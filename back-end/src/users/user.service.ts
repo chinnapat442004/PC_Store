@@ -33,6 +33,10 @@ export class UserService {
     return this.userRepository.findOne({ where: { user_id } });
   }
 
+  findOneByEmail(email: string) {
+    return this.userRepository.findOne({ where: { email } });
+  }
+
   async update(user_id: number, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOne({ where: { user_id } });
     user.address = updateUserDto.address;
