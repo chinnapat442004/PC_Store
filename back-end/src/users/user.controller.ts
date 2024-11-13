@@ -7,6 +7,7 @@ import {
   Delete,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { diskStorage } from 'multer';
 import { UserService } from './user.service';
@@ -17,6 +18,7 @@ import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import * as path from 'path';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -26,7 +28,7 @@ export class UserController {
   // create(@Body() createUserDto: CreateUserDto) {
   //   return this.userService.create(createUserDto);
   // }
-
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.userService.findAll();
