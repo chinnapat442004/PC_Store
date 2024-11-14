@@ -1,6 +1,6 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
@@ -38,14 +38,14 @@ export class OrdersService {
 
     for (const item of createOrderDto.orderDetail) {
       const orderDetail = new OrderDetail();
-      orderDetail.price = item.price;
+      orderDetail.price = item.product.price;
       orderDetail.quantity = item.quantity;
+      orderDetail.product = item.product;
 
       await this.orderDetailRepository.save(orderDetail);
       order.orderDetail.push(orderDetail);
       order.total_amount += orderDetail.price * orderDetail.quantity;
       order.order_status = createOrderDto.order_status;
-
       order.status = createOrderDto.status;
       order.currency = createOrderDto.currency;
     }
@@ -56,7 +56,7 @@ export class OrdersService {
   findAll() {
     return this.orderRepository.find({
       relations: {
-        orderDetail: true,
+        orderDetail: { product: true },
         user: true,
       },
     });
