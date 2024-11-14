@@ -22,19 +22,19 @@ export class UserService {
     user.password = createUserDto.password;
     user.role = createUserDto.role;
 
-    return this.userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
   async findAll() {
     return await this.userRepository.find();
   }
 
-  findOne(user_id: number) {
-    return this.userRepository.findOne({ where: { user_id } });
+  async findOne(user_id: number) {
+    return await this.userRepository.findOne({ where: { user_id } });
   }
 
-  findOneByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
+  async findOneByEmail(email: string) {
+    return await this.userRepository.findOne({ where: { email } });
   }
 
   async update(user_id: number, updateUserDto: UpdateUserDto) {
@@ -46,11 +46,11 @@ export class UserService {
     user.name = updateUserDto.name;
     user.password = updateUserDto.password;
     user.role = updateUserDto.role;
-    return this.userRepository.save(user);
+    return await this.userRepository.save(user);
   }
 
   async remove(user_id: number) {
     const user = await this.userRepository.findOne({ where: { user_id } });
-    return this.userRepository.remove(user);
+    return await this.userRepository.remove(user);
   }
 }

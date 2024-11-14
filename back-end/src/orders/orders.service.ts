@@ -50,11 +50,11 @@ export class OrdersService {
       order.currency = createOrderDto.currency;
     }
 
-    return this.orderRepository.save(order);
+    return await this.orderRepository.save(order);
   }
 
-  findAll() {
-    return this.orderRepository.find({
+  async findAll() {
+    return await this.orderRepository.find({
       relations: {
         orderDetail: { product: true },
         user: true,
@@ -62,8 +62,8 @@ export class OrdersService {
     });
   }
 
-  findOne(order_id: number) {
-    return this.orderRepository.findOne({
+  async findOne(order_id: number) {
+    return await this.orderRepository.findOne({
       where: { order_id },
       relations: { orderDetail: true, user: true },
     });
