@@ -12,16 +12,16 @@ export class ProductsService {
     private productRepository: Repository<Product>,
   ) {}
 
-  create(createProductDto: CreateProductDto) {
-    return this.productRepository.save(createProductDto);
+  async create(createProductDto: CreateProductDto) {
+    return await this.productRepository.save(createProductDto);
   }
 
-  findAll() {
-    return this.productRepository.find();
+  async findAll() {
+    return await this.productRepository.find();
   }
 
-  findOne(product_id: number) {
-    return this.productRepository.findOne({ where: { product_id } });
+  async findOne(product_id: number) {
+    return await this.productRepository.findOne({ where: { product_id } });
   }
 
   async update(product_id: number, updateProductDto: UpdateProductDto) {
@@ -29,13 +29,13 @@ export class ProductsService {
       where: { product_id },
     });
     Object.assign(product, updateProductDto);
-    return this.productRepository.save(product);
+    return await this.productRepository.save(product);
   }
 
   async remove(product_id: number) {
     const product = await this.productRepository.findOne({
       where: { product_id },
     });
-    return this.productRepository.remove(product);
+    return await this.productRepository.remove(product);
   }
 }

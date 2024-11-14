@@ -1,3 +1,4 @@
+import { Category } from 'src/categories/entities/category.entity';
 import { OrderDetail } from 'src/orders/entities/order_detail';
 import {
   Entity,
@@ -6,6 +7,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -36,4 +39,8 @@ export class Product {
 
   @OneToMany(() => OrderDetail, (OrderDetail) => OrderDetail.product)
   orderDetail: OrderDetail[];
+
+  @ManyToOne(() => Category, (categery) => categery.products)
+  @JoinColumn({ name: 'user_id' })
+  category: Category;
 }
