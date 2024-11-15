@@ -35,12 +35,14 @@ export class OrdersService {
     }
 
     order.user = createOrderDto.user;
+    await this.orderRepository.save(order);
 
     for (const item of createOrderDto.orderDetail) {
       const orderDetail = new OrderDetail();
       orderDetail.price = item.product.price;
       orderDetail.quantity = item.quantity;
       orderDetail.product = item.product;
+      orderDetail.order = order;
 
       await this.orderDetailRepository.save(orderDetail);
       order.orderDetail.push(orderDetail);

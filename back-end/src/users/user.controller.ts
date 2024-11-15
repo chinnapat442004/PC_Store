@@ -59,11 +59,9 @@ export class UserController {
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
-    console.log(createUserDto);
     if (image) {
       createUserDto.image = image.filename;
     } else {
-      console.log('not');
     }
     return this.userService.createUser(createUserDto);
   }
