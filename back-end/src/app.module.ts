@@ -12,8 +12,12 @@ import { Order } from './orders/entities/order.entity';
 import { OrderDetail } from './orders/entities/order_detail';
 import { ProductsModule } from './products/products.module';
 import { Product } from './products/entities/product.entity';
+import { Image } from './products/entities/image.entity';
 import { CategoriesModule } from './categories/categories.module';
 import { Category } from './categories/entities/category.entity';
+import { CartsModule } from './carts/carts.module';
+import { Cart } from './carts/entities/cart.entity';
+import { CartDetail } from './carts/entities/cart_detail';
 
 @Module({
   imports: [
@@ -21,7 +25,16 @@ import { Category } from './categories/entities/category.entity';
       type: 'sqlite', // เปลี่ยนเป็น sqlite
 
       database: 'database.sqlite', // ไฟล์ฐานข้อมูล SQLite
-      entities: [User, Order, OrderDetail, Product, Category],
+      entities: [
+        User,
+        Order,
+        OrderDetail,
+        Product,
+        Category,
+        Cart,
+        CartDetail,
+        Image,
+      ],
       synchronize: true,
       autoLoadEntities: true,
     }),
@@ -33,6 +46,7 @@ import { Category } from './categories/entities/category.entity';
     OrdersModule,
     ProductsModule,
     CategoriesModule,
+    CartsModule,
   ],
 
   controllers: [AppController],
