@@ -42,7 +42,18 @@ export class ProductsService {
   }
 
   async findAll() {
-    return await this.productRepository.find();
+    return await this.productRepository.find({
+      relations: {
+        images: true,
+        category: true,
+      },
+      order: {
+        category: {
+          category_id: 'ASC',
+        },
+        title: 'ASC',
+      },
+    });
   }
 
   async findOne(product_id: number) {
