@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { IonIcon } from '@ionic/vue'
 import { arrowBackOutline, arrowForwardOutline } from 'ionicons/icons'
-import HeaderComponents from '../components/HeaderComponents.vue'
 
 // ข้อมูลของกล่อง
 const cards = ref([
@@ -76,7 +75,7 @@ const nextSlide = () => {
 </script>
 
 <template>
-  <div class="bg-[#414141] h-full w-full pt-[30px]">
+  <div class="bg-[#414141] h-full w-full pt-[70px]">
     <div class="px-[70px]">
       <h1 class="text-white text-[50px]">ยกระดับประสบการณ์การเล่นเกมของคุณ</h1>
       <p class="text-white pt-[20px]">

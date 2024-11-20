@@ -1,12 +1,25 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import type { Product } from '@/types/Product'
+import productService from '@/service/product'
+export const useProductStore = defineStore('product', () => {
+  const products = ref<Product[]>([])
 
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
+  const initialProduct: Product & { files: File[] } = {
+    title: '',
+    description: '',
+    price: 0,
+    sold: 0,
+    images: [],
+    quantity: 0,
+    // category: [],
+  }
+  const editedProduct = ref(<Product & { files: File[] }>JSON.parse(JSON.stringify(initialProduct)))
+
+  async function getProducts() {
+    const res = await productService.getProducts()
+    products.value = res.data
   }
 
-  return { count, doubleCount, increment }
+  return { getProducts, products }
 })
