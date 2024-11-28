@@ -57,7 +57,10 @@ export class ProductsService {
   }
 
   async findOne(product_id: number) {
-    return await this.productRepository.findOne({ where: { product_id } });
+    return await this.productRepository.findOne({
+      where: { product_id },
+      relations: { images: true },
+    });
   }
 
   async update(product_id: number, updateProductDto: UpdateProductDto) {

@@ -3,5 +3,5 @@ import { User } from 'src/users/entities/user.entity';
 
 export class CreateCartDto {
   user: User;
-  cartDetails: { quantity: number; price: number; product: Product }[];
+  cartDetails: { quantity: number; product: Product }[];
 }

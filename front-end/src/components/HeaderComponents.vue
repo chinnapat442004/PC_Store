@@ -1,13 +1,22 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/auth'
 import { IonIcon } from '@ionic/vue'
 import { menu, close, person } from 'ionicons/icons'
-import { nextTick } from 'vue'
+const authStore = useAuthStore()
 
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, nextTick } from 'vue'
 
-const isMenuOpen = ref(true)
-const open = ref(true)
+const isLogin = ref(localStorage.getItem('isLogin') === 'true')
+
+function updateLoginStatus() {
+  isLogin.value = localStorage.getItem('isLogin') === 'true'
+}
+
+const isMenuOpen = ref(false)
+const open = ref(false)
 const page = ref('home')
+const checkMenu = ref(false)
+const user = ref()
 
 function show() {
   isMenuOpen.value = !isMenuOpen.value
@@ -15,35 +24,61 @@ function show() {
 }
 
 const checkScreenSize = () => {
-  isMenuOpen.value = window.innerWidth >= 768
-  isMenuOpen.value = true
-  open.value = true
+  if (window.innerWidth >= 768) {
+    isMenuOpen.value = true
+  } else {
+    isMenuOpen.value = false
+  }
+  open.value = false
 }
 
 onMounted(() => {
   checkScreenSize()
-
+  const storedUser = localStorage.getItem('user')
+  user.value = storedUser ? JSON.parse(storedUser) : null
   window.addEventListener('resize', checkScreenSize)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', checkScreenSize)
 })
+
+async function logout() {
+  await authStore.clearUser()
+  updateLoginStatus()
+
+  checkMenu.value = await false
+}
 </script>
 
 <template>
   <header
-    class="shadow-lg py-[10px] px-[90px] md:px-[30px] bg-[#202020] fixed top-0 left-0 w-full z-50"
+    class="shadow-lg py-[10px] px-[5px] md:px-[30px] bg-[#202020] fixed top-0 left-0 w-full z-50"
     :class="{ 'mb-[180px]': isMenuOpen, 'mb-[0px]': !isMenuOpen }"
   >
     <div class="flex justify-between items-center w-[92%] mx-auto md:gap-4">
       <!-- LOGO Main Menu -->
-      <div class="flex justify-between items-center md:gap-10">
-        <div><a href="javascript:void(0)" class="text-[3.7vh] text-[white]">LOGO</a></div>
+
+      <div class="md:hidden">
+        <IonIcon
+          v-if="!open"
+          @click="show"
+          :icon="menu"
+          class="text-3xl cursor-pointer md:hidden text-[white]"
+        />
+        <IonIcon
+          v-if="open"
+          @click="show"
+          :icon="close"
+          class="text-3xl cursor-pointer md:hidden text-[white]"
+        />
+      </div>
+      <div class="flex items-center md:gap-10">
+        <div><a class="text-[30px] text-[white]">LOGO</a></div>
 
         <div
           id="collapseMenu"
-          class="md:static absolute min-h-[2vh] left-0 top-[70px] w-full items-center md:bg-[#202020] bg-[#cbcbcb]"
+          class="md:static absolute min-h-[2vh] left-0 top-[65px] w-full items-center md:bg-[#202020] bg-[#cbcbcb]"
           :class="{ hidden: !isMenuOpen }"
         >
           <ul class="flex md:flex-row flex-col md:gap-4 items-center justify-center">
@@ -100,7 +135,7 @@ onBeforeUnmount(() => {
                 class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center"
                 :class="
                   page === 'cart'
-                    ? 'md:bg-[#979dac] bg-[#6d717a]  md:text-black '
+                    ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
                     : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
                 "
               >
@@ -111,60 +146,74 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div>
-        <div
-          class="flex items-center md:w-[300px] w-[200px] p-2 bg-[#a0a0a1] rounded-[30px] shadow-md"
+      <div
+        class="relative flex items-center md:w-[300px] w-[170px] p-2 bg-white rounded-[30px] shadow-md"
+      >
+        <input
+          type="text"
+          placeholder="ค้นหาสินค้า"
+          class="flex-grow bg-transparent outline-none text-black placeholder-black px-2"
+        />
+        <button
+          class="absolute right-2 text-white bg-[#637aad] hover:bg-[#202020] rounded-lg px-3 py-1 transition"
         >
-          <input
-            type="text"
-            placeholder="ค้นหาสินค้า"
-            class="flex-grow bg-transparent outline-none text-black placeholder-black px-2"
-          />
+          ค้นหา
+        </button>
+      </div>
+
+      <div id="loginMenu" class="flex gap-4 items-center justify-center">
+        <div>
           <button
-            class="text-white bg-[#6d717a] hover:bg-[#202020] rounded-lg px-3 py-1 ml-2 transition"
+            @click="checkMenu = !checkMenu"
+            class="w-[40px] h-[40px] text-[white] hover:text-[#333] font-semibold text-[15px] hover:bg-[#979dac] duration-300 rounded-full flex items-center justify-center border-2"
           >
-            ค้นหา
+            <IonIcon v-if="!isLogin" :icon="person" class="text-[white] text-3xl" />
+
+            <img
+              v-if="isLogin"
+              :src="`http://localhost:3000/images/users/${user?.image}`"
+              class="w-full h-full object-cover rounded-full"
+              alt="User Profile"
+            />
+          </button>
+        </div>
+
+        <div
+          v-if="checkMenu === true && !isLogin"
+          class="bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 duration-300 md:right-auto right-0"
+        >
+          <router-link
+            :to="{ name: 'login' }"
+            class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px] block"
+          >
+            Sign in
+          </router-link>
+          <router-link
+            class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px]"
+            :to="{ name: 'shop' }"
+          >
+            Register
+          </router-link>
+        </div>
+
+        <div
+          v-if="checkMenu === true && isLogin"
+          class="bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 duration-300"
+        >
+          <router-link
+            class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px] block"
+          >
+            บัญชีของฉัน
+          </router-link>
+          <button
+            class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px]"
+            @click="logout"
+          >
+            ออกจากระบบ
           </button>
         </div>
       </div>
-
-      <!-- Login Menu -->
-      <div>
-        <IonIcon
-          v-if="!open"
-          @click="show"
-          :icon="menu"
-          class="text-3xl cursor-pointer md:hidden text-[white]"
-        />
-        <IonIcon
-          v-if="open"
-          @click="show"
-          :icon="close"
-          class="text-3xl cursor-pointer md:hidden text-[white]"
-        />
-      </div>
-      <div id="loginMenu" class="flex gap-4 items-center mt-4 md:mt-0">
-        <!-- <li>
-            <a
-              href="javascript:void(0)"
-              class="w-[80px] h-[40px] text-[white] hover:text-[#333] font-semibold text-[15px] hover:bg-[#979dac] duration-300 rounded-[5px] flex items-center justify-center"
-              >Register</a
-            >
-          </li>
-          <li>
-            <a
-              href="javascript:void(0)"
-              class="w-[80px] h-[40px] text-[white] hover:text-[#333] font-semibold text-[15px] hover:bg-[#979dac] duration-300 rounded-[5px] flex items-center justify-center"
-              >Login</a
-            >
-          </li> -->
-        <button
-          class="w-[40px] h-[40px] text-[white] hover:text-[#333] font-semibold text-[15px] hover:bg-[#979dac] duration-300 rounded-full flex items-center justify-center border-2"
-        >
-          <IonIcon :icon="person" class="text-[white] text-3xl" />
-        </button>
-      </div>
     </div>
   </header>
-  <div></div>
+  <div class="pb-[60px]"></div>
 </template>

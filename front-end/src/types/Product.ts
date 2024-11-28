@@ -2,7 +2,7 @@ import type { OrderDetail } from './OrderDetail'
 import type { Image } from './Image'
 
 type Product = {
-  product_id: number
+  product_id?: number
 
   title: string
 
@@ -15,10 +15,6 @@ type Product = {
   quantity: number
 
   orderDetail: OrderDetail[]
-
-  // category?: Category
-
-  // cartDetails?: CartDetail[]
 
   images: Image[]
 }

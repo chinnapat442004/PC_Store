@@ -21,5 +21,10 @@ export const useProductStore = defineStore('product', () => {
     products.value = res.data
   }
 
-  return { getProducts, products }
+  async function getProduct(product: Product) {
+    const res = await productService.getProduct(product)
+    editedProduct.value = res.data
+  }
+
+  return { getProducts, products, editedProduct, getProduct }
 })
