@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Controller('cart')
 export class CartsController {

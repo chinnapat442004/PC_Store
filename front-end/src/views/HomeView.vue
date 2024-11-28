@@ -75,10 +75,12 @@ const nextSlide = () => {
 </script>
 
 <template>
-  <div class="bg-[#414141] h-full w-full pt-[70px]">
-    <div class="px-[70px]">
-      <h1 class="text-white text-[50px]">ยกระดับประสบการณ์การเล่นเกมของคุณ</h1>
-      <p class="text-white pt-[20px]">
+  <div class="bg-[#414141] h-full w-full pt-[25px]">
+    <div class="px-6 sm:px-8 lg:px-10 max-w-[1200px] mx-auto">
+      <h1 class="text-white text-[36px] sm:text-[40px] lg:text-[50px]">
+        ยกระดับประสบการณ์การเล่นเกมของคุณ
+      </h1>
+      <p class="text-white pt-4 text-sm sm:text-base lg:text-lg leading-relaxed">
         พบกับอุปกรณ์เกมมิ่งระดับพรีเมียมที่ออกแบบมาเพื่อเกมเมอร์ตัวจริง!
         ไม่ว่าจะเป็นคีย์บอร์ดที่ตอบสนองไว, เมาส์ที่แม่นยำ, หูฟังเสียงคมชัด,
         หรือเก้าอี้เกมมิ่งเพื่อความสบายตลอดวัน เรามีทุกสิ่งที่คุณต้องการเพื่อคว้าชัยชนะในทุกเกม

@@ -22,13 +22,15 @@ export class CartsService {
 
     for (const item of createCartDto.cartDetails) {
       const cartDetail = new CartDetail();
-      cartDetail.price = item.price;
+      cartDetail.price = item.product.price * item.quantity;
+      console.log(item.product.price);
+      console.log(item.quantity);
       cartDetail.quantity = item.quantity;
       cartDetail.product = item.product;
       cartDetail.cart = cart;
       await this.cartDetailRepository.save(cartDetail);
 
-      cart.total_amount += cartDetail.price + cartDetail.quantity;
+      cart.total_amount += cartDetail.price;
     }
 
     return await this.cartRepository.save(cart);
@@ -36,7 +38,7 @@ export class CartsService {
 
   async findAll() {
     return await this.cartRepository.find({
-      relations: { cartDetails: { product: true }, user: true },
+      relations: { cartDetails: { product: { images: true } }, user: true },
     });
   }
 
