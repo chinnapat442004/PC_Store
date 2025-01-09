@@ -6,9 +6,9 @@ type CartDetail = {
 
   quantity: number
 
-  price: number
+  price?: number
 
-  cart: Cart
+  cart?: Cart
 
   product: Product
 }

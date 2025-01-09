@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '../stores/auth'
+import { useCartStore } from '../stores/cart'
 import { IonIcon } from '@ionic/vue'
 import { menu, close, person } from 'ionicons/icons'
+import { useRoute } from 'vue-router'
 const authStore = useAuthStore()
+const cartStore = useCartStore()
+const route = useRoute()
 
-import { onBeforeUnmount, onMounted, ref, nextTick } from 'vue'
+import { onBeforeUnmount, onMounted, ref, nextTick, computed } from 'vue'
+import { toast } from 'vue3-toastify'
 
 const isLogin = ref(localStorage.getItem('isLogin') === 'true')
 
@@ -14,9 +19,15 @@ function updateLoginStatus() {
 
 const isMenuOpen = ref(false)
 const open = ref(false)
-const page = ref('home')
+const page = ref()
 const checkMenu = ref(false)
 const user = ref()
+
+const cartDetailCount = computed(() => {
+  const cart = cartStore.cart
+  return cart && cart.cartDetails ? cart.cartDetails.length : 0
+})
+const isToastActive = ref(false)
 
 function show() {
   isMenuOpen.value = !isMenuOpen.value
@@ -37,6 +48,9 @@ onMounted(() => {
   const storedUser = localStorage.getItem('user')
   user.value = storedUser ? JSON.parse(storedUser) : null
   window.addEventListener('resize', checkScreenSize)
+
+  page.value = route.name
+  cartStore.getCart()
 })
 
 onBeforeUnmount(() => {
@@ -46,8 +60,24 @@ onBeforeUnmount(() => {
 async function logout() {
   await authStore.clearUser()
   updateLoginStatus()
+  await cartStore.getCart()
 
   checkMenu.value = await false
+  isLogout()
+}
+
+const isLogout = () => {
+  if (!isToastActive.value) {
+    isToastActive.value = true
+    // สมมุติว่ามีการทำ logout ที่นี่ เช่นลบข้อมูล session, token หรือ redirect
+    // ตัวอย่างการแสดง toast เมื่อออกจากระบบ
+    toast.success('ออกจากระบบสำเร็จ', {
+      position: toast.POSITION.TOP_RIGHT,
+      onClose: () => {
+        isToastActive.value = false
+      },
+    })
+  }
 }
 </script>
 
@@ -79,7 +109,7 @@ async function logout() {
         <div
           id="collapseMenu"
           class="md:static absolute min-h-[2vh] left-0 top-[65px] w-full items-center md:bg-[#202020] bg-[#cbcbcb]"
-          :class="{ hidden: !isMenuOpen }"
+          :class="{ 'hidden md:block': !isMenuOpen }"
         >
           <ul class="flex md:flex-row flex-col md:gap-4 items-center justify-center">
             <li
@@ -87,6 +117,7 @@ async function logout() {
                 async () => {
                   page = 'home'
                   await nextTick()
+                  isMenuOpen = false
                 }
               "
             >
@@ -107,6 +138,7 @@ async function logout() {
                 async () => {
                   page = 'shop'
                   await nextTick()
+                  isMenuOpen = false
                 }
               "
             >
@@ -127,19 +159,26 @@ async function logout() {
                 async () => {
                   page = 'cart'
                   await nextTick()
+                  isMenuOpen = false
                 }
               "
             >
               <router-link
                 :to="{ name: 'cart' }"
-                class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center"
-                :class="
+                class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center relative"
+                :class="[
                   page === 'cart'
-                    ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
-                    : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
-                "
+                    ? 'md:bg-[#979dac] bg-[#6d717a] text-black '
+                    : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]',
+                ]"
               >
                 Cart
+                <span
+                  class="absolute top-[-5px] right-[-5px] bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                  v-if="cartDetailCount >= 1"
+                >
+                  {{ cartDetailCount }}
+                </span>
               </router-link>
             </li>
           </ul>

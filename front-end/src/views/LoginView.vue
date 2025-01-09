@@ -3,8 +3,10 @@ import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+import { useCartStore } from '../stores/cart'
 
 const authStore = useAuthStore()
+const cartStore = useCartStore()
 const submit = ref(false)
 // const errorMessage = ref('')
 
@@ -37,6 +39,7 @@ async function onSubmit() {
   submit.value = true
   try {
     await authStore.login()
+    await cartStore.getCart()
   } catch (error: any) {
     console.log(error)
     notify()
@@ -65,7 +68,7 @@ async function onSubmit() {
             type="text"
             id="username"
             name="username"
-            placeholder="Enter your "
+            placeholder="Enter your email "
             v-model="authStore.email"
             class="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#202020]"
           />

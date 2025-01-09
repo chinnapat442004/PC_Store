@@ -12,7 +12,7 @@ export const useProductStore = defineStore('product', () => {
     sold: 0,
     images: [],
     quantity: 0,
-    // category: [],
+    files: [],
   }
   const editedProduct = ref(<Product & { files: File[] }>JSON.parse(JSON.stringify(initialProduct)))
 
@@ -26,5 +26,5 @@ export const useProductStore = defineStore('product', () => {
     editedProduct.value = res.data
   }
 
-  return { getProducts, products, editedProduct, getProduct }
+  return { getProducts, products, editedProduct, getProduct, initialProduct }
 })

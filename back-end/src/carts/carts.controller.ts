@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CreateCartDto } from './dto/create-cart.dto';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Controller('cart')
 export class CartsController {
@@ -24,18 +25,23 @@ export class CartsController {
     return this.cartsService.findAll();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.cartsService.findOne(+id);
-  // }
+  @Get(':user_id')
+  findOne(@Param('user_id') id: string) {
+    return this.cartsService.findOne(+id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-  //   return this.cartsService.update(+id, updateCartDto);
-  // }
+  @Patch(':id')
+  addCartDetail(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
+    return this.cartsService.addCartDetail(+id, updateCartDto);
+  }
+
+  @Patch('/update/:id')
+  update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
+    return this.cartsService.update(+id, updateCartDto);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.cartsService.remove(+id);
+    return this.cartsService.removeDetail(+id);
   }
 }
