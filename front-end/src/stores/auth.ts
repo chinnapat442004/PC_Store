@@ -31,5 +31,10 @@ export const useAuthStore = defineStore('auth', () => {
     password.value = ''
   }
 
-  return { login, email, password, user, clearUser }
+  function getCurrentUser() {
+    const storedUser = localStorage.getItem('user')
+    user.value = storedUser ? JSON.parse(storedUser) : null
+  }
+
+  return { login, email, password, user, clearUser, getCurrentUser }
 })

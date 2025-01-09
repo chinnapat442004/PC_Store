@@ -1,5 +1,6 @@
 import type { OrderDetail } from './OrderDetail'
 import type { Image } from './Image'
+import type { Category } from './Category'
 
 type Product = {
   product_id?: number
@@ -14,8 +15,9 @@ type Product = {
 
   quantity: number
 
-  orderDetail: OrderDetail[]
+  orderDetail?: OrderDetail[]
 
   images: Image[]
+  category?: Category
 }
 export { type Product }

@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useProductStore } from '../stores/product'
+import { useCartStore } from '../stores/cart'
+import { toast } from 'vue3-toastify'
 const productStore = useProductStore()
-
+const cartStore = useCartStore()
 const number = ref(1)
+const isToastActive = ref(false)
 
 function plus() {
   number.value++
@@ -14,17 +17,41 @@ function minus() {
     number.value--
   }
 }
+
+onMounted(async () => {
+  cartStore.getCart()
+})
+
+const addProduct = () => {
+  if (!isToastActive.value) {
+    isToastActive.value = true
+    toast.success('เพิ่มสินค้าลงในตะกร้า', {
+      position: toast.POSITION.TOP_RIGHT,
+      onClose: () => {
+        isToastActive.value = false // ปล่อยสถานะเมื่อแจ้งเตือนถูกปิด
+      },
+    })
+  }
+  cartStore.getCart()
+}
+
+async function addCart() {
+  cartStore.editedCartDetail.quantity = number.value
+  if (cartStore.cart) cartStore.addCartDetail(cartStore.cart, cartStore.editedCartDetail)
+  await cartStore.getCart()
+  addProduct()
+}
 </script>
 <template>
   <div class="flex justify-center h-screen w-full pt-[70px] bg-[#414141]">
     <div
-      class="bg-[#ffffff] max-w-full sm:max-w-[600px] lg:max-w-[900px] h-auto sm:h-[400px] lg:h-[500px] shadow-xl rounded-[5px] mx-auto"
+      class="bg-[#ffffff] max-w-[600px] lg:max-w-[900px] h-[400px] lg:h-[500px] shadow-xl rounded-[5px] mx-auto"
     >
       <div class="flex p-[30px] flex-row justify-between">
         <img
           :src="`http://localhost:3000/${productStore.editedProduct.images[0].image}`"
           alt=""
-          class="w-[350px] h-[350px] rounded-[5px] shadow-xl"
+          class="w-[280px] h-[280px] md:w-[300px] md:h-[300px] lg:w-[350px] lg:h-[350px] rounded-[5px] shadow-xl"
         />
         <div class="w-[650px] h-[350px] p-[30px]">
           <div class="pb-[50px]">
@@ -62,6 +89,7 @@ function minus() {
           <div class="flex justify-between gap-2 px-[20px]">
             <button
               class="bg-[white] text-[#637aad] w-full h-[35px] border-[2px] border-[#637aad] hover:bg-[#d6dbe7] rounded-[5px] font-bold duration-400"
+              @click="addCart"
             >
               ตะกร้า
             </button>

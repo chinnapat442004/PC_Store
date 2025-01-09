@@ -8,6 +8,6 @@ type Cart = {
 
   cartDetails: CartDetail[]
 
-  user: User
+  user?: User
 }
 export { type Cart }

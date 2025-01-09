@@ -15,7 +15,7 @@ app.component('VueSlider', VueSlider)
 app.use(createPinia())
 app.use(router)
 app.use(Vue3Toastify, {
-  autoClose: 3000,
+  autoClose: 2400,
 } as ToastContainerOptions)
 
 app.mount('#app')
