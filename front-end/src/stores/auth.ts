@@ -15,16 +15,20 @@ export const useAuthStore = defineStore('auth', () => {
     if (res) {
       localStorage.setItem('user', JSON.stringify(res.data.user))
       localStorage.setItem('access_token', res.data.access_token)
-      // localStorage.setItem('role', res.data.employee.role)
+      localStorage.setItem('role', res.data.user.role)
       localStorage.setItem('isLogin', 'true')
-
-      await router.replace({ name: 'home' })
+      if (res.data.user.role === 'admin') {
+        await router.replace({ name: 'dashboard' })
+      } else if (res.data.user.role === 'user') {
+        await router.replace({ name: 'home' })
+      }
     }
   }
 
   function clearUser() {
     localStorage.removeItem('user')
     localStorage.removeItem('access_token')
+    localStorage.removeItem('role')
     localStorage.setItem('isLogin', 'false')
     user.value = null
     email.value = ''

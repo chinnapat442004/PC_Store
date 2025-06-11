@@ -241,6 +241,7 @@ const isLogout = () => {
         >
           <router-link
             class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px] block"
+            to=""
           >
             บัญชีของฉัน
           </router-link>
