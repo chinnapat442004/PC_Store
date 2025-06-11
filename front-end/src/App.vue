@@ -3,9 +3,10 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
+  <RouterView name="navbar" />
   <RouterView name="sidebar" />
 
-  <div class="content">
+  <div>
     <RouterView />
   </div>
 </template>

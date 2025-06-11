@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Product } from '../types/Product'
 import { useProductStore } from '../stores/product'
-import { useCategoryStore } from '../stores/Category'
+import { useCategoryStore } from '../stores/category'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'

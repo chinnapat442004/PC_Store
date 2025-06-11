@@ -40,7 +40,7 @@ async function onSubmit() {
   try {
     await authStore.login()
     await cartStore.getCart()
-  } catch (error: any) {
+  } catch (error) {
     console.log(error)
     notify()
   } finally {
@@ -102,13 +102,9 @@ async function onSubmit() {
       </form>
       <!-- สิ้นสุดฟอร์ม -->
       <p class="mt-4 text-white text-sm">
-        <a href="#" class="text-[#637aad] font-medium hover:underline" @click="goToSignup">
-          สมัครสมาชิก
-        </a>
+        <a href="#" class="text-[#637aad] font-medium hover:underline"> สมัครสมาชิก </a>
         <span class="mx-2">|</span>
-        <a href="#" class="text-[#637aad] font-medium hover:underline" @click="goToForgotPassword">
-          ลืมรหัสผ่าน?
-        </a>
+        <a href="#" class="text-[#637aad] font-medium hover:underline"> ลืมรหัสผ่าน? </a>
       </p>
     </div>
   </div>
