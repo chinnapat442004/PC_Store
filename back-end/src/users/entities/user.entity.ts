@@ -29,10 +29,10 @@ export class User {
   @Column()
   role: string;
 
-  @Column()
-  enabled: string;
+  @Column({ default: true })
+  enabled: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   address: string;
 
   @CreateDateColumn()

@@ -8,6 +8,8 @@ import ProductView from '../views/ProductView.vue'
 import DashboardView from '../views/admin/DashboardView.vue'
 import SidebarComponent from '@/components/SidebarComponent.vue'
 import EditProductView from '../views/admin/ProductView.vue'
+import RegisterView from '../views/RegisterView.vue'
+import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,6 +66,16 @@ const router = createRouter({
         default: EditProductView,
         sidebar: SidebarComponent,
       },
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => RegisterView,
+    },
+    {
+      path: '/forgot-password',
+      name: ' forgotPassword',
+      component: () => ForgotPasswordView,
     },
   ],
 })
