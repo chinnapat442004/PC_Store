@@ -2,19 +2,19 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import userService from '../service/user'
 
-import type { User } from '@/types/user'
+import type { User } from '@/types/User'
 
 export const useUserStore = defineStore('user', () => {
   const users = ref<User[]>([])
 
   const initialUser: User = {
-    email: '',
-    name: '',
-    password: '',
-    image: '',
-    role: '',
-    enabled: '',
-    address: '',
+    email: null,
+    name: null,
+    password: null,
+    image: null,
+    role: null,
+    enabled: true,
+    address: null,
   }
   const editedUser = ref(<User>JSON.parse(JSON.stringify(initialUser)))
 
@@ -28,5 +28,13 @@ export const useUserStore = defineStore('user', () => {
     users.value = res.data
   }
 
-  return { users, editedUser, getUser, getUsers }
+  async function addUser(user: User) {
+    return await userService.addUser(user)
+  }
+
+  const clearUser = () => {
+    editedUser.value = structuredClone(initialUser)
+  }
+
+  return { users, editedUser, getUser, getUsers, addUser, clearUser }
 })

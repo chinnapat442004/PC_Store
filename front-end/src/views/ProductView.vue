@@ -45,15 +45,17 @@ async function addCart() {
 <template>
   <div class="flex justify-center h-screen w-full pt-[70px] bg-[#414141]">
     <div
-      class="bg-[#ffffff] max-w-[600px] lg:max-w-[900px] h-[400px] lg:h-[500px] shadow-xl rounded-[5px] mx-auto"
+      class="bg-[#ffffff] max-w-[600px] lg:max-w-[900px] lg:h-[500px] shadow-xl rounded-[15px] mx-auto"
     >
-      <div class="flex p-[30px] flex-row justify-between">
-        <img
-          :src="`http://localhost:3000/${productStore.editedProduct.images[0].image}`"
-          alt=""
-          class="w-[280px] h-[280px] md:w-[300px] md:h-[300px] lg:w-[350px] lg:h-[350px] rounded-[5px] shadow-xl"
-        />
-        <div class="w-[650px] h-[350px] p-[30px]">
+      <div class="flex p-[30px] flex-wrap">
+        <div>
+          <img
+            :src="`http://localhost:3000/${productStore.editedProduct.images[0].image}`"
+            alt=""
+            class="w-[280px] h-[280px] md:w-[300px] md:h-[300px] lg:w-[350px] lg:h-[350px] rounded-[5px] shadow-xl"
+          />
+        </div>
+        <div class="p-[30px]">
           <div class="pb-[50px]">
             <h1 class="text-[33px] font-medium pb-[20px]">
               {{ productStore.editedProduct.title }}

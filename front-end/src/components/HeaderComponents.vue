@@ -210,7 +210,10 @@ const isLogout = () => {
 
             <img
               v-if="isLogin"
-              :src="`http://localhost:3000/images/users/${user?.image}`"
+              :src="
+                `http://localhost:3000/images/users/${user?.image}` ||
+                'https://cdn-icons-png.flaticon.com/512/3682/3682281.png'
+              "
               class="w-full h-full object-cover rounded-full"
               alt="User Profile"
             />
@@ -229,7 +232,7 @@ const isLogout = () => {
           </router-link>
           <router-link
             class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px]"
-            :to="{ name: 'shop' }"
+            :to="{ name: 'register' }"
           >
             Register
           </router-link>

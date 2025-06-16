@@ -1,12 +1,12 @@
 type User = {
   user_id?: number
-  email: string
-  name: string
-  password: string
-  image: string
-  role: string
-  enabled: string
-  address: string
+  email: string | null
+  name: string | null
+  password: string | null
+  image: string | null
+  role: string | null
+  enabled: boolean
+  address: string | null
 }
 
 export { type User }
