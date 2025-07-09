@@ -1,6 +1,6 @@
 import http from './http'
 
-function login(email: string, password: string) {
+function login(email: string | null, password: string | null) {
   try {
     const response = http.post(`/auth/login`, { email, password })
     return response

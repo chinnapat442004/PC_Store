@@ -10,14 +10,24 @@ const cartStore = useCartStore()
 const submit = ref(false)
 const passwordError = ref('')
 const usernameError = ref('')
+const loginError = ref('')
+// const showValid = ref(false)
 // const errorMessage = ref('')
 
 const isToastActive = ref(false)
 
 watch([() => authStore.email, () => authStore.password], ([newEmail, newPassword]) => {
-  if ((newEmail && usernameError.value) || (newPassword && passwordError.value)) {
+  // ถ้าผู้ใช้พิมพ์ email หรือ password ให้เคลียร์ error ทั้งหมดทันที
+  if (newEmail) {
     usernameError.value = ''
+  }
+  if (newPassword) {
     passwordError.value = ''
+  }
+
+  // ✅ เคลียร์ loginError เสมอเมื่อผู้ใช้พิมพ์บางอย่างใหม่
+  if (newEmail || newPassword) {
+    loginError.value = ''
   }
 })
 
@@ -46,11 +56,24 @@ const pass = () => {
 }
 
 const checkValidate = () => {
-  passwordError.value = 'กรุณากรอกรหัสผ่าน'
-  usernameError.value = 'กรุณากรอก Email'
+  if (authStore.email === null || authStore.email === '') {
+    usernameError.value = 'กรุณากรอก Email'
+  }
+  if (authStore.password === null || authStore.password === '') {
+    passwordError.value = 'กรุณากรอกรหัสผ่าน'
+  }
+  if (
+    authStore.email &&
+    authStore.password &&
+    usernameError.value === '' &&
+    passwordError.value === ''
+  ) {
+    loginError.value = 'email หรือ password ไม่ถูกต้อง'
+  }
 }
 async function onSubmit() {
   submit.value = true
+
   try {
     await authStore.login()
     await cartStore.getCart()
@@ -87,7 +110,7 @@ async function onSubmit() {
             v-model="authStore.email"
             :class="[
               'w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2',
-              usernameError
+              passwordError || loginError
                 ? 'bg-red-50 border border-red-500  placeholder-red-700 '
                 : 'focus:ring-[#202020]',
             ]"
@@ -110,13 +133,16 @@ async function onSubmit() {
             v-model="authStore.password"
             :class="[
               'w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2',
-              usernameError
+              passwordError || loginError
                 ? 'bg-red-50 border border-red-500  placeholder-red-700 '
                 : 'focus:ring-[#202020]',
             ]"
           />
           <p v-if="passwordError" class="text-red-500 text-sm mt-1">
             {{ passwordError }}
+          </p>
+          <p v-else-if="loginError" class="text-red-500 text-sm mt-1">
+            {{ loginError }}
           </p>
         </div>
 

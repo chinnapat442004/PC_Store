@@ -5,8 +5,8 @@ import type { User } from '@/types/User'
 import router from '@/router'
 
 export const useAuthStore = defineStore('auth', () => {
-  const email = ref()
-  const password = ref()
+  const email = ref(null)
+  const password = ref(null)
   const user = ref<User | null>()
 
   async function login() {
@@ -31,8 +31,8 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('role')
     localStorage.setItem('isLogin', 'false')
     user.value = null
-    email.value = ''
-    password.value = ''
+    email.value = null
+    password.value = null
   }
 
   function getCurrentUser() {
