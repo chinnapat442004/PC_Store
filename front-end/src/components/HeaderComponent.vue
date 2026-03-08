@@ -4,6 +4,7 @@ import { useCartStore } from '../stores/cart'
 import { IonIcon } from '@ionic/vue'
 import { menu, close, person } from 'ionicons/icons'
 import { useRoute } from 'vue-router'
+// import { watch } from 'vue'
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const route = useRoute()
@@ -19,9 +20,16 @@ function updateLoginStatus() {
 
 const isMenuOpen = ref(false)
 const open = ref(false)
-const page = ref()
+// const page = ref()
 const checkMenu = ref(false)
 const user = ref()
+
+// watch(
+//   () => route.name,
+//   (newRoute) => {
+//     page.value = newRoute
+//   },
+// )
 
 const cartDetailCount = computed(() => {
   const cart = cartStore.cart
@@ -49,7 +57,6 @@ onMounted(() => {
   user.value = storedUser ? JSON.parse(storedUser) : null
   window.addEventListener('resize', checkScreenSize)
 
-  page.value = route.name
   cartStore.getCart()
 })
 
@@ -115,7 +122,7 @@ const isLogout = () => {
             <li
               @click="
                 async () => {
-                  page = 'home'
+                  route.name = 'home'
                   await nextTick()
                   isMenuOpen = false
                 }
@@ -125,7 +132,7 @@ const isLogout = () => {
                 :to="{ name: 'home' }"
                 class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center"
                 :class="
-                  page === 'home'
+                  route.name === 'home'
                     ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
                     : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
                 "
@@ -136,7 +143,7 @@ const isLogout = () => {
             <li
               @click="
                 async () => {
-                  page = 'shop'
+                  route.name = 'shop'
                   await nextTick()
                   isMenuOpen = false
                 }
@@ -146,8 +153,8 @@ const isLogout = () => {
                 :to="{ name: 'shop' }"
                 class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center"
                 :class="
-                  page === 'shop'
-                    ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
+                  route.path.startsWith('/shop') || route.path.startsWith('/product')
+                    ? 'md:bg-[#979dac] bg-[#6d717a] text-black'
                     : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
                 "
               >
@@ -157,7 +164,7 @@ const isLogout = () => {
             <li
               @click="
                 async () => {
-                  page = 'cart'
+                  route.name = 'cart'
                   await nextTick()
                   isMenuOpen = false
                 }
@@ -167,7 +174,7 @@ const isLogout = () => {
                 :to="{ name: 'cart' }"
                 class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center relative"
                 :class="[
-                  page === 'cart'
+                  route.name === 'cart'
                     ? 'md:bg-[#979dac] bg-[#6d717a] text-black '
                     : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]',
                 ]"

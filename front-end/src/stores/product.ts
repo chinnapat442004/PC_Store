@@ -2,8 +2,10 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Product } from '@/types/Product'
 import productService from '@/service/product'
+import { useLoadingStore } from './loading'
 export const useProductStore = defineStore('product', () => {
   const products = ref<Product[]>([])
+  const loadingStore = useLoadingStore()
 
   const initialProduct: Product & { files: File[] } = {
     title: '',
@@ -21,9 +23,11 @@ export const useProductStore = defineStore('product', () => {
     products.value = res.data
   }
 
-  async function getProduct(product: Product) {
-    const res = await productService.getProduct(product)
-    editedProduct.value = res.data
+  async function getProduct(id: number) {
+    loadingStore.doLoad()
+    const res = await productService.getProduct(id)
+    editedProduct.value = await res.data
+    loadingStore.finishLoad()
   }
 
   return { getProducts, products, editedProduct, getProduct, initialProduct }

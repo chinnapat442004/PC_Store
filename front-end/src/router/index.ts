@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ShopView from '../views/ShopView.vue'
 import CartView from '../views/CartView.vue'
-import HeaderComponents from '../components/HeaderComponents.vue'
+import HeaderComponents from '../components/HeaderComponent.vue'
 import LoginView from '../views/LoginView.vue'
 import ProductView from '../views/ProductView.vue'
 import DashboardView from '../views/admin/DashboardView.vue'
@@ -10,6 +10,7 @@ import SidebarComponent from '@/components/SidebarComponent.vue'
 import EditProductView from '../views/admin/ProductView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,6 +38,7 @@ const router = createRouter({
         default: CartView,
         navbar: HeaderComponents,
       },
+      meta: { requiresAuth: true },
     },
     {
       path: '/login',
@@ -80,4 +82,12 @@ const router = createRouter({
   ],
 })
 
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  if (to.meta.requiresAuth && !authStore.token) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
+})
 export default router

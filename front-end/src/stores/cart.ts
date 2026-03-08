@@ -47,5 +47,9 @@ export const useCartStore = defineStore('Cart', () => {
     return cartService.remove(cartDetail)
   }
 
-  return { getCart, addCartDetail, cart, editedCart, editedCartDetail, update, remove }
+  async function clearChart() {
+    cart.value = undefined
+  }
+
+  return { getCart, addCartDetail, clearChart, cart, editedCart, editedCartDetail, update, remove }
 })

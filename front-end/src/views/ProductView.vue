@@ -3,10 +3,24 @@ import { onMounted, ref } from 'vue'
 import { useProductStore } from '../stores/product'
 import { useCartStore } from '../stores/cart'
 import { toast } from 'vue3-toastify'
+import { useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
+import { useLoadingStore } from '@/stores/loading'
+import LoadingComponent from '@/components/LoadingComponent.vue'
 const productStore = useProductStore()
+const authStore = useAuthStore()
 const cartStore = useCartStore()
+const loadingStore = useLoadingStore()
 const number = ref(1)
 const isToastActive = ref(false)
+
+const route = useRoute()
+onMounted(async () => {
+  cartStore.getCart()
+  const id = await Number(route.params.id as string) //
+  await productStore.getProduct(id)
+})
 
 function plus() {
   number.value++
@@ -18,39 +32,46 @@ function minus() {
   }
 }
 
-onMounted(async () => {
-  cartStore.getCart()
-})
-
 const addProduct = () => {
-  if (!isToastActive.value) {
-    isToastActive.value = true
-    toast.success('เพิ่มสินค้าลงในตะกร้า', {
-      position: toast.POSITION.TOP_RIGHT,
-      onClose: () => {
-        isToastActive.value = false // ปล่อยสถานะเมื่อแจ้งเตือนถูกปิด
-      },
-    })
+  if (!authStore.token) {
+    router.push({ name: 'login' })
+  } else {
+    if (!isToastActive.value) {
+      isToastActive.value = true
+      toast.success('เพิ่มสินค้าลงในตะกร้า', {
+        position: toast.POSITION.TOP_RIGHT,
+        onClose: () => {
+          isToastActive.value = false
+        },
+      })
+    }
   }
   cartStore.getCart()
 }
 
 async function addCart() {
-  cartStore.editedCartDetail.quantity = number.value
-  if (cartStore.cart) cartStore.addCartDetail(cartStore.cart, cartStore.editedCartDetail)
-  await cartStore.getCart()
-  addProduct()
+  if (!authStore.token) {
+    router.replace({ name: 'login' })
+  } else {
+    cartStore.editedCartDetail.quantity = number.value
+    if (cartStore.cart) cartStore.addCartDetail(cartStore.cart, cartStore.editedCartDetail)
+    await cartStore.getCart()
+    addProduct()
+  }
 }
 </script>
 <template>
-  <div class="flex justify-center h-screen w-full pt-[70px] bg-[#414141]">
+  <LoadingComponent v-model="loadingStore.loading" />
+
+  <div class="flex justify-center min-h-screen w-full pt-[70px] bg-[#414141]">
     <div
+      v-show="!loadingStore.loading"
       class="bg-[#ffffff] max-w-[600px] lg:max-w-[900px] lg:h-[500px] shadow-xl rounded-[15px] mx-auto"
     >
-      <div class="flex p-[30px] flex-wrap">
+      <div class="flex flex-col lg:flex-row p-[30px]">
         <div>
           <img
-            :src="`http://localhost:3000/${productStore.editedProduct.images[0].image}`"
+            :src="`http://localhost:3000/${productStore.editedProduct.images[0]?.image}`"
             alt=""
             class="w-[280px] h-[280px] md:w-[300px] md:h-[300px] lg:w-[350px] lg:h-[350px] rounded-[5px] shadow-xl"
           />
@@ -65,7 +86,7 @@ async function addCart() {
 
           <div class="flex p-[20px] pb-[60px]">
             <div class="text-[20px] w-1/2 text-center">
-              {{ productStore.editedProduct.price }}
+              {{ productStore.editedProduct.price }} บาท
             </div>
             <div class="flex w-1/2 justify-around">
               <div>
@@ -97,6 +118,7 @@ async function addCart() {
             </button>
             <button
               class="bg-[#637aad] w-full h-[35px] text-[white] rounded-[5px] hover:bg-[#4a68a8] font-bold duration-400"
+              @click="addProduct"
             >
               ซื้อ
             </button>

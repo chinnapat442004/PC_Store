@@ -1,11 +1,10 @@
-import type { Product } from '@/types/Product'
 import http from './http'
 
 function getProducts() {
   return http.get('/product')
 }
 
-function getProduct(product: Product) {
-  return http.get(`/product/${product.product_id}`)
+function getProduct(id: number) {
+  return http.get(`/product/${id}`)
 }
 export default { getProducts, getProduct }

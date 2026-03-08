@@ -46,9 +46,9 @@ const filteredCategory = computed(() => {
 })
 
 function goToProduct(product: Product) {
-  productStore.getProduct(product)
+  productStore.getProduct(product.product_id!)
   cartStore.editedCartDetail.product = product
-  router.replace({ name: 'product', params: { id: product.product_id } })
+  router.push({ name: 'product', params: { id: product.product_id } })
 }
 
 const updateSlider = () => {

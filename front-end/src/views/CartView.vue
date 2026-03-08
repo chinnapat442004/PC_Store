@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import { useCartStore } from '../stores/cart'
-import { onMounted } from 'vue'
+
 import type { CartDetail } from '../types/CartDetail'
 import { trash } from 'ionicons/icons'
 import { IonIcon } from '@ionic/vue'
+import { watch } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 
 const cartStore = useCartStore()
 
-onMounted(async () => {
-  cartStore.getCart()
-})
+const authStore = useAuthStore()
+
+watch(
+  () => authStore.user,
+  (val) => {
+    if (val) {
+      cartStore.getCart()
+    }
+  },
+)
 
 async function plus(detail: CartDetail) {
   detail.quantity++
