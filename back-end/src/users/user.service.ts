@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { Role } from './enums/role.enum';
 
 @Injectable()
 export class UserService {
@@ -65,5 +66,11 @@ export class UserService {
   async remove(user_id: number) {
     const user = await this.userRepository.findOne({ where: { user_id } });
     return await this.userRepository.remove(user);
+  }
+
+  async findStaff() {
+    return this.userRepository.find({
+      where: [{ role: Role.EMPLOYEE }, { role: Role.MANAGER }],
+    });
   }
 }

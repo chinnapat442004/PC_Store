@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { Role } from '../enums/role.enum';
 
 @Entity()
 export class User {
@@ -26,9 +27,10 @@ export class User {
   @Column({ nullable: true })
   image: string;
 
-  @Column()
-  role: string;
-
+  @Column({
+    type: 'text',
+  })
+  role: Role;
   @Column({ default: true })
   enabled: boolean;
 
