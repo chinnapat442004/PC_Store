@@ -49,14 +49,26 @@ onMounted(() => {
               ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
               : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
           "
-          >Product</router-link
+          >Product Management</router-link
         >
       </li>
-      <li>
+      <li
+        @click="
+          async () => {
+            page = 'user'
+            await nextTick()
+          }
+        "
+      >
         <router-link
-          to="/settings"
+          to="/user"
           class="flex text-white hover:bg-[#979dac] hover:text-black duration-300 rounded-[5px] p-3"
-          >Settings</router-link
+          :class="
+            page === 'user'
+              ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
+              : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
+          "
+          >User Management</router-link
         >
       </li>
     </ul>

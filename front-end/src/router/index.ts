@@ -11,6 +11,7 @@ import EditProductView from '../views/admin/ProductView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
 import { useAuthStore } from '@/stores/auth'
+import UserView from '@/views/admin/UserView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +67,14 @@ const router = createRouter({
       name: 'editproduct',
       components: {
         default: EditProductView,
+        sidebar: SidebarComponent,
+      },
+    },
+    {
+      path: '/user',
+      name: 'user',
+      components: {
+        default: UserView,
         sidebar: SidebarComponent,
       },
     },
