@@ -18,6 +18,8 @@ import { Category } from './categories/entities/category.entity';
 import { CartsModule } from './carts/carts.module';
 import { Cart } from './carts/entities/cart.entity';
 import { CartDetail } from './carts/entities/cart_detail';
+import { BranchsModule } from './branchs/branchs.module';
+import { Branch } from './branchs/entities/branch.entity';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { CartDetail } from './carts/entities/cart_detail';
       database: 'database.sqlite', // ไฟล์ฐานข้อมูล SQLite
       entities: [
         User,
+        Branch,
         Order,
         OrderDetail,
         Product,
@@ -41,12 +44,14 @@ import { CartDetail } from './carts/entities/cart_detail';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+    BranchsModule,
     UsersModule,
     AuthModule,
     OrdersModule,
     ProductsModule,
     CategoriesModule,
     CartsModule,
+    BranchsModule,
   ],
 
   controllers: [AppController],

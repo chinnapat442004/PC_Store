@@ -68,9 +68,10 @@ export class UserService {
     return await this.userRepository.remove(user);
   }
 
-  async findStaff() {
+  async findUsersByRole(role: Role) {
+    const whereCondition: any = { role: role };
     return this.userRepository.find({
-      where: [{ role: Role.EMPLOYEE }, { role: Role.MANAGER }],
+      where: whereCondition,
     });
   }
 }

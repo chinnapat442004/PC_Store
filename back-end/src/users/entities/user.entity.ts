@@ -7,8 +7,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Role } from '../enums/role.enum';
+import { Branch } from 'src/branchs/entities/branch.entity';
 
 @Entity()
 export class User {
@@ -48,4 +51,8 @@ export class User {
 
   @OneToMany(() => Cart, (carts) => carts.user)
   carts: Cart[];
+
+  @ManyToOne(() => Branch, (branch) => branch.users)
+  @JoinColumn({ name: 'branch_id' })
+  branch: Branch;
 }
