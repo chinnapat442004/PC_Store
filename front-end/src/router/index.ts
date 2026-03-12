@@ -12,6 +12,7 @@ import RegisterView from '../views/RegisterView.vue'
 import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
 import { useAuthStore } from '@/stores/auth'
 import UserView from '@/views/admin/UserView.vue'
+import BranchView from '@/views/admin/BranchView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,9 +80,22 @@ const router = createRouter({
       },
     },
     {
+      path: '/branch',
+      name: 'branch',
+      components: {
+        default: BranchView,
+        sidebar: SidebarComponent,
+      },
+    },
+    {
       path: '/register',
       name: 'register',
       component: () => RegisterView,
+    },
+    {
+      path: '/forgot-password',
+      name: ' forgotPassword',
+      component: () => ForgotPasswordView,
     },
     {
       path: '/forgot-password',

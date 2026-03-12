@@ -1,15 +1,11 @@
 <script lang="ts" setup>
-import { onMounted, ref, nextTick } from 'vue'
+import { nextTick, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const page = ref()
-
-onMounted(() => {
-  page.value = route.name
-})
+const page = computed(() => route.name)
 </script>
 <template>
   <div class="bg-[#202020] w-[200px] h-screen fixed">
@@ -33,14 +29,7 @@ onMounted(() => {
           >Dashboard</router-link
         >
       </li>
-      <li
-        @click="
-          async () => {
-            page = 'editproduct'
-            await nextTick()
-          }
-        "
-      >
+      <li>
         <router-link
           to="/editproduct"
           class="flex hover:bg-[#979dac] hover:text-black duration-300 rounded-[5px] p-3"
@@ -52,23 +41,28 @@ onMounted(() => {
           >Product Management</router-link
         >
       </li>
-      <li
-        @click="
-          async () => {
-            page = 'user'
-            await nextTick()
-          }
-        "
-      >
+      <li>
         <router-link
           to="/user"
-          class="flex text-white hover:bg-[#979dac] hover:text-black duration-300 rounded-[5px] p-3"
+          class="flex hover:bg-[#979dac] hover:text-black duration-300 rounded-[5px] p-3"
           :class="
             page === 'user'
               ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
               : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
           "
           >User Management</router-link
+        >
+      </li>
+      <li>
+        <router-link
+          to="/branch"
+          class="flex hover:bg-[#979dac] hover:text-black duration-300 rounded-[5px] p-3"
+          :class="
+            page === 'branch'
+              ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
+              : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
+          "
+          >Branch Management</router-link
         >
       </li>
     </ul>

@@ -2,7 +2,7 @@ import http from './http'
 import type { User } from '@/types/User'
 
 function getUsers() {
-  return http.get('/user')
+  return http.get('/users')
 }
 
 function getUser(user: User) {

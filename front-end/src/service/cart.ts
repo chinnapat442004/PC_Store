@@ -6,6 +6,7 @@ import type { CartDetail } from '@/types/CartDetail'
 function getCart(user: User) {
   return http.get(`/cart/${user.user_id}`)
 }
+
 function addCart(cart: Cart) {
   return http.post('/cart', cart)
 }
