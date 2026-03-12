@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { BranchStatus } from '../enums/branch-status';
 
 @Entity()
 export class Branch {
@@ -17,6 +18,17 @@ export class Branch {
 
   @Column()
   address: string;
+
+  @Column({
+    type: 'text',
+  })
+  status: BranchStatus;
+
+  @Column({ type: 'real' })
+  lat: number;
+
+  @Column({ type: 'real' })
+  lng: number;
 
   @CreateDateColumn()
   createdAt: Date;

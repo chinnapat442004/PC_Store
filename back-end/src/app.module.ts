@@ -18,8 +18,8 @@ import { Category } from './categories/entities/category.entity';
 import { CartsModule } from './carts/carts.module';
 import { Cart } from './carts/entities/cart.entity';
 import { CartDetail } from './carts/entities/cart_detail';
-import { BranchsModule } from './branchs/branchs.module';
-import { Branch } from './branchs/entities/branch.entity';
+import { BranchsModule } from './branches/branchs.module';
+import { Branch } from './branches/entities/branch.entity';
 
 @Module({
   imports: [

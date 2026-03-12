@@ -11,7 +11,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Role } from '../enums/role.enum';
-import { Branch } from 'src/branchs/entities/branch.entity';
+import { Branch } from 'src/branches/entities/branch.entity';
 
 @Entity()
 export class User {
