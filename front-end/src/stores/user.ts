@@ -2,39 +2,84 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import userService from '../service/user'
 
-import type { User } from '@/types/User'
+import type { User, CreateUser, UpdateUser } from '@/types/User'
 
 export const useUserStore = defineStore('user', () => {
   const users = ref<User[]>([])
+  const editedUser = ref<User | null>(null)
 
-  const initialUser: User = {
-    email: null,
-    name: null,
-    password: null,
-    image: null,
-    role: null,
-    enabled: true,
-    address: null,
-  }
-  const editedUser = ref(<User>JSON.parse(JSON.stringify(initialUser)))
+  const page = ref(1)
+  const limit = ref(10)
+  const lastPage = ref(1)
+  const total = ref(0)
+  const search = ref('')
 
-  async function getUser(user: User) {
-    const res = await userService.getUser(user)
+  const createUser = ref<CreateUser>({
+    email: '',
+    password: '',
+    name: '',
+    image: '',
+    role: 'user',
+    address: '',
+  })
+
+  async function getUser(user_id: number) {
+    const res = await userService.getUser(user_id)
     editedUser.value = res.data
   }
 
-  async function getUsers() {
-    const res = await userService.getUsers()
-    users.value = res.data
+  async function getUsers(p = page.value, l = limit.value, s = search.value) {
+    const res = await userService.getUsers(p, l, s)
+
+    users.value = res.data.data
+    page.value = res.data.page
+    lastPage.value = res.data.lastPage
+    total.value = res.data.total
   }
 
-  async function addUser(user: User) {
-    return await userService.addUser(user)
+  async function addUser(user: CreateUser) {
+    const res = await userService.addUser(user)
+    clearCreateUser()
+    return res
+  }
+
+  async function updateUser(user: UpdateUser) {
+    if (!user.user_id) return
+    const res = await userService.updateUser(user.user_id, user)
+
+    clearCreateUser()
+    return res
   }
 
   const clearUser = () => {
-    editedUser.value = structuredClone(initialUser)
+    editedUser.value = null
   }
 
-  return { users, editedUser, getUser, getUsers, addUser, clearUser }
+  const clearCreateUser = () => {
+    createUser.value = {
+      email: '',
+      password: '',
+      name: '',
+      image: '',
+      role: 'user',
+      address: '',
+    }
+  }
+
+  return {
+    users,
+    editedUser,
+    page,
+    limit,
+    lastPage,
+    total,
+    search,
+    createUser,
+    getUser,
+    getUsers,
+    addUser,
+    clearUser,
+    clearCreateUser,
+    updateUser,
+  }
 })

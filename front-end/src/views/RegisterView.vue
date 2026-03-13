@@ -65,10 +65,10 @@ const isValidEmail = (email: string | null) => {
 }
 
 const checkNull = () => {
-  if (userStore.editedUser.name === null) {
+  if (userStore.createUser.name === null) {
     usernameError.value = 'กรุณากรอก username'
   }
-  if (userStore.editedUser.email === null) {
+  if (userStore.createUser.email === null) {
     emailError.value = 'กรุณากรอก email'
   }
   if (userStore.editedUser.password === null) {

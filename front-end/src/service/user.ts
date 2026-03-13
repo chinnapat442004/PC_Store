@@ -1,31 +1,44 @@
 import http from './http'
-import type { User } from '@/types/User'
+import type { CreateUser, UpdateUser } from '@/types/User'
 
-function getUsers() {
-  return http.get('/users')
+function getUsers(page: number, limit: number, search: string) {
+  return http.get(`/users?page=${page}&limit=${limit}&search=${search}`)
 }
 
-function getUser(user: User) {
-  return http.get(`/user/${user.user_id}`)
+function getUser(id: number) {
+  return http.get(`/users/${id}`)
 }
 
-function addUser(user: User) {
+function addUser(user: CreateUser) {
   const formData = new FormData()
   if (user.name) formData.append('name', user.name)
   if (user.email) formData.append('email', user.email)
   if (user.password) formData.append('password', user.password)
   if (user.role) formData.append('role', user.role)
-  if (user.name) formData.append('enabled', String(user.enabled))
-  if (user.address) formData.append('address', user.address)
+
   if (user.name)
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`)
+    return http.post('/users', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
-  return http.post('/user', formData, {
+}
+
+function updateUser(id: number, user: UpdateUser) {
+  console.log(user)
+  const formData = new FormData()
+  if (user.name) formData.append('name', user.name)
+  if (user.email) formData.append('email', user.email)
+  if (user.image) formData.append('image', user.image)
+  if (user.enabled !== undefined) {
+    formData.append('enabled', String(user.enabled))
+  }
+
+  return http.patch(`/users/${id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   })
 }
 
-export default { getUsers, getUser, addUser }
+export default { getUsers, getUser, addUser, updateUser }
