@@ -9,6 +9,4 @@ export class CreateUserDto {
   image: string;
   @IsEnum(Role)
   role: Role;
-  enabled: boolean;
-  address: string;
 }

@@ -37,9 +37,6 @@ export class User {
   @Column({ default: true })
   enabled: boolean;
 
-  @Column({ nullable: true })
-  address: string;
-
   @CreateDateColumn()
   createdAt: Date;
 

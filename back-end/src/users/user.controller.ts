@@ -4,12 +4,14 @@ import {
   Post,
   Body,
   Param,
-  Delete,
+  // Delete,
   UploadedFile,
   UseInterceptors,
   Req,
   ForbiddenException,
   UseGuards,
+  Query,
+  Patch,
   // UseGuards,
 } from '@nestjs/common';
 import { diskStorage } from 'multer';
@@ -19,8 +21,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import * as fs from 'fs';
-import * as path from 'path';
+// import * as fs from 'fs';
+// import * as path from 'path';
 import { Role } from './enums/role.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 // import { AuthGuard } from '../auth/auth.guard';
@@ -41,35 +43,36 @@ export class UserController {
   // }
 
   @Get()
-  async getUsers(
-    @Req() req: any, // ดึงข้อมูล Request เพื่อเอาข้อมูลคนที่ Login
+  async findAll(
+    @Req() req: any,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @Query('search') search: string,
   ) {
-    const currentUser = req.user; // ข้อมูลจาก JWT Token ที่ถอดรหัสแล้ว
+    const currentUser = req.user;
 
-    // ---------------------------------------------------
-    // กรณีที่ 1: ถ้าเป็น Admin (Super User)
-    // ---------------------------------------------------
     if (currentUser.role === Role.ADMIN) {
-      // Admin สามารถดูได้ทั้ง Manager และ Employee ของทุกสาขา (ไม่ต้องส่ง branchId)
-      return this.userService.findUsersByRole(Role.MANAGER);
+      return this.userService.findUsersByRole(
+        Role.MANAGER,
+        +page,
+        +limit,
+        search,
+      );
     }
 
-    // ---------------------------------------------------
-    // กรณีที่ 2: ถ้าเป็น เจ้าของสาขา (Manager)
-    // ---------------------------------------------------
     if (currentUser.role) {
-      // Manager อนุญาตให้ดูได้แค่ Employee เท่านั้น
       if (currentUser.role !== Role.EMPLOYEE) {
         throw new ForbiddenException('คุณไม่มีสิทธิ์ดูข้อมูลผู้ใช้งานระดับนี้');
       }
 
-      // ส่ง branchId ของตัว Manager เองเข้าไปกรองข้อมูลด้วย
-      return this.userService.findUsersByRole(Role.EMPLOYEE);
+      return this.userService.findUsersByRole(
+        Role.EMPLOYEE,
+        +page,
+        +limit,
+        search,
+      );
     }
 
-    // ---------------------------------------------------
-    // กรณีที่ 3: ถ้าเป็น พนักงาน (Employee)
-    // ---------------------------------------------------
     throw new ForbiddenException('พนักงานไม่มีสิทธิ์เข้าถึงข้อมูลผู้ใช้งาน');
   }
 
@@ -82,31 +85,29 @@ export class UserController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './public/images/users', // โฟลเดอร์เก็บภาพโปรไฟล์
+        destination: './public/images/users',
         filename: (req, image, cd) => {
-          // const uniqueSuffix =
-          //   Date.now() + '-' + Math.round(Math.random() * 1e9);
-          // const ext = extname(image.originalname);
           const name = uuidv4();
-          // return cd(null, `${image.fieldname}-${uniqueSuffix}${ext}`);
           return cd(null, name + extname(image.originalname));
         },
       }),
     }),
   )
-  create(
+  async create(
+    @Req() req: any,
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
     if (image) {
       createUserDto.image = image.filename;
-    } else {
     }
 
-    return this.userService.createUser(createUserDto);
+    const creatorRole = req.user.role;
+
+    return this.userService.createUser(createUserDto, creatorRole);
   }
 
-  @Post(':id')
+  @Patch(':id')
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -134,31 +135,31 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const user = await this.userService.findOne(+id);
+  // @Delete(':id')
+  // async remove(@Param('id') id: string) {
+  //   const user = await this.userService.findOne(+id);
 
-    if (!user) {
-      throw new Error('User not found');
-    }
+  //   if (!user) {
+  //     throw new Error('User not found');
+  //   }
 
-    // Path ของไฟล์รูปภาพ
-    const imagePath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'public',
-      'images',
-      'users',
-      user.image,
-    );
+  //   // Path ของไฟล์รูปภาพ
+  //   const imagePath = path.join(
+  //     __dirname,
+  //     '..',
+  //     '..',
+  //     'public',
+  //     'images',
+  //     'users',
+  //     user.image,
+  //   );
 
-    // ลบรูปภาพจากโฟลเดอร์
-    fs.unlink(imagePath, (err) => {
-      if (err) {
-      }
-    });
+  //   // ลบรูปภาพจากโฟลเดอร์
+  //   fs.unlink(imagePath, (err) => {
+  //     if (err) {
+  //     }
+  //   });
 
-    return this.userService.remove(+id);
-  }
+  //   return this.userService.remove(+id);
+  // }
 }

@@ -33,7 +33,7 @@ export class BranchsController {
   findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
-    @Query('search') search: string = '',
+    @Query('search') search: string,
   ) {
     return this.branchsService.findAll(+page, +limit, search);
   }
