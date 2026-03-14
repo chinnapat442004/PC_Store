@@ -104,10 +104,10 @@ const searchUser = async () => {
   await userStore.getUsers()
 }
 
-const openDelete = async (item: User) => {
-  deleteConfirm.value = true
-  userStore.editedUser = { ...item }
-}
+// const openDelete = async (item: User) => {
+//   deleteConfirm.value = true
+//   userStore.editedUser = { ...item }
+// }
 
 const closeDialogDelete = async () => {
   deleteConfirm.value = false

@@ -6,8 +6,8 @@ import router from '@/router'
 import { useCartStore } from './cart'
 
 export const useAuthStore = defineStore('auth', () => {
-  const email = ref(null)
-  const password = ref(null)
+  const email = ref<string>('')
+  const password = ref<string>('')
   const user = ref<User | null>()
   const token = ref(localStorage.getItem('access_token'))
   async function login() {
@@ -36,8 +36,8 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('isLogin', 'false')
     token.value = null
     user.value = null
-    email.value = null
-    password.value = null
+    email.value = ''
+    password.value = ''
     cartStore.clearChart()
     console.log('ออกจากระบบแล้ว')
   }

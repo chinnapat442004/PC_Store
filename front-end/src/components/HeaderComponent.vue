@@ -51,12 +51,13 @@ const checkScreenSize = () => {
   open.value = false
 }
 
-onMounted(() => {
+onMounted(async () => {
   checkScreenSize()
+  await authStore.getCurrentUser()
   const storedUser = localStorage.getItem('user')
   user.value = storedUser ? JSON.parse(storedUser) : null
+  console.log(user)
   window.addEventListener('resize', checkScreenSize)
-
   cartStore.getCart()
 })
 

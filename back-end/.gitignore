@@ -65,5 +65,5 @@ dev.db
 Thumbs.db
 
 # User uploaded files
-/public/uploads/*
-!/public/uploads/.gitkeep
+/public/images/*
+!/public/images/.gitkeep
