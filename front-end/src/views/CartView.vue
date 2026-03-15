@@ -83,19 +83,19 @@ async function remove(cartDetail: CartDetail) {
 
 <template>
   <div
-    class="flex justify-center w-full h-full min-h-screen gap-3 flex-wrap bg-[#414141] px-[40px] pt-[30px] m-auto pb-[20px]"
+    class="flex justify-center w-full h-full min-h-screen gap-3 md:flex-nowrap flex-wrap bg-[#414141] px-[40px] pt-[30px] m-auto pb-[20px]"
   >
-    <div class="w-[750px] flex flex-col gap-3 h-full">
+    <div class="max-w-[750px] w-full min-w-[300px] flex flex-col gap-3 h-full">
       <div
         v-for="detail in cartStore.cart?.cartDetails"
         :key="detail.cart_detail_id"
-        class="bg-white rounded-[10px] h-auto flex sm:h-[120px] px-[20px] sm:px-[50px] mx-auto w-full"
+        class="bg-white rounded-[10px] h-auto flex sm:h-[120px] px-[5px] md:px-[10px] lg:px-[30px] mx-auto w-full"
       >
-        <div>
+        <div class="flex  items-center ">
           <img
             :src="`http://localhost:3000/${detail.product.images[0]?.image}`"
             alt=""
-            class="w-[100px] h-[100px] rounded-[5px] shadow-xl"
+            class="w-[100px] h-[100px] object-cover rounded-[5px] "
           />
         </div>
         <div class="w-full pt-2 pb-4 px-7 flex flex-col justify-around gap-3 sm:gap-0">
@@ -104,17 +104,12 @@ async function remove(cartDetail: CartDetail) {
             <div
               class="flex transition-transform duration-500 ease-in-out justify-center items-center"
             >
-              <button
-                class="bg-[#da6969] w-[30px] h-[30px] text-white rounded-[5px] hover:bg-[#d94f4f]"
-                @click="remove(detail)"
-              >
-                <IonIcon class="" :icon="trash" />
-              </button>
+           <div class="font-medium text-red-400 text-sm md:text-base">฿{{ detail.price }} </div>
             </div>
           </div>
 
-          <div class="flex sm:flex-row flex-col justify-between gap-3 sm:gap-0">
-            <div class="flex md:w-1/4 sm:w-1/3 w-1/2 justify-between">
+          <div class="flex flex-row  justify-between gap-3 sm:gap-0">
+            <!-- <div class="flex md:w-1/4 sm:w-1/3 w-1/2 justify-between">
               <div>
                 <button
                   class="rounded-[5px] flex justify-center items-center text-[25px] text-[white] h-[30px] w-[30px] bg-[#4c4b4b]"
@@ -133,20 +128,47 @@ async function remove(cartDetail: CartDetail) {
                   +
                 </button>
               </div>
-            </div>
+            </div> -->
+
+            <div class="flex items-center gap-4 bg-gray-100 px-2 py-1 rounded-lg">
+                <button
+                  class="rounded-md flex justify-center items-center text-white h-[27px] w-[27px] bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95"
+                  @click="minus(detail)"
+                >
+                  <span class="mb-1">-</span>
+                </button>
+
+                <div class="text-[10px] md:text-[14px] font-medium min-w-[30px] text-center">{{ detail.quantity}}</div>
+
+                <button
+                  class="rounded-md flex justify-center items-center  h-[27px] w-[27px] text-white bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95"
+              @click="plus(detail)"
+                >
+                  <span class="mb-1">+</span>
+                </button>
+              </div>
+
+            
             <div class="flex gap-4 items-center">
-              <div>{{ detail.quantity }}</div>
-              <div>X</div>
-              <div>{{ detail.product.price }}</div>
-              <div>=</div>
-              <div class="bg-[#7092a8] p-1 rounded-[5px] text-[white]">{{ detail.price }} ฿</div>
+                     <div
+              class="flex transition-transform duration-500 ease-in-out justify-center items-center"
+            >
+              <button
+                class="bg-[#da6969] w-[30px] h-[30px] text-white rounded-[5px] hover:bg-[#d94f4f]"
+                @click="remove(detail)"
+              >
+                <IonIcon class="" :icon="trash" />
+              </button>
+            </div>
+
+              
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="bg-white w-[400px] rounded-[10px] p-[20px] h-[250px]">
+    <div class="bg-white max-w-[750px] w-full   md:w-[400px] rounded-[10px] p-[20px] h-[250px]">
       <div>
         <div class="flex justify-between">
           <div>ยอดรวม</div>

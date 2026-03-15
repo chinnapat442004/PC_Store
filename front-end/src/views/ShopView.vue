@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'
 
 const router = useRouter()
-
+const search = ref('')
 // const filteredProducts = ref<Product[]>([])
 const productStore = useProductStore()
 const categoryStore = useCategoryStore()
@@ -83,15 +83,38 @@ function prevPage() {
 watch(filteredProducts, () => {
   currentPage.value = 1
 })
+
+const searchProduct = async () => {
+  productStore.search = search.value
+  await productStore.getProducts()
+}
 </script>
 
 <template>
   <div class="w-full h-full bg-[#414141] lg:px-[20px] min-h-screen">
-    <div class="flex flex-col lg:flex-row justify-center  md:py-[30px] px-[10px] md:px-[20px] max-w-[1300px] m-auto gap-4">
+    <div class="flex flex-col lg:flex-row justify-center  py-[30px] px-[10px] md:px-[20px] max-w-[1300px] m-auto gap-4">
+      <div class=" flex flex-col gap-3 items-center">
       <!-- Filter Sidebar -->
+       <div
+        class="relative flex items-center w-full lg:w-[275px] py-2 bg-white rounded-[30px] shadow-md"
+      >
+        <input
+          type="text"
+          placeholder="ค้นหาสินค้า"
+          class="flex-grow bg-transparent outline-none text-black placeholder-black px-5"
+          v-model="search"
+        />
+        <button
+          class="absolute right-2 text-white bg-[#637aad] hover:bg-[#202020] rounded-lg px-3 py-1 transition"
+    @click="searchProduct()"
+          >
+          ค้นหา
+        </button>
+      </div>
       <div
         class="bg-[#ffffff] w-full lg:w-[275px] rounded-[10px] shadow-xl p-[20px] md:p-[25px] h-fit"
       >
+      
         <div><p class="font-semibold text-lg mb-2">ช่วงราคา</p></div>
         <div class="flex justify-between items-center gap-2">
           <input
@@ -137,8 +160,7 @@ watch(filteredProducts, () => {
           />
           <hr class="border-t-2 border-gray-300 my-4" />
         </div>
-
-        <!-- Categories -->
+          <!-- Categories -->
         <p class="font-semibold text-lg mb-2 pt-2">หมวดหมู่</p>
         <div class="flex flex-wrap lg:flex-col gap-3 lg:gap-1">
           <div class="p-[5px] flex items-center" v-for="item of categoryStore.categories" :key="item.category_id">
@@ -158,6 +180,9 @@ watch(filteredProducts, () => {
             </div>
           </div>
         </div>
+        </div>
+
+      
       </div>
 
      

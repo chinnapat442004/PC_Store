@@ -77,8 +77,7 @@ async function logout() {
 const isLogout = () => {
   if (!isToastActive.value) {
     isToastActive.value = true
-    // สมมุติว่ามีการทำ logout ที่นี่ เช่นลบข้อมูล session, token หรือ redirect
-    // ตัวอย่างการแสดง toast เมื่อออกจากระบบ
+    
     toast.success('ออกจากระบบสำเร็จ', {
       position: toast.POSITION.TOP_RIGHT,
       onClose: () => {
@@ -91,8 +90,8 @@ const isLogout = () => {
 
 <template>
   <header
-    class="shadow-lg py-[10px] px-[5px] md:px-[30px] bg-[#202020] fixed top-0 left-0 w-full z-50"
-    :class="{ 'mb-[180px]': isMenuOpen, 'mb-[0px]': !isMenuOpen }"
+    class="shadow-lg py-[10px] px-[5px] md:px-[30px] bg-[#202020] fixed top-0 left-0 w-full z-50  "
+    :class="{ 'mb-[180px] ': isMenuOpen, 'mb-[0px]': !isMenuOpen }"
   >
     <div class="flex justify-between items-center w-[92%] mx-auto md:gap-4">
       <!-- LOGO Main Menu -->
@@ -116,26 +115,24 @@ const isLogout = () => {
 
         <div
           id="collapseMenu"
-          class="md:static absolute min-h-[2vh] left-0 top-[65px] w-full items-center md:bg-[#202020] bg-[#cbcbcb]"
+          class="md:static absolute min-h-[2vh] left-0 top-[65px] w-full items-center md:bg-[#202020] bg-[#202020]"
           :class="{ 'hidden md:block': !isMenuOpen }"
         >
           <ul class="flex md:flex-row flex-col md:gap-4 items-center justify-center">
             <li
               @click="
-                async () => {
-                  route.name = 'home'
-                  await nextTick()
-                  isMenuOpen = false
-                }
+            isMenuOpen = false,
+            open =false
+                
               "
             >
               <router-link
                 :to="{ name: 'home' }"
-                class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center"
+                class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:md:bg-[#6d717a] hover:bg-[#333333] duration-300 rounded-[5px] flex items-center justify-center"
                 :class="
                   route.name === 'home'
-                    ? 'md:bg-[#979dac] bg-[#6d717a]  text-black '
-                    : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
+                    ? 'md:bg-[#979dac] bg-[#2E2E2E]  text-white '
+                    : 'md:bg-[#202020] text-white bg-[#202020]'
                 "
               >
                 Home
@@ -143,20 +140,17 @@ const isLogout = () => {
             </li>
             <li
               @click="
-                async () => {
-                  route.name = 'shop'
-                  await nextTick()
-                  isMenuOpen = false
-                }
+                      isMenuOpen = false,
+            open =false
               "
             >
               <router-link
                 :to="{ name: 'shop' }"
-                class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center"
+                class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:md:bg-[#6d717a] hover:bg-[#333333] duration-300 rounded-[5px] flex items-center justify-center"
                 :class="
                   route.path.startsWith('/shop') || route.path.startsWith('/product')
-                    ? 'md:bg-[#979dac] bg-[#6d717a] text-black'
-                    : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]'
+                    ? 'md:bg-[#979dac] bg-[#2E2E2E] text-white  #333333 '
+                    : 'md:bg-[#202020] text-white bg-[#202020]'
                 "
               >
                 Shop
@@ -164,20 +158,17 @@ const isLogout = () => {
             </li>
             <li
               @click="
-                async () => {
-                  route.name = 'cart'
-                  await nextTick()
-                  isMenuOpen = false
-                }
+                        isMenuOpen = false,
+            open =false
               "
             >
               <router-link
                 :to="{ name: 'cart' }"
-                class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:bg-[#6d717a] duration-300 rounded-[5px] flex items-center justify-center relative"
+                class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] md:hover:text-[#333] font-semibold text-[15px] hover:md:bg-[#6d717a] hover:bg-[#333333] duration-300 rounded-[5px] flex items-center justify-center relative"
                 :class="[
                   route.name === 'cart'
-                    ? 'md:bg-[#979dac] bg-[#6d717a] text-black '
-                    : 'md:bg-[#202020] md:text-white bg-[#a0a0a1]',
+                    ? 'md:bg-[#979dac] bg-[#2E2E2E] text-white '
+                    : 'md:bg-[#202020] text-white bg-[#202020]',
                 ]"
               >
                 Cart
@@ -193,20 +184,7 @@ const isLogout = () => {
         </div>
       </div>
 
-      <div
-        class="relative flex items-center md:w-[300px] w-[170px] p-2 bg-white rounded-[30px] shadow-md"
-      >
-        <input
-          type="text"
-          placeholder="ค้นหาสินค้า"
-          class="flex-grow bg-transparent outline-none text-black placeholder-black px-2"
-        />
-        <button
-          class="absolute right-2 text-white bg-[#637aad] hover:bg-[#202020] rounded-lg px-3 py-1 transition"
-        >
-          ค้นหา
-        </button>
-      </div>
+      
 
       <div id="loginMenu" class="flex gap-4 items-center justify-center">
         <div>
@@ -248,7 +226,7 @@ const isLogout = () => {
 
         <div
           v-if="checkMenu === true && isLogin"
-          class="bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 duration-300"
+          class="   bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 duration-300"
         >
           <router-link
             class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px] block"

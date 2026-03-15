@@ -14,7 +14,7 @@ const cartStore = useCartStore()
 const loadingStore = useLoadingStore()
 const number = ref(1)
 const isToastActive = ref(false)
-
+const search = ref('')
 const route = useRoute()
 onMounted(async () => {
   cartStore.getCart()
@@ -36,7 +36,7 @@ const addProduct = () => {
   if (!authStore.token) {
     router.push({ name: 'login' })
   } else {
-    if (!isToastActive.value) {
+   
       isToastActive.value = true
       toast.success('เพิ่มสินค้าลงในตะกร้า', {
         position: toast.POSITION.TOP_RIGHT,
@@ -44,7 +44,7 @@ const addProduct = () => {
           isToastActive.value = false
         },
       })
-    }
+    
   }
   cartStore.getCart()
 }
@@ -59,6 +59,12 @@ async function addCart() {
     addProduct()
   }
 }
+
+const searchProduct = async () => {
+  productStore.search = search.value
+  await productStore.getProducts()
+}
+
 </script>
 <template>
   <LoadingComponent v-model="loadingStore.loading" />
