@@ -6,6 +6,7 @@ import type { CartDetail } from '@/types/CartDetail'
 
 import { useProductStore } from './product'
 import { useAuthStore } from './auth'
+import { car } from 'ionicons/icons'
 
 export const useCartStore = defineStore('Cart', () => {
   const cart = ref<Cart>()
@@ -29,9 +30,13 @@ export const useCartStore = defineStore('Cart', () => {
   const editedCartDetail = ref(<CartDetail>JSON.parse(JSON.stringify(initialCartDetail)))
 
   async function getCart() {
+    
     if (authStore.user) {
+    
       const res = await cartService.getCart(authStore.user)
       cart.value = res.data
+      console.log(cart.value?.cartDetails)
+    
     }
   }
 

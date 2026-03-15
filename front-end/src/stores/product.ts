@@ -18,9 +18,18 @@ export const useProductStore = defineStore('product', () => {
   }
   const editedProduct = ref(<Product & { files: File[] }>JSON.parse(JSON.stringify(initialProduct)))
 
-  async function getProducts() {
-    const res = await productService.getProducts()
-    products.value = res.data
+  const page = ref(1)
+  const limit = ref(10)
+  const lastPage = ref(1)
+  const total = ref(0)
+  const search = ref('')
+
+  async function getProducts(p = page.value, l = limit.value, s = search.value) {
+    const res = await productService.getProducts(p, l, s)
+    products.value = res.data.data
+    page.value = res.data.page
+    lastPage.value = res.data.lastPage
+    total.value = res.data.total
   }
 
   async function getProduct(id: number) {
@@ -30,5 +39,5 @@ export const useProductStore = defineStore('product', () => {
     loadingStore.finishLoad()
   }
 
-  return { getProducts, products, editedProduct, getProduct, initialProduct }
+  return { getProducts, products, editedProduct, getProduct, initialProduct, page, limit, lastPage, total, search }
 })

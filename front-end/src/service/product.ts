@@ -1,7 +1,7 @@
 import http from './http'
 
-function getProducts() {
-  return http.get('/product')
+function getProducts(page: number, limit: number, search: string) {
+  return http.get(`/product?page=${page}&limit=${limit}&search=${search}`)
 }
 
 function getProduct(id: number) {

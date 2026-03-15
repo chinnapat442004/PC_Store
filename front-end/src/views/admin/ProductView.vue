@@ -53,22 +53,22 @@ const removeItem = async (Product: Product) => {
 }
 
 const nextPage = async () => {
-  // if (ProductStore.page < ProductStore.lastPage) {
-  //   ProductStore.page++
-  //   await ProductStore.getProductes()
-  // }
+  if (ProductStore.page < ProductStore.lastPage) {
+    ProductStore.page++
+    await ProductStore.getProducts()
+  }
 }
 
 const prevPage = async () => {
-  // if (ProductStore.page > 1) {
-  //   ProductStore.page--
-  //   await ProductStore.getProductes()
-  // }
+  if (ProductStore.page > 1) {
+    ProductStore.page--
+    await ProductStore.getProducts()
+  }
 }
 
 const searchProduct = async () => {
-  // ProductStore.search = search.value
-  // await ProductStore.getProductes()
+  ProductStore.search = search.value
+  await ProductStore.getProducts()
 }
 
 const openDelete = async (item: Product) => {
@@ -82,10 +82,10 @@ const closeDialogDelete = async () => {
 }
 
 const clearSearch = async () => {
-  // search.value = ''
-  // ProductStore.search = ''
-  // ProductStore.page = 1
-  // await ProductStore.getProductes()
+  search.value = ''
+  ProductStore.search = ''
+  ProductStore.page = 1
+  await ProductStore.getProducts()
 }
 </script>
 
@@ -139,12 +139,10 @@ const clearSearch = async () => {
               <th class="px-6 py-3 text-center">Action</th>
             </tr>
           </thead>
-          <!-- v-if="ProductStore.Productes.length === 0" -->
           <tbody class="divide-y">
-            <!-- <tr>
+            <tr v-if="ProductStore.products.length === 0">
               <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
-            </tr> -->
-            <!-- v-else v-for="Product in ProductStore.Productes" :key="Product.Product_id" -->
+            </tr>
             <tr v-for="product in ProductStore.products" :key="product.product_id">
               <td class="text-center align-middle">
                 <img
@@ -158,7 +156,7 @@ const clearSearch = async () => {
               <td class="px-6 py-1">{{ product.description }}</td>
               <td class="px-6 py-1">{{ product.price }}</td>
 
-              <td class="px-6 py-3 flex justify-center space-x-2">
+              <td class="px-6 py-1 flex justify-center space-x-2 ">
                 <button class="edit-btn">
                   <span class="pi pi-pencil"></span>
                 </button>
@@ -177,9 +175,9 @@ const clearSearch = async () => {
             <span class="pi pi-chevron-left text-sm"></span> Prev
           </button>
 
-          <!-- <span class="text-sm text-gray-600">
+          <span class="text-sm text-gray-600">
             {{ ProductStore.page }} of {{ ProductStore.lastPage }}</span
-          > -->
+          >
 
           <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
             Next <span class="pi pi-chevron-right text-sm"></span>

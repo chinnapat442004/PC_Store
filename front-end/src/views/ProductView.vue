@@ -63,65 +63,74 @@ async function addCart() {
 <template>
   <LoadingComponent v-model="loadingStore.loading" />
 
-  <div class="flex justify-center min-h-screen w-full pt-[70px] bg-[#414141]">
+  <div class="flex justify-center  flex-1 w-full pt-[40px] md:pt-[70px] bg-[#414141] px-[15px] pb-[40px] md:pb-0 min-h-screen">
     <div
       v-show="!loadingStore.loading"
-      class="bg-[#ffffff] max-w-[600px] lg:max-w-[900px] lg:h-[500px] shadow-xl rounded-[15px] mx-auto"
+      class="bg-[#ffffff] w-full max-w-[900px] shadow-xl rounded-[10px] mx-auto overflow-hidden h-fit"
     >
-      <div class="flex flex-col lg:flex-row p-[30px]">
-        <div>
+      <div class="flex flex-col md:flex-row p-[15px] sm:p-[30px]">
+        <!-- Product Image -->
+        <div class=" flex justify-center items-start md:mr-[20px] lg:mr-[30px] w-full md:w-auto shrink-0 mb-6 md:mb-0">
           <img
-            :src="`http://localhost:3000/${productStore.editedProduct.images[0]?.image}`"
-            alt=""
-            class="w-[280px] h-[280px] md:w-[300px] md:h-[300px] lg:w-[350px] lg:h-[350px] rounded-[5px] shadow-xl"
+            :src="productStore.editedProduct.images && productStore.editedProduct.images.length > 0 ? `http://localhost:3000/${productStore.editedProduct.images[0].image}` : ''"
+            alt="Product Image"
+            class="w-full max-w-[350px] aspect-square object-cover rounded-[10px]   border-gray-200"
           />
         </div>
-        <div class="p-[30px]">
-          <div class="pb-[50px]">
-            <h1 class="text-[33px] font-medium pb-[20px]">
+
+        <!-- Product Details -->
+        <div class="flex flex-col flex-1 pb-[10px] md:pb-[30px]">
+          <!-- Title & Description -->
+          <div class="mb-6 md:mb-[50px]">
+            <h1 class="text-[22px] md:text-[26px]  font-bold leading-tight mb-3">
               {{ productStore.editedProduct.title }}
             </h1>
-            <p>{{ productStore.editedProduct.description }}</p>
+            <p class="text-gray-600 text-sm md:text-base leading-relaxed break-words whitespace-pre-wrap">{{ productStore.editedProduct.description }}</p>
           </div>
 
-          <div class="flex p-[20px] pb-[60px]">
-            <div class="text-[20px] w-1/2 text-center">
-              {{ productStore.editedProduct.price }} บาท
-            </div>
-            <div class="flex w-1/2 justify-around">
-              <div>
+          <div class="mt-auto">
+            <!-- Price and Quantity Control -->
+            <div class="flex flex-col sm:flex-row items-center sm:items-center justify-between mb-8 gap-6 sm:gap-0">
+              <div class="text-[18px] md:text-[20px] font-bold text-red-400 shrink-0">
+                ฿{{ productStore.editedProduct.price?.toLocaleString() || 0 }} 
+              </div>
+              
+              <div class="flex items-center gap-4 bg-gray-100 px-4 py-2 rounded-lg">
                 <button
-                  class="rounded-[5px] flex justify-center items-center text-[25px] text-[white] h-[30px] w-[30px] bg-[#4c4b4b]"
+                  class="rounded-md flex justify-center items-center text-xl text-white h-[35px] w-[35px] bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95"
                   @click="minus"
                 >
-                  -
+                  <span class="mb-1">-</span>
                 </button>
-              </div>
 
-              <div class="text-[20px]">{{ number }}</div>
-              <div>
+                <div class="text-[18px] md:text-[20px] font-medium min-w-[30px] text-center">{{ number }}</div>
+
                 <button
-                  class="rounded-[5px] flex justify-center items-center text-[25px] h-[30px] w-[30px] text-[white] bg-[#4c4b4b]"
+                  class="rounded-md flex justify-center items-center text-xl h-[35px] w-[35px] text-white bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95"
                   @click="plus"
                 >
-                  +
+                  <span class="mb-1">+</span>
                 </button>
               </div>
             </div>
-          </div>
-          <div class="flex justify-between gap-2 px-[20px]">
-            <button
-              class="bg-[white] text-[#637aad] w-full h-[35px] border-[2px] border-[#637aad] hover:bg-[#d6dbe7] rounded-[5px] font-bold duration-400"
-              @click="addCart"
-            >
-              ตะกร้า
-            </button>
-            <button
-              class="bg-[#637aad] w-full h-[35px] text-[white] rounded-[5px] hover:bg-[#4a68a8] font-bold duration-400"
-              @click="addProduct"
-            >
-              ซื้อ
-            </button>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-between gap-3 md:gap-4 mt-4">
+              <button
+                class="bg-white text-[#637aad] w-full py-3 md:py-1.5 border-[2px] border-[#637aad] hover:bg-[#eaf0fb] rounded-[8px] font-semibold transition duration-300  flex justify-center items-center gap-2"
+                @click="addCart"
+              >
+                <span class="pi pi-shopping-cart"></span>
+                เพิ่มลงตะกร้า
+              </button>
+              <button
+                class="bg-[#637aad] w-full py-3 md:py-1.5 text-white rounded-[8px] hover:bg-[#4a68a8] font-semibold transition duration-300 shadow-md hover:shadow-lg  flex justify-center items-center gap-2"
+                @click="addProduct"
+              >
+                <span class="pi pi-credit-card"></span>
+                ซื้อเลย
+              </button>
+            </div>
           </div>
         </div>
       </div>

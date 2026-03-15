@@ -45,8 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function getCurrentUser() {
     const storedUser = localStorage.getItem('user')
     user.value = storedUser ? JSON.parse(storedUser) : null
-    const cartStore = useCartStore()
-    await cartStore.getCart()
+    
   }
   if (token.value) {
     console.log('login แล้ว')

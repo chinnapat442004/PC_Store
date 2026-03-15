@@ -2,7 +2,7 @@
 import type { Product } from '../types/Product'
 import { useProductStore } from '../stores/product'
 import { useCategoryStore } from '../stores/category'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'
 
@@ -14,15 +14,15 @@ const categoryStore = useCategoryStore()
 const cartStore = useCartStore()
 
 const min = ref(0)
-const max = ref(50000)
-const range = ref([0, 50000])
+const max = ref(100000)
+const range = ref([0, 100000])
 
 const checkbox = ref<number[]>([])
 
 const sliderKey = ref(0)
 
 onMounted(async () => {
-  await productStore.getProducts()
+  await productStore.getProducts(1, 1000)
   await categoryStore.getCategories()
 })
 
@@ -54,20 +54,50 @@ function goToProduct(product: Product) {
 const updateSlider = () => {
   sliderKey.value++
 }
+
+const currentPage = ref(1)
+const itemsPerPage = ref(16)
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return filteredProducts.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredProducts.value.length / itemsPerPage.value) || 1
+})
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+  }
+}
+
+function prevPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
+}
+
+watch(filteredProducts, () => {
+  currentPage.value = 1
+})
 </script>
 
 <template>
   <div class="w-full h-full bg-[#414141] lg:px-[20px] min-h-screen">
-    <div class="flex justify-center flex-wrap py-[30px] px-[6px] lg:w-[1500px] m-auto">
+    <div class="flex flex-col lg:flex-row justify-center  md:py-[30px] px-[10px] md:px-[20px] max-w-[1300px] m-auto gap-4">
+      <!-- Filter Sidebar -->
       <div
-        class="bg-[#ffffff] w-[275px] mt-[25px] rounded-[10px] shadow-xl mr-[15px] px-[25px] pt-[25px] py-[35px] h-fit"
+        class="bg-[#ffffff] w-full lg:w-[275px] rounded-[10px] shadow-xl p-[20px] md:p-[25px] h-fit"
       >
-        <div><p>ช่วงราคา</p></div>
-        <div class="flex justify-between items-center">
+        <div><p class="font-semibold text-lg mb-2">ช่วงราคา</p></div>
+        <div class="flex justify-between items-center gap-2">
           <input
             type="number"
             v-model="range[0]"
-            class="border-[1px] border-gray-400 w-[100px] h-[40px] px-2 rounded-[5px]"
+            class="border-[1px] border-gray-400 w-full min-w-[80px] h-[40px] px-2 rounded-[5px]"
             :min="min"
             :max="range[1]"
             @input="updateSlider"
@@ -76,7 +106,7 @@ const updateSlider = () => {
           <input
             type="number"
             v-model="range[1]"
-            class="border-[1px] border-gray-400 w-[100px] h-[40px] rounded-[5px]"
+            class="border-[1px] border-gray-400 w-full min-w-[80px] h-[40px] px-2 rounded-[5px]"
             :min="range[0]"
             :max="max"
             @input="updateSlider"
@@ -107,51 +137,75 @@ const updateSlider = () => {
           />
           <hr class="border-t-2 border-gray-300 my-4" />
         </div>
-        <div>
-          <div class="p-[5px] flex"></div>
-        </div>
 
-        <div class="p-[5px] flex" v-for="item of categoryStore.categories" :key="item.category_id">
-          <div class="pr-[12px]">
-            <input
-              type="checkbox"
-              :id="`checkbox-${item.category_id}`"
-              class="cursor-pointer scale-150"
-              :value="item.category_id"
-              v-model="checkbox"
-            />
-          </div>
-          <div>
-            <label :for="`checkbox-${item.category_id}`" class="cursor-pointer text-[17px]">
-              {{ item.name }}
-            </label>
+        <!-- Categories -->
+        <p class="font-semibold text-lg mb-2 pt-2">หมวดหมู่</p>
+        <div class="flex flex-wrap lg:flex-col gap-3 lg:gap-1">
+          <div class="p-[5px] flex items-center" v-for="item of categoryStore.categories" :key="item.category_id">
+            <div class="pr-[12px]">
+              <input
+                type="checkbox"
+                :id="`checkbox-${item.category_id}`"
+                class="cursor-pointer scale-150"
+                :value="item.category_id"
+                v-model="checkbox"
+              />
+            </div>
+            <div>
+              <label :for="`checkbox-${item.category_id}`" class="cursor-pointer text-[15px] md:text-[17px]">
+                {{ item.name }}
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
-      <div
-        class="grid gap-2 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 py-[30px] px-[6px] mx-[10px]"
-      >
-        <div class="" v-for="item of filteredProducts" :key="item.product_id">
-          <div
-            class="bg-[#ffffff] w-[175px] h-[300px] sm:w-[245px] sm:h-[320px] lg:w-[245px] lg:h-[320px] rounded-[10px] py-[15px] px-[10px] shadow-xl transition-transform duration-400 hover:scale-105 cursor-pointer"
-            @click="goToProduct(item)"
-          >
-            <div class="flex justify-center">
-              <img
-                class="w-[180] h-[160px] lg:w-[200px] lg:h-[180px] object-cover pointer-events-none select-none rounded-[5px]"
-                :src="`http://localhost:3000/${item.images[0].image}`"
-                alt=""
-              />
-            </div>
-            <div class="flex justify-between flex-col h-[100px] px-[20px] pt-[10px]">
-              <div class="font-bold">{{ item.title }}</div>
-              <div class="flex justify-between">
-                <div class="font-medium">{{ item.price }}</div>
-                <div></div>
+     
+      <div class="flex-1 w-full">
+        <div
+          class="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 pb-[30px]"
+        >
+          <div class="flex justify-center" v-for="item of paginatedProducts" :key="item.product_id">
+            <div
+              class="bg-[#ffffff] w-full max-w-[245px] aspect-[3/4] rounded-[10px] p-[10px] md:p-[15px] shadow-xl transition-transform duration-400 hover:scale-[1.03] cursor-pointer flex flex-col"
+              @click="goToProduct(item)"
+            >
+              <div class="flex justify-center flex-1 overflow-hidden rounded-[5px]">
+                <img
+                  class="w-full h-full object-cover pointer-events-none select-none rounded-[5px]"
+                  :src="`http://localhost:3000/${item.images && item.images.length > 0 ? item.images[0].image : ''}`"
+                  alt=""
+                />
+              </div>
+              <div class="flex justify-between flex-col h-[70px] md:h-[90px] pt-[10px]">
+                <div class="font-bold text-sm md:text-base line-clamp-2 md:line-clamp-1 break-words leading-tight" :title="item.title">{{ item.title }}</div>
+                <div class="flex justify-between items-end mt-1">
+                  <div class="font-medium text-red-400 text-sm md:text-base">฿{{ item.price.toLocaleString() }}</div>
+                  <div></div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+
+        <div v-if="totalPages > 1" class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-4 md:mr-3">
+          <button
+            class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            @click="prevPage"
+            :disabled="currentPage === 1"
+          >
+            <span class="pi pi-chevron-left text-sm"></span> <span class="hidden sm:inline">Prev</span>
+          </button>
+
+          <span class="text-sm text-white bg-[#555] px-3 py-1 rounded"> {{ currentPage }} / {{ totalPages }}</span>
+
+          <button
+            class="bg-gray-50 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+          >
+            <span class="hidden sm:inline">Next</span> <span class="pi pi-chevron-right text-sm"></span>
+          </button>
         </div>
       </div>
     </div>
