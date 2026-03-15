@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { Image } from './entities/image.entity';
 
 @Injectable()
@@ -41,12 +41,24 @@ export class ProductsService {
     return savedProduct;
   }
 
-  async findAll() {
-    return await this.productRepository.find({
+  async findAll(page: number, limit: number, search?: string) {
+    const skip = (page - 1) * limit;
+
+    const where = search
+      ? [
+          { title: Like(`%${search}%`) },
+          { description: Like(`%${search}%`) },
+        ]
+      : {};
+
+    const [data, total] = await this.productRepository.findAndCount({
+      where,
       relations: {
         images: true,
         category: true,
       },
+      skip: skip,
+      take: limit,
       order: {
         category: {
           category_id: 'ASC',
@@ -54,6 +66,13 @@ export class ProductsService {
         title: 'ASC',
       },
     });
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 
   async findOne(product_id: number) {
