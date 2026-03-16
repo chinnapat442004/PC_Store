@@ -14,7 +14,7 @@ const cartStore = useCartStore()
 const loadingStore = useLoadingStore()
 const number = ref(1)
 const isToastActive = ref(false)
-const search = ref('')
+
 const route = useRoute()
 onMounted(async () => {
   cartStore.getCart()
@@ -60,10 +60,7 @@ async function addCart() {
   }
 }
 
-const searchProduct = async () => {
-  productStore.search = search.value
-  await productStore.getProducts()
-}
+
 
 </script>
 <template>
