@@ -20,13 +20,19 @@ import { Cart } from './carts/entities/cart.entity';
 import { CartDetail } from './carts/entities/cart_detail';
 import { BranchsModule } from './branches/branchs.module';
 import { Branch } from './branches/entities/branch.entity';
-
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
+     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-
-      database: 'database.sqlite', 
+      type: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      port: parseInt(<string>process.env.POSTGRES_PORT),
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      synchronize: true,
+      autoLoadEntities: true,
       entities: [
         User,
         Branch,
@@ -38,8 +44,6 @@ import { Branch } from './branches/entities/branch.entity';
         CartDetail,
         Image,
       ],
-      synchronize: true,
-      autoLoadEntities: true,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),

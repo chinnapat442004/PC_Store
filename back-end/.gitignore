@@ -55,10 +55,6 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# local database
-database.sqlite
-dev.db
-*.sqlite3
 
 # OS files
 .DS_Store
@@ -67,3 +63,8 @@ Thumbs.db
 # User uploaded files
 /public/images/*
 !/public/images/.gitkeep
+
+
+# environment variables
+.env
+.env.*
