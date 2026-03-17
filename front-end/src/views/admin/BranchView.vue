@@ -5,6 +5,9 @@ import ConfirmComponent from '@/components/dialogs/ConfirmComponent.vue'
 
 import MapPicker from '@/components/MapPicker.vue'
 import type { Branch } from '@/types/Branch'
+import { useLoadingStore } from '@/stores/loading'
+import LoadingComponent from '@/components/LoadingComponent.vue'
+const loadingStore = useLoadingStore()
 const branchStore = useBranchStore()
 const showDialog = ref(false)
 const search = ref('')
@@ -272,7 +275,7 @@ const clearSearch = async () => {
     message="คุณต้องการที่จะลบข้อมูลนี้ใช่หรือไม่"
     @confirm="removeItem(branchStore.editedBranch)"
     @cancel="closeDialogDelete()"
-  />
+  /> <LoadingComponent v-model="loadingStore.loading" />
 </template>
 
 <style scoped>

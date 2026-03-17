@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+
 const productStore = useProductStore()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
@@ -17,8 +18,8 @@ const isToastActive = ref(false)
 
 const route = useRoute()
 onMounted(async () => {
-  cartStore.getCart()
-  const id = await Number(route.params.id as string) //
+  cartStore.getCarts()
+  const id = await Number(route.params.id as string) 
   await productStore.getProduct(id)
 })
 
@@ -46,7 +47,7 @@ const addProduct = () => {
       })
     
   }
-  cartStore.getCart()
+  cartStore.getCarts()
 }
 
 async function addCart() {
@@ -55,7 +56,7 @@ async function addCart() {
   } else {
     cartStore.editedCartDetail.quantity = number.value
     if (cartStore.cart) cartStore.addCartDetail(cartStore.cart, cartStore.editedCartDetail)
-    await cartStore.getCart()
+    await cartStore.getCarts()
     addProduct()
   }
 }

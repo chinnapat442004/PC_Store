@@ -4,7 +4,7 @@ import { useCartStore } from '../stores/cart'
 import { IonIcon } from '@ionic/vue'
 import { menu, close, person } from 'ionicons/icons'
 import { useRoute } from 'vue-router'
-// import { watch } from 'vue'
+
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const route = useRoute()
@@ -24,12 +24,6 @@ const open = ref(false)
 const checkMenu = ref(false)
 const user = ref()
 
-// watch(
-//   () => route.name,
-//   (newRoute) => {
-//     page.value = newRoute
-//   },
-// )
 
 const cartDetailCount = computed(() => {
   const cart = cartStore.cart
@@ -58,7 +52,7 @@ onMounted(async () => {
   user.value = storedUser ? JSON.parse(storedUser) : null
   console.log(user)
   window.addEventListener('resize', checkScreenSize)
-  cartStore.getCart()
+  cartStore.getCarts()
 })
 
 onBeforeUnmount(() => {
@@ -68,7 +62,7 @@ onBeforeUnmount(() => {
 async function logout() {
   await authStore.clearUser()
   updateLoginStatus()
-  await cartStore.getCart()
+  await cartStore.getCarts()
 
   checkMenu.value = await false
   isLogout()

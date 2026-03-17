@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -126,22 +126,17 @@ if (updateProductDto.categoryId) {
   return product;
 }
 
-  async remove(product_id: number) {
+ async remove(product_id: number) {
+  const product = await this.productRepository.findOne({
+    where: { product_id },
+  });
 
-    const product = await this.productRepository.findOne({
-      where: { product_id },
-      relations: ['images'],
-    });
-    if (!product) {
-      throw new Error('Product not found');
-    }
-
-
-    if (product.images && product.images.length > 0) {
-      await this.imageRepository.remove(product.images);
-    }
-
-  
-    await this.productRepository.remove(product);
+  if (!product) {
+    throw new NotFoundException('Product not found');
   }
+
+  await this.productRepository.remove(product);
+
+  return { message: 'Product deleted successfully' };
+}
 }

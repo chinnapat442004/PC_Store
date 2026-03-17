@@ -48,6 +48,7 @@ export class Product {
   @OneToMany(() => CartDetail, (cartDetails) => cartDetails.product)
   cartDetails: CartDetail[];
 
-  @OneToMany(() => Image, (image) => image.product)
+  @OneToMany(() => Image, (image) => image.product,{  cascade: true,
+  onDelete: 'CASCADE',})
   images: Image[];
 }

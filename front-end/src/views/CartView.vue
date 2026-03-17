@@ -4,16 +4,18 @@ import { useCartStore } from '../stores/cart'
 import type { CartDetail } from '../types/CartDetail'
 import { trash } from 'ionicons/icons'
 import { IonIcon } from '@ionic/vue'
-import { onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-
+import LoadingComponent from '@/components/LoadingComponent.vue'
+import { useLoadingStore } from '@/stores/loading'
+const loadingStore = useLoadingStore()
 const cartStore = useCartStore()
 
 const authStore = useAuthStore()
 
 onMounted(async () => {
   await authStore.getCurrentUser()
-  cartStore.getCart()
+  cartStore.getCarts()
  
 })
 
@@ -61,7 +63,7 @@ async function minus(detail: CartDetail) {
 
 async function remove(cartDetail: CartDetail) {
   cartStore.remove(cartDetail)
-  await cartStore.getCart()
+  await cartStore.getCarts()
   const cart = cartStore.cart
   if (cart && cart.cartDetails) {
     // ลบ cartDetail ออกจาก cartDetails
@@ -182,4 +184,7 @@ async function remove(cartDetail: CartDetail) {
       </div>
     </div>
   </div>
+
+  
+   <LoadingComponent v-model="loadingStore.loading" />
 </template>

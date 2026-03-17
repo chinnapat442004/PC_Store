@@ -3,8 +3,9 @@ import { defineStore } from 'pinia'
 import userService from '../service/user'
 
 import type { User, CreateUser, UpdateUser } from '@/types/User'
-
+import { useLoadingStore } from './loading'
 export const useUserStore = defineStore('user', () => {
+    const loadingStore = useLoadingStore()
   const users = ref<User[]>([])
   const editedUser = ref<User | null>(null)
 
@@ -29,12 +30,14 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function getUsers(p = page.value, l = limit.value, s = search.value) {
+       loadingStore.doLoad()
     const res = await userService.getUsers(p, l, s)
 
     users.value = res.data.data
     page.value = res.data.page
     lastPage.value = res.data.lastPage
     total.value = res.data.total
+       loadingStore.finishLoad()
   }
 
   async function addUser(user: CreateUser) {

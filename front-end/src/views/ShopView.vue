@@ -5,7 +5,9 @@ import { useCategoryStore } from '../stores/category'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'
-
+import LoadingComponent from '@/components/LoadingComponent.vue'
+import { useLoadingStore } from '@/stores/loading'
+const loadingStore = useLoadingStore()
 const router = useRouter()
 const search = ref('')
 // const filteredProducts = ref<Product[]>([])
@@ -235,4 +237,6 @@ const searchProduct = async () => {
       </div>
     </div>
   </div>
+
+   <LoadingComponent v-model="loadingStore.loading" />
 </template>

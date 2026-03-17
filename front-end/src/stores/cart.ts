@@ -3,12 +3,13 @@ import { defineStore } from 'pinia'
 import type { Cart } from '@/types/Cart'
 import cartService from '@/service/cart'
 import type { CartDetail } from '@/types/CartDetail'
-
+import { useLoadingStore } from './loading'
 import { useProductStore } from './product'
 import { useAuthStore } from './auth'
-import { car } from 'ionicons/icons'
+
 
 export const useCartStore = defineStore('Cart', () => {
+   const loadingStore = useLoadingStore()
   const cart = ref<Cart>()
   const productStort = useProductStore()
   const authStore = useAuthStore()
@@ -21,16 +22,25 @@ export const useCartStore = defineStore('Cart', () => {
   }
 
   const initialCartDetail: CartDetail = {
+  quantity: 0,
+  product: {
+    product_id: 0,
+    title: '',
+    description: '',
+    price: 0,
     quantity: 0,
-    product: productStort.initialProduct,
+    images: [],
+    categoryId: 0,
+    category: undefined
   }
+}
 
   const editedCart = ref(<Cart>JSON.parse(JSON.stringify(initialCart)))
 
   const editedCartDetail = ref(<CartDetail>JSON.parse(JSON.stringify(initialCartDetail)))
 
-  async function getCart() {
-    
+  async function getCarts() {
+    loadingStore.doLoad()
     if (authStore.user) {
     
       const res = await cartService.getCart(authStore.user)
@@ -38,6 +48,7 @@ export const useCartStore = defineStore('Cart', () => {
       console.log(cart.value?.cartDetails)
     
     }
+      loadingStore.finishLoad()
   }
 
   async function addCartDetail(cart: Cart, cartDetail: CartDetail) {
@@ -56,5 +67,5 @@ export const useCartStore = defineStore('Cart', () => {
     cart.value = undefined
   }
 
-  return { getCart, addCartDetail, clearChart, cart, editedCart, editedCartDetail, update, remove }
+  return { getCarts, addCartDetail, clearChart, cart, editedCart, editedCartDetail, update, remove }
 })

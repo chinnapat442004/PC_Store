@@ -77,7 +77,7 @@ async function onSubmit() {
   try {
     await authStore.login()
     await authStore.getCurrentUser()
-    await cartStore.getCart()
+    await cartStore.getCarts()
   } catch (error) {
     console.log(error)
     notify()

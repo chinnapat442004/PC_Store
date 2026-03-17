@@ -53,7 +53,7 @@ const updateVisibleCards = () => {
 onMounted(() => {
   updateVisibleCards()
   window.addEventListener('resize', updateVisibleCards)
-  cartStore.getCart()
+  cartStore.getCarts()
 })
 
 watch(() => window.innerWidth, updateVisibleCards)

@@ -5,6 +5,9 @@ import ConfirmComponent from '@/components/dialogs/ConfirmComponent.vue'
 
 import type { User } from '@/types/User'
 import { useAuthStore } from '@/stores/auth'
+import { useLoadingStore } from '@/stores/loading'
+import LoadingComponent from '@/components/LoadingComponent.vue'
+const loadingStore = useLoadingStore()
 const userStore = useUserStore()
 const showDialog = ref(false)
 const search = ref('')
@@ -308,7 +311,7 @@ const clearSearch = async () => {
     type="delete"
     message="คุณต้องการที่จะลบข้อมูลนี้ใช่หรือไม่"
     @cancel="closeDialogDelete()"
-  />
+  /> <LoadingComponent v-model="loadingStore.loading" />
 </template>
 
 <style scoped>
