@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -15,6 +16,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import cloudinary from 'config/cloudinary.config';
+import path from 'path';
 
 @Controller('product')
 export class ProductsController {
@@ -53,7 +55,7 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
-  @Post(':id')
+  @Patch(':id')
   @UseInterceptors(
     FilesInterceptor('images', 10, {
       storage: memoryStorage(),
