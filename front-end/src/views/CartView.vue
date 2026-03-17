@@ -93,7 +93,7 @@ async function remove(cartDetail: CartDetail) {
       >
         <div class="flex  items-center ">
           <img
-            :src="`http://localhost:3000/${detail.product.images[0]?.image}`"
+            :src="detail.product.images[0]?.image"
             alt=""
             class="w-[100px] h-[100px] object-cover rounded-[5px] "
           />

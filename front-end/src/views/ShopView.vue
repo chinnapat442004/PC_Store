@@ -198,7 +198,7 @@ const searchProduct = async () => {
               <div class="flex justify-center flex-1 overflow-hidden rounded-[5px]">
                 <img
                   class="w-full h-full object-cover pointer-events-none select-none rounded-[5px]"
-                  :src="`http://localhost:3000/${item.images && item.images.length > 0 ? item.images[0].image : ''}`"
+                  :src="item.images && item.images.length > 0 ? item.images[0].image : ''"
                   alt=""
                 />
               </div>

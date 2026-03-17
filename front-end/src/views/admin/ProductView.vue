@@ -146,7 +146,7 @@ const clearSearch = async () => {
             <tr v-for="product in ProductStore.products" :key="product.product_id">
               <td class="text-center align-middle">
                 <img
-                  :src="`http://localhost:3000/${product.images[0].image}`"
+                  :src="product.images[0].image"
                   alt=""
                   class="h-32 w-32 object-cover rounded"
                 />

@@ -75,10 +75,12 @@ async function addCart() {
         <!-- Product Image -->
         <div class=" flex justify-center items-start md:mr-[20px] lg:mr-[30px] w-full md:w-auto shrink-0 mb-6 md:mb-0">
           <img
-            :src="productStore.editedProduct.images && productStore.editedProduct.images.length > 0 ? `http://localhost:3000/${productStore.editedProduct.images[0].image}` : ''"
+            :src="productStore.editedProduct.images && productStore.editedProduct.images.length > 0 ? productStore.editedProduct.images[0].image : ''"
             alt="Product Image"
             class="w-full max-w-[350px] aspect-square object-cover rounded-[10px]   border-gray-200"
           />
+
+          
         </div>
 
         <!-- Product Details -->
