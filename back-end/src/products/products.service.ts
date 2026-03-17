@@ -17,13 +17,13 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     const product = new Product();
-    // กำหนดข้อมูลของ product จาก DTO
+    
     product.title = createProductDto.title;
     product.description = createProductDto.description;
     product.price = createProductDto.price;
     product.sold = 0;
     product.quantity = createProductDto.quantity;
-
+    product.category.category_id = Number(createProductDto.categoryId) 
   const savedProduct = await this.productRepository.save(product);
 
   if (createProductDto.images?.length) {
@@ -94,10 +94,9 @@ async update(product_id: number, updateProductDto: UpdateProductDto) {
   product.title = updateProductDto.title;
   product.description = updateProductDto.description;
   product.price = updateProductDto.price;
-
   product.quantity = updateProductDto.quantity;
   product.category.category_id = updateProductDto.categoryId;
-
+product.category.category_id = Number(updateProductDto.categoryId) 
   await this.productRepository.save(product);
 
   if (updateProductDto.images?.length) {
