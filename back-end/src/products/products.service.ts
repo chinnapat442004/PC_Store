@@ -77,7 +77,8 @@ export class ProductsService {
   async findOne(product_id: number) {
     return await this.productRepository.findOne({
       where: { product_id },
-      relations: { images: true },
+      relations: {   images: true,
+        category: true, },
     });
   }
 
@@ -118,7 +119,7 @@ product.category.category_id = Number(updateProductDto.categoryId)
 }
 
   async remove(product_id: number) {
-    // ค้นหา product ที่จะลบ
+
     const product = await this.productRepository.findOne({
       where: { product_id },
       relations: ['images'],
@@ -127,12 +128,12 @@ product.category.category_id = Number(updateProductDto.categoryId)
       throw new Error('Product not found');
     }
 
-    // ลบ images ที่เกี่ยวข้อง
+
     if (product.images && product.images.length > 0) {
       await this.imageRepository.remove(product.images);
     }
 
-    // ลบ product
+  
     await this.productRepository.remove(product);
   }
 }
