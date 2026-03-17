@@ -21,13 +21,13 @@ export class ProductsService {
     product.title = createProductDto.title;
     product.description = createProductDto.description;
     product.price = createProductDto.price;
-    product.sold = createProductDto.sold;
+    product.sold = 0;
     product.quantity = createProductDto.quantity;
 
     const savedProduct = await this.productRepository.save(product);
 
     if (createProductDto.images && createProductDto.images.length > 0) {
-      // สร้าง image instances
+ 
       const images = createProductDto.images.map((filename) => {
         const image = this.imageRepository.create({
           image: `/images/products/${filename}`,
@@ -99,9 +99,9 @@ export class ProductsService {
       product.title = updateProductDto.title;
       product.description = updateProductDto.description;
       product.price = updateProductDto.price;
-      product.sold = updateProductDto.sold;
+     
       product.quantity = updateProductDto.quantity;
-      product.category = updateProductDto.category;
+      product.category.category_id = updateProductDto.categoryId;
 
       return this.productRepository.save(product);
     }
