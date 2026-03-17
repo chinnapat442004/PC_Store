@@ -101,7 +101,6 @@ async update(product_id: number, updateProductDto: UpdateProductDto) {
   product.description = updateProductDto.description;
   product.price = updateProductDto.price;
   product.quantity = updateProductDto.quantity;
-  product.category.category_id = updateProductDto.categoryId;
 if (updateProductDto.categoryId) {
   product.category = {
     category_id: updateProductDto.categoryId,
