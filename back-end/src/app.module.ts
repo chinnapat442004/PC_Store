@@ -3,8 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+
 import { UsersModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { OrdersModule } from './orders/orders.module';
@@ -45,9 +44,7 @@ import { ConfigModule } from '@nestjs/config';
         Image,
       ],
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-    }),
+  
     BranchsModule,
     UsersModule,
     AuthModule,

@@ -16,30 +16,30 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    const product = new Product();
-    // กำหนดข้อมูลของ product จาก DTO
-    product.title = createProductDto.title;
-    product.description = createProductDto.description;
-    product.price = createProductDto.price;
-    product.sold = createProductDto.sold;
-    product.quantity = createProductDto.quantity;
+  const product = this.productRepository.create({
+    title: createProductDto.title,
+    description: createProductDto.description,
+    price: createProductDto.price,
+    sold: createProductDto.sold,
+    quantity: createProductDto.quantity,
+    category: createProductDto.category,
+  });
 
-    const savedProduct = await this.productRepository.save(product);
+  const savedProduct = await this.productRepository.save(product);
 
-    if (createProductDto.images && createProductDto.images.length > 0) {
-      // สร้าง image instances
-      const images = createProductDto.images.map((filename) => {
-        const image = this.imageRepository.create({
-          image: `/images/products/${filename}`,
-          product: product,
-        });
-        return image;
-      });
+  if (createProductDto.images?.length) {
+    const images = createProductDto.images.map((url) =>
+      this.imageRepository.create({
+        image: url,
+        product: savedProduct,
+      }),
+    );
 
-      await this.imageRepository.save(images);
-    }
-    return savedProduct;
+    await this.imageRepository.save(images);
   }
+
+  return savedProduct;
+}
 
   async findAll(page: number, limit: number, search?: string) {
     const skip = (page - 1) * limit;
@@ -82,30 +82,42 @@ export class ProductsService {
     });
   }
 
-  async update(product_id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.productRepository.findOne({
-      where: { product_id },
-    });
+async update(product_id: number, updateProductDto: UpdateProductDto) {
+  const product = await this.productRepository.findOne({
+    where: { product_id },
+    relations: ['images'],
+  });
 
-    if (updateProductDto.images && updateProductDto.images.length > 0) {
-      const images = updateProductDto.images.map((filename) => {
-        const image = this.imageRepository.create({
-          image: `/images/products/${filename}`,
-          product: product,
-        });
-        return image;
-      });
-      await this.imageRepository.save(images);
-      product.title = updateProductDto.title;
-      product.description = updateProductDto.description;
-      product.price = updateProductDto.price;
-      product.sold = updateProductDto.sold;
-      product.quantity = updateProductDto.quantity;
-      product.category = updateProductDto.category;
-
-      return this.productRepository.save(product);
-    }
+  if (!product) {
+    throw new Error('Product not found');
   }
+
+  product.title = updateProductDto.title;
+  product.description = updateProductDto.description;
+  product.price = updateProductDto.price;
+  product.sold = updateProductDto.sold;
+  product.quantity = updateProductDto.quantity;
+  product.category = updateProductDto.category;
+
+  await this.productRepository.save(product);
+
+  if (updateProductDto.images?.length) {
+    if (product.images?.length) {
+      await this.imageRepository.remove(product.images);
+    }
+
+    const images = updateProductDto.images.map((url) =>
+      this.imageRepository.create({
+        image: url,
+        product: product,
+      }),
+    );
+
+    await this.imageRepository.save(images);
+  }
+
+  return product;
+}
 
   async remove(product_id: number) {
     // ค้นหา product ที่จะลบ

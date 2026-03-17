@@ -13,10 +13,8 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import path, { extname } from 'path';
-import { v4 as uuidv4 } from 'uuid';
-import * as fs from 'fs';
+import { memoryStorage } from 'multer';
+import cloudinary from 'config/cloudinary.config';
 
 @Controller('product')
 export class ProductsController {
@@ -25,13 +23,7 @@ export class ProductsController {
   @Post()
   @UseInterceptors(
     FilesInterceptor('images', 10, {
-      storage: diskStorage({
-        destination: './public/images/products',
-        filename: (req, file, cb) => {
-          const filename = uuidv4();
-          return cb(null, filename + extname(file.originalname));
-        },
-      }),
+      storage: memoryStorage(),
     }),
   )
   async create(
@@ -39,22 +31,32 @@ export class ProductsController {
     @UploadedFiles() images: Express.Multer.File[],
   ) {
     if (images && images.length > 0) {
-      createProductDto.images = images.map((image) => image.filename);
+      const uploadedImages = await Promise.all(
+        images.map((image) =>
+          new Promise<string>((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: 'products' },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result.secure_url);
+              },
+            );
+
+            stream.end(image.buffer);
+          }),
+        ),
+      );
+
+      createProductDto.images = uploadedImages;
     }
 
-    return await this.productsService.create(createProductDto);
+    return this.productsService.create(createProductDto);
   }
 
   @Post(':id')
   @UseInterceptors(
     FilesInterceptor('images', 10, {
-      storage: diskStorage({
-        destination: './public/images/products',
-        filename: (req, file, cb) => {
-          const filename = uuidv4();
-          return cb(null, filename + extname(file.originalname));
-        },
-      }),
+      storage: memoryStorage(),
     }),
   )
   async update(
@@ -63,16 +65,32 @@ export class ProductsController {
     @Param('id') id: string,
   ) {
     if (images && images.length > 0) {
-      updateProductDto.images = images.map((image) => image.filename);
+      const uploadedImages = await Promise.all(
+        images.map((image) =>
+          new Promise<string>((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              { folder: 'products' },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result.secure_url);
+              },
+            );
+
+            stream.end(image.buffer);
+          }),
+        ),
+      );
+
+      updateProductDto.images = uploadedImages;
     }
 
-    return await this.productsService.update(+id, updateProductDto);
+    return this.productsService.update(+id, updateProductDto);
   }
 
   @Get()
   findAll(
-    @Query('page') page: string = '1',
-    @Query('limit') limit: string = '10',
+    @Query('page') page = '1',
+    @Query('limit') limit = '10',
     @Query('search') search: string,
   ) {
     return this.productsService.findAll(+page, +limit, search);
@@ -84,33 +102,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const product = await this.productsService.findOne(+id);
-    if (!product) {
-      throw new Error('Product not found');
-    }
-
-    if (product.images && product.images.length > 0) {
-      product.images.forEach((image) => {
-        const imagePath = path.join(
-          __dirname,
-          '..',
-          '..',
-          'public',
-          'images',
-          'users',
-          image.image,
-        );
-
-        fs.unlink(imagePath, (err) => {
-          if (err) {
-            console.error('Error deleting image:', err);
-          } else {
-            console.log('Image deleted successfully');
-          }
-        });
-      });
-    }
+  remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }
 }

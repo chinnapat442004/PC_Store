@@ -9,7 +9,7 @@ import { Product } from './product.entity';
 
 @Entity()
 export class Image {
-  @PrimaryGeneratedColumn()
+@PrimaryGeneratedColumn()
   image_id: number;
 
   @Column()
