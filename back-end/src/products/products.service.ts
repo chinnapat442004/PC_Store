@@ -23,7 +23,12 @@ export class ProductsService {
     product.price = createProductDto.price;
     product.sold = 0;
     product.quantity = createProductDto.quantity;
-    product.category.category_id = Number(createProductDto.categoryId) 
+   if (createProductDto.categoryId) {
+  product.category = {
+    category_id: createProductDto.categoryId,
+  } as any
+}
+
   const savedProduct = await this.productRepository.save(product);
 
   if (createProductDto.images?.length) {
@@ -97,7 +102,11 @@ async update(product_id: number, updateProductDto: UpdateProductDto) {
   product.price = updateProductDto.price;
   product.quantity = updateProductDto.quantity;
   product.category.category_id = updateProductDto.categoryId;
-product.category.category_id = Number(updateProductDto.categoryId) 
+if (updateProductDto.categoryId) {
+  product.category = {
+    category_id: updateProductDto.categoryId,
+  } as any
+}
   await this.productRepository.save(product);
 
   if (updateProductDto.images?.length) {
