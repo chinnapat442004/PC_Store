@@ -40,12 +40,12 @@ const router = createRouter({
         default: CartView,
         navbar: HeaderComponents,
       },
-      meta: { requiresAuth: true },
+   
     },
     {
       path: '/login',
       name: 'login',
-      component: () => LoginView,
+      component: LoginView,
     },
     {
       path: '/product/:id',
@@ -90,18 +90,14 @@ const router = createRouter({
     {
       path: '/register',
       name: 'register',
-      component: () => RegisterView,
+       component: RegisterView,
     },
     {
       path: '/forgot-password',
       name: ' forgotPassword',
-      component: () => ForgotPasswordView,
+       component:ForgotPasswordView,
     },
-    {
-      path: '/forgot-password',
-      name: ' forgotPassword',
-      component: () => ForgotPasswordView,
-    },
+    
   ],
 })
 
