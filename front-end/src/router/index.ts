@@ -45,7 +45,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: LoginView,
+       component: () => import('../views/LoginView.vue'),
     },
     {
       path: '/product/:id',
@@ -90,12 +90,12 @@ const router = createRouter({
     {
       path: '/register',
       name: 'register',
-       component: RegisterView,
+         component: () => import('../views/RegisterView.vue'),
     },
     {
       path: '/forgot-password',
       name: ' forgotPassword',
-       component:ForgotPasswordView,
+          component: () => import('../views/ForgotPasswordView.vue'),
     },
     
   ],
