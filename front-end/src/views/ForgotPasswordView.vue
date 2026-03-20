@@ -28,7 +28,7 @@ const sendResetEmail = async () => {
 
 <template>
   <div class="flex w-full h-screen justify-center items-center bg-[#202020]">
-    <div class="bg-[#414141] w-[500px] p-8 rounded-[10px] shadow-xl">
+    <div class="w-[500px] p-8 rounded-[10px] shadow-xl">
       <h1 class="text-3xl font-semibold text-white text-center mb-6">ลืมรหัสผ่าน</h1>
 
       <form @submit.prevent="sendResetEmail" class="space-y-6">

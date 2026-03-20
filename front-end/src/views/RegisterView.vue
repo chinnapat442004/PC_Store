@@ -121,7 +121,8 @@ async function onRegister() {
 <template>
   <div class="flex w-full h-screen justify-center items-center bg-[#202020]">
     <div
-      class="py-[25px] bg-[#414141] w-[500px] max-h-[680px] rounded-[10px] shadow-xl flex flex-col justify-center items-center"
+      class=" bg-[#414141] py-[25px] 
+       w-[500px] max-h-[680px] rounded-[10px] shadow-xl flex flex-col justify-center items-center"
     >
       <h1 class="text-3xl font-semibold text-white mb-6">Register</h1>
       <form @submit.prevent="onRegister" class="w-[350px]">

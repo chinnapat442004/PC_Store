@@ -67,7 +67,7 @@ async function addCart() {
 <template>
   <LoadingComponent v-model="loadingStore.loading" />
 
-  <div class="flex justify-center  flex-1 w-full pt-[40px] md:pt-[70px] bg-[#414141] px-[15px] pb-[40px] md:pb-0 min-h-screen">
+  <div class="flex justify-center  flex-1 w-full pt-[40px] md:pt-[70px]  px-[15px] pb-[40px] md:pb-0 min-h-screen">
     <div
       v-show="!loadingStore.loading"
       class="bg-[#ffffff] w-full max-w-[900px] shadow-xl rounded-[10px] mx-auto overflow-hidden h-fit"

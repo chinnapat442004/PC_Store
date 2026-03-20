@@ -85,7 +85,7 @@ async function remove(cartDetail: CartDetail) {
 
 <template>
   <div
-    class="flex justify-center w-full h-full min-h-screen gap-3 md:flex-nowrap flex-wrap bg-[#414141] px-[40px] pt-[30px] m-auto pb-[20px]"
+    class="flex justify-center w-full h-full min-h-screen gap-3 md:flex-nowrap flex-wrap  py-[30px] px-[10px] md:px-[20px] m-auto pb-[20px]"
   >
     <div class="max-w-[750px] w-full min-w-[300px] flex flex-col gap-3 h-full">
       <div
@@ -93,7 +93,7 @@ async function remove(cartDetail: CartDetail) {
         :key="detail.cart_detail_id"
         class="bg-white rounded-[10px] h-auto flex sm:h-[120px] px-[5px] md:px-[10px] lg:px-[30px] mx-auto w-full"
       >
-        <div class="flex  items-center ">
+        <div class="flex  items-center  ">
           <img
             :src="detail.product.images[0]?.image"
             alt=""
@@ -111,26 +111,7 @@ async function remove(cartDetail: CartDetail) {
           </div>
 
           <div class="flex flex-row  justify-between gap-3 sm:gap-0">
-            <!-- <div class="flex md:w-1/4 sm:w-1/3 w-1/2 justify-between">
-              <div>
-                <button
-                  class="rounded-[5px] flex justify-center items-center text-[25px] text-[white] h-[30px] w-[30px] bg-[#4c4b4b]"
-                  @click="minus(detail)"
-                >
-                  -
-                </button>
-              </div>
-
-              <div class="text-[20px]">{{ detail.quantity }}</div>
-              <div>
-                <button
-                  class="rounded-[5px] flex justify-center items-center text-[25px] h-[30px] w-[30px] text-[white] bg-[#4c4b4b]"
-                  @click="plus(detail)"
-                >
-                  +
-                </button>
-              </div>
-            </div> -->
+            
 
             <div class="flex items-center gap-4 bg-gray-100 px-2 py-1 rounded-lg">
                 <button

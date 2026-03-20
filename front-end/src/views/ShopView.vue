@@ -93,7 +93,7 @@ const searchProduct = async () => {
 </script>
 
 <template>
-  <div class="w-full h-full bg-[#414141] lg:px-[20px] min-h-screen">
+  <div class="w-full h-full  lg:px-[20px] min-h-screen">
     <div class="flex flex-col lg:flex-row justify-center  py-[30px] px-[10px] md:px-[20px] max-w-[1300px] m-auto gap-4">
       <div class=" flex flex-col gap-3 items-center">
       <!-- Filter Sidebar -->

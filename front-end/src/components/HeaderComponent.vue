@@ -220,7 +220,7 @@ const isLogout = () => {
 
         <div
           v-if="checkMenu === true && isLogin"
-          class="   bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 duration-300"
+          class="   bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 duration-300 md:right-auto right-0"
         >
           <router-link
             class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px] block"

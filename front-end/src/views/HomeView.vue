@@ -79,7 +79,7 @@ const nextSlide = () => {
 </script>
 
 <template>
-  <div class="bg-[#414141] h-full w-full pt-[25px]">
+  <div class=" h-full w-full pt-[25px]">
     <div class="px-6 sm:px-8 lg:px-10 max-w-[1200px] mx-auto">
       <h1 class="text-white text-[36px] sm:text-[40px] lg:text-[50px]">
         ยกระดับประสบการณ์การเล่นเกมของคุณ
