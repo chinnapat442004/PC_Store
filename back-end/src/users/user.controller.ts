@@ -21,26 +21,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
-// import * as fs from 'fs';
-// import * as path from 'path';
+
 import { Role } from './enums/role.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-// import { AuthGuard } from '../auth/auth.guard';
+
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.userService.create(createUserDto);
-  // }
-  // @UseGuards(AuthGuard)
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
 
   @Get()
   async findAll(
@@ -111,13 +101,9 @@ export class UserController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './public/images/users', // โฟลเดอร์เก็บภาพโปรไฟล์
+        destination: './public/images/users', 
         filename: (req, image, cd) => {
-          // const uniqueSuffix =
-          //   Date.now() + '-' + Math.round(Math.random() * 1e9);
-          // const ext = extname(image.originalname);
-          const name = uuidv4();
-          // return cd(null, `${image.fieldname}-${uniqueSuffix}${ext}`);
+    
           return cd(null, name + extname(image.originalname));
         },
       }),
@@ -135,31 +121,5 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
-  // @Delete(':id')
-  // async remove(@Param('id') id: string) {
-  //   const user = await this.userService.findOne(+id);
 
-  //   if (!user) {
-  //     throw new Error('User not found');
-  //   }
-
-  //   // Path ของไฟล์รูปภาพ
-  //   const imagePath = path.join(
-  //     __dirname,
-  //     '..',
-  //     '..',
-  //     'public',
-  //     'images',
-  //     'users',
-  //     user.image,
-  //   );
-
-  //   // ลบรูปภาพจากโฟลเดอร์
-  //   fs.unlink(imagePath, (err) => {
-  //     if (err) {
-  //     }
-  //   });
-
-  //   return this.userService.remove(+id);
-  // }
 }

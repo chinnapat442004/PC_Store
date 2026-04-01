@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, ValidateIf } from 'class-validator';
 import { Role } from '../enums/role.enum';
 
 export class CreateUserDto {
@@ -9,4 +9,9 @@ export class CreateUserDto {
   image: string;
   @IsEnum(Role)
   role: Role;
+   @ValidateIf((o) => o.role === Role.MANAGER|| o.role === Role.EMPLOYEE)
+  @IsNotEmpty({ message: 'branch is required for owner or employee' })
+  branch_id: number;
+
+  
 }

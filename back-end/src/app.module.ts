@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
-
 import { UsersModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { OrdersModule } from './orders/orders.module';
@@ -20,6 +19,8 @@ import { CartDetail } from './carts/entities/cart_detail';
 import { BranchsModule } from './branches/branchs.module';
 import { Branch } from './branches/entities/branch.entity';
 import { ConfigModule } from '@nestjs/config';
+import { BrandsModule } from './brands/brands.module';
+import { Brand } from './brands/entities/brand.entity';
 @Module({
   imports: [
      ConfigModule.forRoot({ isGlobal: true }),
@@ -42,6 +43,7 @@ import { ConfigModule } from '@nestjs/config';
         Cart,
         CartDetail,
         Image,
+        Brand
       ],
     }),
   
@@ -52,6 +54,7 @@ import { ConfigModule } from '@nestjs/config';
     ProductsModule,
     CategoriesModule,
     CartsModule,
+    BrandsModule
    
   ],
 

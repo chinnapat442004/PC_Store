@@ -12,6 +12,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Image } from './image.entity';
+import { Brand } from 'src/brands/entities/brand.entity';
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
@@ -51,4 +52,8 @@ export class Product {
   @OneToMany(() => Image, (image) => image.product,{  cascade: true,
   onDelete: 'CASCADE',})
   images: Image[];
+
+  @ManyToOne(() => Brand, (brand) => brand.products)
+  @JoinColumn({ name: 'brand_id' })
+  brand: Brand;
 }
