@@ -8,9 +8,10 @@ import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useLoadingStore } from '@/stores/loading'
+import { useRouter } from 'vue-router'
 const loadingStore = useLoadingStore()
 const cartStore = useCartStore()
-
+const router = useRouter()
 const authStore = useAuthStore()
 
 onMounted(async () => {
@@ -80,6 +81,10 @@ async function remove(cartDetail: CartDetail) {
       return total
     }, 0)
   }
+}
+
+const goToCheckout = () => {
+  router.push({ name: 'checkout' })
 }
 </script>
 
@@ -151,20 +156,46 @@ async function remove(cartDetail: CartDetail) {
       </div>
     </div>
 
-    <div class="bg-white max-w-[750px] w-full   md:w-[400px] rounded-[10px] p-[20px] h-[250px]">
+    <div class="bg-white max-w-[750px] w-full   md:w-[400px] rounded-[10px] p-[20px] h-[275px]">
       <div>
-        <div class="flex justify-between">
-          <div>ยอดรวม</div>
-          <div>{{ cartStore.cart?.total_amount }}</div>
-        </div>
-        <div>
-          <button class="bg-[#82d182] w-full mt-[60px] h-[35px] hover:bg-[#69c769] rounded-[10px]">
-            ชำระเงิน
+       
+          <div class="text-lg font-semibold mb-4">
+    สรุปยอด
+  </div>
+  
+  <div class="flex justify-between text-sm mb-2">
+    <div>ราคาก่อนภาษี:</div>
+    <div>฿{{ cartStore.cart?.total_amount }}</div>
+  </div>
+
+ 
+  <div class="flex justify-between text-sm mb-2">
+    <div>ภาษี VAT 7%:</div>
+    <!-- <div>฿{{ cartStore.cart?.vat }}</div> -->
+  </div>
+
+  <hr class="my-3" />
+
+ 
+  <div class="flex justify-between text-lg font-bold ">
+    <div>ยอดรวม:</div>
+    <!-- <div>฿{{ cartStore.cart?.total }}</div> -->
+  </div>
+
+ 
+  <div class="flex justify-between text-base  font-medium  ">
+    <div>ยอดรวม (รวมภาษีมูลค่าเพิ่ม)</div>
+
+  </div> <div>
+          <button class="bg-[#82d182] w-full mt-[20px] h-[35px] hover:bg-[#69c769] rounded-[10px]" @click="goToCheckout">
+            ดำเนินการต่อ
           </button>
         </div>
+        </div>
+       
       </div>
     </div>
-  </div>
+
 
   
    <LoadingComponent v-model="loadingStore.loading" />

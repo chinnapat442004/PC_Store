@@ -18,7 +18,7 @@ const cartStore = useCartStore()
 const min = ref(0)
 const max = ref(100000)
 const range = ref([0, 100000])
-
+const selectAll = ref(false)
 const checkbox = ref<number[]>([])
 
 const sliderKey = ref(0)
@@ -27,6 +27,7 @@ onMounted(async () => {
   await productStore.getProducts(1, 1000)
   await categoryStore.getCategories()
 })
+
 
 const filteredProducts = computed(() => {
   const categoryFiltered = filteredCategory.value
@@ -93,7 +94,7 @@ const searchProduct = async () => {
 </script>
 
 <template>
-  <div class="w-full h-full  lg:px-[20px] min-h-screen">
+  <div class="w-full h-full  lg:px-[20px] min-h-screen ">
     <div class="flex flex-col lg:flex-row justify-center  py-[30px] px-[10px] md:px-[20px] max-w-[1300px] m-auto gap-4">
       <div class=" flex flex-col gap-3 items-center">
       <!-- Filter Sidebar -->
@@ -107,7 +108,7 @@ const searchProduct = async () => {
           v-model="search"
         />
         <button
-          class="absolute right-2 text-white bg-[#637aad] hover:bg-[#202020] rounded-lg px-3 py-1 transition"
+          class="absolute right-2 text-white bg-[#637aad] hover:bg-[#4a68a8] rounded-lg px-3 py-1 transition"
     @click="searchProduct()"
           >
           ค้นหา

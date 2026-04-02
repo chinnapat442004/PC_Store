@@ -27,11 +27,11 @@ const sendResetEmail = async () => {
 </script>
 
 <template>
-  <div class="flex w-full h-screen justify-center items-center bg-[#202020]">
-    <div class="w-[500px] p-8 rounded-[10px] shadow-xl">
-      <h1 class="text-3xl font-semibold text-white text-center mb-6">ลืมรหัสผ่าน</h1>
+  <div class="flex w-full h-screen justify-center items-center  bg-[#202020] px-[15px]">
+    <div class="w-full max-w-[500px] p-8   rounded-[10px] shadow-xl bg-[#414141] flex justify-center items-center flex-col  ">
+      <h1 class="text-3xl font-semibold text-white text-center mb-6 ">ลืมรหัสผ่าน</h1>
 
-      <form @submit.prevent="sendResetEmail" class="space-y-6">
+      <form @submit.prevent="sendResetEmail" class="space-y-6 w-full max-w-[350px]">
         <div>
           <label for="email" class="block text-white font-medium mb-2">Email:</label>
           <input

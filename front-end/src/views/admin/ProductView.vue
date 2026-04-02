@@ -216,7 +216,7 @@ const removeImage = () => {
             <span class="pi pi-times text-lg"></span>
           </button>
           <button
-            class="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+            class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8]  text-white px-4 py-2 rounded-md  transition"
             @click="openCreateDialog()"
           >
             <span class="pi pi-plus text-lg"></span>

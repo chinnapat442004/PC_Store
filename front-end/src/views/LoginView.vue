@@ -90,7 +90,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="flex w-full h-screen justify-center items-center bg-[#202020]">
+  <div class="flex w-full h-screen justify-center items-center bg-[#202020] px-[15px]">
     <div
       class="bg-[#414141] w-[500px] max-h-[500px] rounded-[10px] shadow-xl flex justify-center items-center flex-col py-[40px]"
     >
@@ -152,7 +152,7 @@ async function onSubmit() {
           <button
             type="submit"
             :disabled="submit"
-            class="bg-[#637aad] w-full px-4 py-2 mt-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#4c5f86] text-[white]"
+            class="bg-[#637aad] hover:bg-[#4a68a8]  w-full px-4 py-2 mt-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#4c5f86] text-[white]"
           >
             <span v-if="submit">Logging in...</span>
             <span v-else>Login</span>

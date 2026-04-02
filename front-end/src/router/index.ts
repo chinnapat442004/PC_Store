@@ -13,6 +13,8 @@ import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
 import { useAuthStore } from '@/stores/auth'
 import UserView from '@/views/admin/UserView.vue'
 import BranchView from '@/views/admin/BranchView.vue'
+import CheckoutView from '@/views/CheckoutView.vue'
+import CategoryView from '@/views/admin/CategoryView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +40,14 @@ const router = createRouter({
       name: 'cart',
       components: {
         default: CartView,
+        navbar: HeaderComponents,
+      },
+   
+    },  {
+      path: '/checkout',
+      name: 'checkout',
+      components: {
+        default: CheckoutView,
         navbar: HeaderComponents,
       },
    
@@ -84,6 +94,13 @@ const router = createRouter({
       name: 'branch',
       components: {
         default: BranchView,
+        sidebar: SidebarComponent,
+      },
+    },{
+      path: '/category',
+      name: 'category',
+      components: {
+        default: CategoryView,
         sidebar: SidebarComponent,
       },
     },
