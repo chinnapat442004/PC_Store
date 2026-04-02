@@ -22,7 +22,7 @@ export class ProductsService {
     product.description = createProductDto.description;
     product.price = createProductDto.price;
     product.sold = 0;
-    product.quantity = createProductDto.quantity;
+    // product.quantity = createProductDto.quantity;
    if (createProductDto.categoryId) {
   product.category = {
     category_id: createProductDto.categoryId,
@@ -100,7 +100,7 @@ async update(product_id: number, updateProductDto: UpdateProductDto) {
   product.title = updateProductDto.title;
   product.description = updateProductDto.description;
   product.price = updateProductDto.price;
-  product.quantity = updateProductDto.quantity;
+  // product.quantity = updateProductDto.quantity;
 if (updateProductDto.categoryId) {
   product.category = {
     category_id: updateProductDto.categoryId,

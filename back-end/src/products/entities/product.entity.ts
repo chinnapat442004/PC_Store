@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Image } from './image.entity';
 import { Brand } from 'src/brands/entities/brand.entity';
+import { Stock } from 'src/stock/entities/stock.entity';
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
@@ -30,8 +31,6 @@ export class Product {
   @Column()
   sold: number;
 
-  @Column()
-  quantity: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -56,4 +55,7 @@ export class Product {
   @ManyToOne(() => Brand, (brand) => brand.products)
   @JoinColumn({ name: 'brand_id' })
   brand: Brand;
+
+  @OneToMany(() => Stock, (stock) => stock.product)
+stocks: Stock[];
 }

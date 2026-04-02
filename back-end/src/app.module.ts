@@ -21,6 +21,8 @@ import { Branch } from './branches/entities/branch.entity';
 import { ConfigModule } from '@nestjs/config';
 import { BrandsModule } from './brands/brands.module';
 import { Brand } from './brands/entities/brand.entity';
+import { StockModule } from './stock/stock.module';
+import { Stock } from './stock/entities/stock.entity';
 @Module({
   imports: [
      ConfigModule.forRoot({ isGlobal: true }),
@@ -43,7 +45,7 @@ import { Brand } from './brands/entities/brand.entity';
         Cart,
         CartDetail,
         Image,
-        Brand
+        Brand,Stock
       ],
     }),
   
@@ -54,7 +56,8 @@ import { Brand } from './brands/entities/brand.entity';
     ProductsModule,
     CategoriesModule,
     CartsModule,
-    BrandsModule
+    BrandsModule,
+    StockModule
    
   ],
 

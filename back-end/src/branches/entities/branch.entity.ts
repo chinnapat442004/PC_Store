@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { BranchStatus } from '../enums/branch-status';
+import { Stock } from 'src/stock/entities/stock.entity';
 
 @Entity()
 export class Branch {
@@ -35,4 +36,7 @@ export class Branch {
 
   @OneToMany(() => User, (user) => user.branch)
   users: User[];
+
+  @OneToMany(() => Stock, (stock) => stock.branch)
+stocks: Stock[];
 }
