@@ -1,10 +1,16 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import router from '@/router'
+import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
+import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
+import { toast } from 'vue3-toastify'
 const route = useRoute()
 const page = computed(() => route.name)
-
+const authStore = useAuthStore()
+const cartStore = useCartStore()
+const checkMenu = ref(false)
+const isToastActive = ref(false)
 
 const menus = [
   { name: 'dashboard', label: 'Dashboard', path: { name: 'dashboard' } },
@@ -13,6 +19,26 @@ const menus = [
   { name: 'category', label: 'Category Management', path: { name: 'category' } },
   { name: 'editproduct', label: 'Product Management', path: {name: 'editproduct'} },
 ]
+const isLogin = ref(localStorage.getItem('isLogin') === 'true')
+
+function updateLoginStatus() {
+  isLogin.value = localStorage.getItem('isLogin') === 'true'
+}
+
+async function logout() {
+  await authStore.clearUser()
+  updateLoginStatus()
+  await cartStore.getCarts()
+  checkMenu.value = false
+ await router.replace( { name: 'login' })
+  if (!isToastActive.value) {
+    isToastActive.value = true
+    toast.success('ออกจากระบบสำเร็จ', {
+      position: toast.POSITION.TOP_RIGHT,
+      onClose: () => (isToastActive.value = false),
+    })
+  }
+}
 </script>
 
 <template>
@@ -32,5 +58,14 @@ const menus = [
       </li>
 
     </ul>
+  <div class="absolute bottom-0 w-full px-2 py-4">
+  <button
+    @click="logout"
+    class="flex items-center gap-3 hover:bg-[#979dac] hover:text-black duration-300 rounded-[5px] font-semibold px-4 py-3 text-white w-full text-left"
+  >
+    <i class="pi pi-sign-out"></i>
+    Logout
+  </button>
+</div>
   </div>
 </template>

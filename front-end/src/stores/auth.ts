@@ -5,6 +5,7 @@ import type { User } from '@/types/User'
 import router from '@/router'
 import { useCartStore } from './cart'
 
+
 export const useAuthStore = defineStore('auth', () => {
   const email = ref<string>('')
   const password = ref<string>('')
@@ -18,13 +19,14 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('access_token', res.data.access_token)
       localStorage.setItem('role', res.data.user.role)
       localStorage.setItem('isLogin', 'true')
+      token.value = localStorage.getItem('access_token')
 
       if (res.data.user.role === 'admin') {
-        await router.replace({ name: 'dashboard' })
+        await router.replace( { name: 'dashboard' })
       } else if (res.data.user.role === 'user') {
         await router.replace({ name: 'home' })
       }
-      token.value = localStorage.getItem('access_token')
+
     }
   }
 
