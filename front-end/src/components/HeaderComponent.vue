@@ -6,7 +6,7 @@ import { menu, close, person } from 'ionicons/icons'
 import { useRoute } from 'vue-router'
 import { onBeforeUnmount, onMounted, ref, computed } from 'vue'
 import { toast } from 'vue3-toastify'
-
+const page = computed(() => route.name)
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const route = useRoute()
@@ -24,11 +24,10 @@ const user = ref()
 const isToastActive = ref(false)
 
 const menus = [
-  { name: 'home', label: 'Home', to: { name: 'home' } },
-  { name: 'shop', label: 'Shop', to: { name: 'shop' } },
-  { name: 'cart', label: 'Cart', to: { name: 'cart' } },
+  { name: 'home', label: 'Home', path: { name: 'home' } },
+  { name: 'shop', label: 'Shop', path: { name: 'shop' } },
+  { name: 'cart', label: 'Cart', path: { name: 'cart' } },
 ]
-
 const isActive = (name: string) => route.name === name
 
 const cartDetailCount = computed(() => {
@@ -102,9 +101,9 @@ async function logout() {
 
             <li v-for="menu in menus" :key="menu.name" @click="closeMenu">
               <router-link
-                :to="menu.to"
+                :to="menu.path"
                 class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] flex items-center justify-center font-semibold rounded-[5px] duration-300 hover:bg-[#333333] md:hover:bg-[#6d717a] relative"
-                :class="isActive(menu.name)
+                :class="page === menu.name
                   ? 'md:bg-[#979dac] bg-[#2E2E2E] text-white'
                   : 'bg-[#202020] text-white'"
               >
@@ -177,6 +176,7 @@ async function logout() {
 
       </div>
     </div>
+
   </header>
 
   <div class="pb-[60px]"></div>

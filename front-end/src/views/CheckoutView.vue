@@ -3,13 +3,13 @@ import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
 import { onMounted, ref } from 'vue'
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 
 
 
-const promptPayNumber = '0820266513' // ← เปลี่ยนเป็นเบอร์คุณ
+const promptPayNumber = import.meta.env.VITE_PROMPTPAY_NUMBER
 
 const grandTotal = computed(() => {
   return cartStore.cart?.total_amount || 0

@@ -3,7 +3,6 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { IonIcon } from '@ionic/vue'
 import { arrowBackOutline, arrowForwardOutline } from 'ionicons/icons'
 import { useCartStore } from '../stores/cart'
-
 const cartStore = useCartStore()
 
 // ข้อมูลของกล่อง
@@ -171,4 +170,5 @@ const nextSlide = () => {
       </div>
     </footer>
   </div>
+
 </template>

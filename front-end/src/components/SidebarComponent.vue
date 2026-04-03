@@ -17,7 +17,9 @@ const menus = [
   { name: 'user', label: 'User Management', path:{ name: 'user'} },
   { name: 'branch', label: 'Branch Management', path: { name:'branch'} },
   { name: 'category', label: 'Category Management', path: { name: 'category' } },
-  { name: 'editproduct', label: 'Product Management', path: {name: 'editproduct'} },
+  { name: 'editproduct', label: 'Product Management', path: {name: 'editproduct'} }, 
+   { name: 'brand', label: 'Brand Management', path: {name: 'brand'} },
+      { name: 'setting', label: 'System Settings', path: {name: 'setting'} },
 ]
 const isLogin = ref(localStorage.getItem('isLogin') === 'true')
 

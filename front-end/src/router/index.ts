@@ -7,6 +7,8 @@ import ProductView from '../views/ProductView.vue'
 import DashboardView from '../views/admin/DashboardView.vue'
 import EditProductView from '../views/admin/ProductView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import BrandView from '@/views/admin/BrandView.vue'
+import SystemSettingsView from '@/views/admin/SystemSettingsView.vue'
 import { useAuthStore } from '@/stores/auth'
 import UserView from '@/views/admin/UserView.vue'
 import BranchView from '@/views/admin/BranchView.vue'
@@ -51,6 +53,7 @@ const router = createRouter({
         { path: 'checkout', name: 'checkout', component: CheckoutView },
          { path: 'dashbord', name: 'dashbord', component: DashboardView },
         { path: 'product/:id', name: 'product', component: ProductView },
+        
       ],
     },
 
@@ -58,13 +61,16 @@ const router = createRouter({
     {
       path: '/admin',
       component: () => import('@/layouts/AdminLayout.vue'),
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true ,role: 'admin'},
       children: [
         { path: '', name: 'dashboard', component: DashboardView },
         { path: 'product', name: 'editproduct', component: EditProductView },
         { path: 'user', name: 'user', component: UserView },
         { path: 'branch', name: 'branch', component: BranchView },
         { path: 'category', name: 'category', component: CategoryView },
+        { path: 'brand', name: 'brand', component:   BrandView },  
+        { path: 'setting', name: 'setting', component:   SystemSettingsView},
+
       ],
     },
   ],
@@ -72,10 +78,21 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  if (to.meta.requiresAuth && !authStore.token) {
-    next({ name: 'login' })
-  } else {
-    next()
+
+  const isAuth = to.meta.requiresAuth
+  const requiredRoles = to.meta.role 
+
+  if (isAuth && !authStore.token) {
+    return next({ name: 'login' })
   }
+
+if(authStore.user?.role)
+  if (requiredRoles !== authStore.user?.role) {
+    return next({ name: '403' }) 
+  }
+
+    next()
+  
 })
+
 export default router
