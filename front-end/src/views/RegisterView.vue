@@ -119,7 +119,7 @@ async function onRegister() {
 </script>
 
 <template>
-  <div class="flex w-full h-screen justify-center items-center bg-[#202020] px-[15px]">
+  
     <div
       class=" bg-[#414141] py-[25px] 
        w-[500px] max-h-[680px] rounded-[10px] shadow-xl flex flex-col justify-center items-center"
@@ -210,5 +210,5 @@ async function onRegister() {
         >
       </p>
     </div>
-  </div>
+  
 </template>

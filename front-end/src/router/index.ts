@@ -19,102 +19,50 @@ import CategoryView from '@/views/admin/CategoryView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      components: {
-        default: HomeView,
-        navbar: HeaderComponents,
-      },
-    },
-    {
-      path: '/shop',
-      name: 'shop',
-      components: {
-        default: ShopView,
-        navbar: HeaderComponents,
-      },
-    },
-    {
-      path: '/cart',
-      name: 'cart',
-      components: {
-        default: CartView,
-        navbar: HeaderComponents,
-      },
+
    
-    },  {
-      path: '/checkout',
-      name: 'checkout',
-      components: {
-        default: CheckoutView,
-        navbar: HeaderComponents,
-      },
-   
-    },
     {
       path: '/login',
-      name: 'login',
-       component: () => import('../views/LoginView.vue'),
-    },
-    {
-      path: '/product/:id',
-      name: 'product',
-      components: {
-        default: ProductView,
-        navbar: HeaderComponents,
-      },
-    },
-    {
-      path: '/dashboard',
-      name: 'dashboard',
-      components: {
-        default: DashboardView,
-        sidebar: SidebarComponent,
-      },
-    },
-    {
-      path: '/editproduct',
-      name: 'editproduct',
-      components: {
-        default: EditProductView,
-        sidebar: SidebarComponent,
-      },
-    },
-    {
-      path: '/user',
-      name: 'user',
-      components: {
-        default: UserView,
-        sidebar: SidebarComponent,
-      },
-    },
-    {
-      path: '/branch',
-      name: 'branch',
-      components: {
-        default: BranchView,
-        sidebar: SidebarComponent,
-      },
-    },{
-      path: '/category',
-      name: 'category',
-      components: {
-        default: CategoryView,
-        sidebar: SidebarComponent,
-      },
+      component: () => import('@/layouts/AuthLayout.vue'),
+      children: [
+        { path: '', name: 'login', component: LoginView },
+      ],
     },
     {
       path: '/register',
-      name: 'register',
-         component: () => import('../views/RegisterView.vue'),
+      component: () => import('@/layouts/AuthLayout.vue'),
+      children: [
+        { path: '', name: 'register', component: RegisterView },
+      ],
     },
+
+   
     {
-      path: '/forgot-password',
-      name: ' forgotPassword',
-          component: () => import('../views/ForgotPasswordView.vue'),
+      path: '/',
+      component: () => import('@/layouts/CustomerLayout.vue'),
+      children: [
+        { path: '', name: 'home', component: HomeView },
+        { path: 'shop', name: 'shop', component: ShopView },
+        { path: 'cart', name: 'cart', component: CartView },
+        { path: 'checkout', name: 'checkout', component: CheckoutView },
+         { path: 'dashbord', name: 'dashbord', component: DashboardView },
+        { path: 'product/:id', name: 'product', component: ProductView },
+      ],
     },
-    
+
+   
+    {
+      path: '/admin',
+      component: () => import('@/layouts/AdminLayout.vue'),
+      meta: { requiresAuth: true },
+      children: [
+        { path: '', name: 'dashboard', component: DashboardView },
+        { path: 'product', name: 'editproduct', component: EditProductView },
+        { path: 'user', name: 'user', component: UserView },
+        { path: 'branch', name: 'branch', component: BranchView },
+        { path: 'category', name: 'category', component: CategoryView },
+      ],
+    },
   ],
 })
 

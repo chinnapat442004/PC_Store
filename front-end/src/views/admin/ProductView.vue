@@ -190,8 +190,7 @@ const removeImage = () => {
 </script>
 
 <template>
-  <div class="pl-[200px] w-full">
-    <div class="h-full  lg:px-[20px] min-h-screen pt-6">
+ 
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-white">Product Management</h1>
 
@@ -291,10 +290,10 @@ const removeImage = () => {
           </button>
         </div>
       </div>
-    </div>
-  </div>
+ 
 
-  <!-- Dialog -->
+
+
 <!-- Dialog -->
 <div v-if="showDialog " class="overlay">
   <div class="dialog">
@@ -380,16 +379,7 @@ const removeImage = () => {
       />
     </div>
 
-    <!-- Quantity -->
-    <div class="mb-3">
-      <label>Quantity</label>
-      <input
-        v-model.number="ProductStore.editedProduct.quantity"
-        type="number"
-        placeholder="Enter quantity"
-        class="border w-full px-3 py-2 rounded bg-gray-50"
-      />
-    </div>
+  
 
    <!-- Category -->
 <div class="mb-3">

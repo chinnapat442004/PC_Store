@@ -126,8 +126,8 @@ const clearSearch = async () => {
 </script>
 
 <template>
-  <div class="pl-[200px] w-full">
-    <div class="h-full  lg:px-[20px] min-h-screen pt-6">
+ 
+
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-white">User Management</h1>
 
@@ -161,7 +161,7 @@ const clearSearch = async () => {
         </div>
       </div>
 
-      <!-- Table -->
+    
       <div class="bg-white rounded-lg overflow-hidden">
         <table class="w-full text-left text-black">
           <thead class="bg-[#383838] text-gray-300 text-sm">
@@ -187,12 +187,7 @@ const clearSearch = async () => {
               <td class="px-6 py-1">{{ User.enabled }}</td>
               <td class="px-6 py-1">{{ User.email }}</td>
 
-              <!-- <span
-                  class="text-white text-sm px-3 py-1 rounded-full inline-block"
-                  :class="User.status === 'active' ? 'bg-green-500' : 'bg-red-500'"
-                >
-                  {{ User.status }}
-                </span> -->
+           
 
               <td class="px-6 py-3 flex justify-center space-x-2">
                 <button class="edit-btn" @click="openEdit(User)">
@@ -218,8 +213,8 @@ const clearSearch = async () => {
           </button>
         </div>
       </div>
-    </div>
-  </div>
+
+ 
 
   <!-- Dialog -->
   <div v-if="showDialog && formUser" class="overlay">

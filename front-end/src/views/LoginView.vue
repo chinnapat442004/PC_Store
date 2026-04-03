@@ -90,17 +90,15 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="flex w-full h-screen justify-center items-center bg-[#202020] px-[15px]">
+ 
     <div
       class="bg-[#414141] w-[500px] max-h-[500px] rounded-[10px] shadow-xl flex justify-center items-center flex-col py-[40px]"
     >
       <h1 class="text-3xl font-semibold text-center text-white mb-6">Sign in</h1>
 
-      <!-- ข้อความแจ้งข้อผิดพลาด -->
-
-      <!-- เริ่มต้นฟอร์ม -->
+    
       <form @submit.prevent="onSubmit" class="w-[350px]">
-        <!-- ช่องกรอกชื่อผู้ใช้ -->
+
         <div class="mb-4">
           <label for="email" class="block text-white font-medium">Email:</label>
           <input
@@ -121,8 +119,7 @@ async function onSubmit() {
           </p>
         </div>
 
-        <!-- ช่องกรอกรหัสผ่าน -->
-        <!-- required -->
+     
         <div class="mb-4">
           <label for="password" class="block text-white font-medium">Password:</label>
           <div></div>
@@ -147,7 +144,7 @@ async function onSubmit() {
           </p>
         </div>
 
-        <!-- ปุ่ม Submit -->
+ 
         <div class="flex justify-center">
           <button
             type="submit"
@@ -159,7 +156,7 @@ async function onSubmit() {
           </button>
         </div>
       </form>
-      <!-- สิ้นสุดฟอร์ม -->
+    
       <p class="mt-4 text-white text-sm">
         <router-link to="/register" class="text-[#637aad] font-medium hover:underline">
           สมัครสมาชิก
@@ -170,5 +167,5 @@ async function onSubmit() {
         </router-link>
       </p>
     </div>
-  </div>
+
 </template>

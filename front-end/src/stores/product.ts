@@ -13,7 +13,7 @@ export const useProductStore = defineStore('product', () => {
     title: '',
     description: '',
     price: 0,
-    quantity: 0,
+  
     images: [],
     categoryId: 0,
     files: [],
@@ -54,7 +54,7 @@ export const useProductStore = defineStore('product', () => {
         title: data.title,
         description: data.description,
         price: data.price,
-        quantity: data.quantity,
+       
         images: data.images,
       categoryId: data.category?.category_id ?? undefined,
         files: []

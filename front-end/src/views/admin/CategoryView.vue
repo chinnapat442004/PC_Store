@@ -78,8 +78,8 @@ const clearSearch = async () => {
 </script>
 
 <template>
-  <div class="pl-[200px] w-full">
-    <div class="h-full lg:px-[20px] min-h-screen pt-6">
+ 
+   
 
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-white">Category Management</h1>
@@ -145,9 +145,8 @@ const clearSearch = async () => {
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
-
+   
+ 
   <!-- Dialog -->
   <div v-if="showDialog" class="overlay">
     <div class="dialog">

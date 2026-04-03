@@ -7,7 +7,7 @@ type CreateProductPayload = {
   title: string
   description: string
   price: number
-  quantity: number
+
   images: Image[]
   categoryId?: number
 }
