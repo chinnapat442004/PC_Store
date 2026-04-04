@@ -2,6 +2,7 @@
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
+import type { MenuItem } from '@/types/Menu'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { toast } from 'vue3-toastify'
@@ -12,15 +13,9 @@ const cartStore = useCartStore()
 const checkMenu = ref(false)
 const isToastActive = ref(false)
 
-const menus = [
-  { name: 'dashboard', label: 'Dashboard', path: { name: 'dashboard' } },
-  { name: 'user', label: 'User Management', path:{ name: 'user'} },
-  { name: 'branch', label: 'Branch Management', path: { name:'branch'} },
-  { name: 'category', label: 'Category Management', path: { name: 'category' } },
-  { name: 'editproduct', label: 'Product Management', path: {name: 'editproduct'} }, 
-   { name: 'brand', label: 'Brand Management', path: {name: 'brand'} },
-      { name: 'setting', label: 'System Settings', path: {name: 'setting'} },
-]
+const props = defineProps<{
+  menus: MenuItem[]
+}>()
 const isLogin = ref(localStorage.getItem('isLogin') === 'true')
 
 function updateLoginStatus() {

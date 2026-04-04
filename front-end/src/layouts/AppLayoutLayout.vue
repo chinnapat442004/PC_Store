@@ -1,0 +1,50 @@
+<script setup lang="ts">
+import Sidebar from '@/components/SidebarComponent.vue'
+import { useAuthStore } from '@/stores/auth';
+import type { MenuItem, UserRole } from '@/types/Menu';
+import { computed } from 'vue';
+
+
+const authStore = useAuthStore()
+
+const menusByRole: Record<UserRole, MenuItem[]> = {
+  admin: [
+    { name: 'dashboard', label: 'Dashboard', path: { name: 'dashboard' } },
+    { name: 'user', label: 'User Management', path: { name: 'user' } },
+    { name: 'branch', label: 'Branch Management', path: { name: 'branch' } },
+    { name: 'category', label: 'Category Management', path: { name: 'category' } },
+    { name: 'editproduct', label: 'Product Management', path: { name: 'editproduct' } },
+    { name: 'brand', label: 'Brand Management', path: { name: 'brand' } },
+    { name: 'setting', label: 'System Settings', path: { name: 'setting' } },
+  ],
+
+  manager: [
+    { name: 'manager-dashboard', label: 'Dashboard', path: { name: 'manager-dashboard' } },
+    { name: 'manager-orders', label: 'Order Management', path: { name: 'manager-orders' } },
+    { name: 'manager-stock', label: 'Stock', path: { name: 'manager-stock' } },
+    { name: 'manager-stock-movement', label: 'Stock Movement', path: { name: 'manager-stock-movement' } },
+    { name: 'manager-shipment', label: 'Shipment', path: { name: 'manager-shipment' } },
+    { name: 'manager-payment', label: 'Payment', path: { name: 'manager-payment' } },
+    { name: 'manager-staff', label: 'Staff Management', path: { name: 'manager-staff' } },
+    { name: 'manager-report', label: 'Report', path: { name: 'manager-report' } },
+  ], staff: []
+}
+const menus = computed<MenuItem[]>(() => {
+  const role = authStore.user?.role
+
+  if (!role) return []
+
+  return menusByRole[role]
+})
+</script>
+
+<template>
+ <Sidebar :menus="menus" />
+<div class="pl-[240px] w-full">
+     <div class="h-full  lg:px-[20px] min-h-screen pt-6">
+    
+    <router-view />
+
+    </div>
+  </div>
+</template>

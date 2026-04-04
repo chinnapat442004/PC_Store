@@ -60,7 +60,7 @@ const router = createRouter({
    
     {
       path: '/admin',
-      component: () => import('@/layouts/AdminLayout.vue'),
+      component: () => import('@/layouts/AppLayoutLayout.vue'),
       meta: { requiresAuth: true ,role: 'admin'},
       children: [
         { path: '', name: 'dashboard', component: DashboardView },
@@ -72,7 +72,28 @@ const router = createRouter({
         { path: 'setting', name: 'setting', component:   SystemSettingsView},
 
       ],
-    },
+    },{
+  path: '/manager',
+  component: () => import('@/layouts/AppLayoutLayout.vue'),
+  meta: { requiresAuth: true, role: 'manager' },
+  children: [
+    { path: '', name: 'manager-dashboard', component: () => import('@/views/manager/DashboardView.vue') },
+
+    { path: 'orders', name: 'manager-orders', component: () => import('@/views/manager/OrderView.vue') },
+
+    { path: 'stock', name: 'manager-stock', component: () => import('@/views/manager/StockView.vue') },
+
+    { path: 'stock-movement', name: 'manager-stock-movement', component: () => import('@/views/manager/StockMovementView.vue') },
+
+    { path: 'shipment', name: 'manager-shipment', component: () => import('@/views/manager/ShipmentView.vue') },
+
+    { path: 'payment', name: 'manager-payment', component: () => import('@/views/manager/PaymentView.vue') },
+
+    { path: 'staff', name: 'manager-staff', component: () => import('@/views/manager/StaffView.vue') },
+
+    { path: 'report', name: 'manager-report', component: () => import('@/views/manager/ReportView.vue') },
+  ],
+}
   ],
 })
 

@@ -1,11 +1,12 @@
-export type Role = 'user' | 'employee' | 'manager' | 'admin'
+import type { UserRole } from "./Menu"
+
 
 export type User = {
   user_id: number
   email: string
   name: string
   image?: string
-  role: Role
+  role: UserRole
   enabled: boolean
   address?: string
   createdAt: string
@@ -17,7 +18,7 @@ export type CreateUser = {
   password: string
   name: string
   image?: string
-  role?: Role
+  role?: UserRole
   address?: string
 }
 
@@ -26,7 +27,7 @@ export type UpdateUser = {
   email?: string
   name?: string
   image?: string
-  role?: Role
+  role?: UserRole
   enabled?: boolean
   address?: string
 }

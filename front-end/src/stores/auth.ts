@@ -23,7 +23,9 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (res.data.user.role === 'admin') {
         await router.replace( { name: 'dashboard' })
-      } else if (res.data.user.role === 'user') {
+      }else if (res.data.user.role === 'manager') {
+        await router.replace({ name: 'manager-dashboard' })
+      } else if (res.data.user.role === 'customer') {
         await router.replace({ name: 'home' })
       }
 
