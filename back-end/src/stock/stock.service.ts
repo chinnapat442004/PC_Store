@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, FindOptionsWhere } from 'typeorm';
 
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { Stock } from './entities/stock.entity';
@@ -20,82 +20,102 @@ export class StockService {
   ) {}
 
 
-  async createStock(dto: CreateStockDto) {
-  const { product_id, branch_id, quantity } = dto;
+  
 
-  const exist = await this.stockRepo.findOne({
-    where: { product_id, branch_id },
-  });
+async getStock(
+ 
+  branch_id: number,
+  page: number = 1,
+  limit: number = 10,
+  search?: string,
+) {
+  const skip = (page - 1) * limit
 
-  if (exist) {
-    throw new BadRequestException('Stock already exists');
+  const qb = this.stockRepo
+    .createQueryBuilder('stock')
+    .leftJoinAndSelect('stock.product', 'product')
+    .leftJoinAndSelect('product.images', 'images')
+    .where('stock.branch_id = :branch_id', { branch_id })
+
+
+  if (search) {
+    qb.andWhere('LOWER(product.title) LIKE LOWER(:search)', {
+      search: `%${search}%`,
+    })
   }
 
-  const stock = this.stockRepo.create({
-    product_id,
-    branch_id,
-    quantity,
-  });
 
-  return this.stockRepo.save(stock);
+  qb.skip(skip).take(limit)
+
+
+  qb.orderBy('stock.updated_at', 'DESC')
+
+  const [stocks, total] = await qb.getManyAndCount()
+
+  const data = stocks.map((stock) => {
+    let stockStatus = 'in stock'
+    if (stock.quantity === 0) {
+      stockStatus = 'out of stock'
+    } else if (stock.quantity <= 5) {
+      stockStatus = 'low stock'
+    }
+
+    return {
+      id: stock.id,
+      quantity: stock.quantity,
+      updated_at: stock.updated_at,
+      product_id: stock.product.product_id,
+      product_title: stock.product.title,
+      product_price: stock.product.price,
+      image: stock.product.images?.[0]?.image ?? null, 
+      status_label: stockStatus,
+    }
+  })
+
+  return {
+    data,
+    total,
+    page,
+    lastPage: Math.ceil(total / limit),
+  }
 }
+async updateStock(dto: UpdateStockDto) {
+  const { product_id, branch_id, quantity, note } = dto
 
-  async getStock(product_id?: number, branch_id?: number) {
-  if (product_id && branch_id) {
-    return this.stockRepo.findOne({
+  return this.dataSource.transaction(async (manager) => {
+    const stock = await manager.findOne(Stock, {
       where: { product_id, branch_id },
-    });
-  }
+    })
 
-  if (branch_id) {
-    return this.stockRepo.find({
-      where: { branch_id },
-    });
-  }
+    if (!stock) {
+      throw new BadRequestException('Stock not found')
+    }
 
-  return this.stockRepo.find(); 
-}
 
-  async updateStock(dto: UpdateStockDto) {
-    const { product_id, branch_id, quantity, type, ref_id, note } = dto;
+    const diff = quantity - stock.quantity
 
-    return this.dataSource.transaction(async (manager) => {
-      let stock = await manager.findOne(Stock, {
-        where: { product_id, branch_id },
-      });
+    if (stock.quantity + diff < 0) {
+      throw new BadRequestException('Stock not enough')
+    }
 
-      if (!stock) {
-        stock = manager.create(Stock, {
-          product_id,
-          branch_id,
-          quantity: 0,
-        });
-      }
+   
+    stock.quantity = quantity
+    await manager.save(stock)
 
-      const newQty = stock.quantity + quantity;
-
-      if (newQty < 0) {
-        throw new BadRequestException('Stock not enough');
-      }
-
-      stock.quantity = newQty;
-
-      await manager.save(stock);
-
-      const movement = manager.create(StockMovement, {
+   
+    await manager.save(
+      manager.create(StockMovement, {
         product_id,
         branch_id,
-        change_qty: quantity,
-        type,
-        ref_id,
-        note,
-      });
+        change_qty: diff,
+        type: diff >= 0 ? 'IN' : 'OUT',
+        note: note ,
+      }),
+    )
 
-      await manager.save(movement);
-
-      return stock;
-    });
-  }
+    return stock
+  })
+}
 
   async getMovement(product_id: number) {
     return this.movementRepo.find({

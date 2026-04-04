@@ -51,12 +51,12 @@ export class UserController {
     }
 
     if (currentUser.role) {
-      if (currentUser.role !== Role.EMPLOYEE) {
+      if (currentUser.role !== Role.STAFF) {
         throw new ForbiddenException('คุณไม่มีสิทธิ์ดูข้อมูลผู้ใช้งานระดับนี้');
       }
 
       return this.userService.findUsersByRole(
-        Role.EMPLOYEE,
+        Role.STAFF,
         +page,
         +limit,
         search,

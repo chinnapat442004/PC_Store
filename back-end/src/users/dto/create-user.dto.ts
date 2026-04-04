@@ -9,7 +9,7 @@ export class CreateUserDto {
   image: string;
   @IsEnum(Role)
   role: Role;
-   @ValidateIf((o) => o.role === Role.MANAGER|| o.role === Role.EMPLOYEE)
+   @ValidateIf((o) => o.role === Role.MANAGER|| o.role === Role.STAFF)
   @IsNotEmpty({ message: 'branch is required for owner or employee' })
   branch_id: number;
 

@@ -37,11 +37,10 @@ export class UserService {
     user.name = createUserDto.name;
     user.password = createUserDto.password;
 
-    // ⭐ กำหนด role ตามคนสร้าง
     if (creatorRole === Role.ADMIN) {
       user.role = Role.MANAGER;
     } else if (creatorRole === Role.MANAGER) {
-      user.role = Role.EMPLOYEE;
+      user.role = Role.STAFF;
     } else {
       throw new ConflictException('You are not allowed to create users');
     }
@@ -57,9 +56,12 @@ export class UserService {
     return await this.userRepository.findOne({ where: { user_id } });
   }
 
-  async findOneByEmail(email: string) {
-    return await this.userRepository.findOne({ where: { email } });
-  }
+ async findOneByEmail(email: string) {
+  return this.userRepository.findOne({
+    where: { email },
+    relations: ['branch'], 
+  });
+}
 
   async update(user_id: number, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOne({ where: { user_id } });
