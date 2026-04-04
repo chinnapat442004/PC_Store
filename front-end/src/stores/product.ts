@@ -33,6 +33,7 @@ export const useProductStore = defineStore('product', () => {
   async function getProducts(p = page.value, l = limit.value, s = search.value) {
     loadingStore.doLoad()
     try {
+      console.log(loadingStore.loading)
       const res = await productService.getProducts(p, l, s)
       products.value = res.data.data
       page.value = res.data.page

@@ -9,14 +9,12 @@ function getProduct(id: number) {
   return http.get(`/product/${id}`)
 }
 
-
 function createProduct(product: CreateProductPayload & { files?: File[] }) {
   const formData = new FormData()
 
   if (product.title) formData.append('title', product.title)
   if (product.description) formData.append('description', product.description)
   if (product.price !== undefined) formData.append('price', product.price.toString())
-  if (product.quantity !== undefined) formData.append('quantity', product.quantity.toString())
   if (product.categoryId !== undefined) formData.append('categoryId', product.categoryId.toString())
 
   if (product.files && product.files.length > 0) {
@@ -42,7 +40,6 @@ function updateProduct(
   if (product.title) formData.append('title', product.title)
   if (product.description) formData.append('description', product.description)
   if (product.price !== undefined) formData.append('price', product.price.toString())
-  if (product.quantity !== undefined) formData.append('quantity', product.quantity.toString())
   if (product.categoryId !== undefined) formData.append('categoryId', product.categoryId.toString())
 
   if (product.files && product.files.length > 0) {

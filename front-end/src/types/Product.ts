@@ -7,7 +7,6 @@ type CreateProductPayload = {
   title: string
   description: string
   price: number
-
   images: Image[]
   categoryId?: number
 }
@@ -25,7 +24,6 @@ type Product = {
   quantity: number 
   orderDetail?: OrderDetail[]
   images: Image[]
-
   categoryId: number
   category?: Category
 }
