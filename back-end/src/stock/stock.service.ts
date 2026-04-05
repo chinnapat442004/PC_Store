@@ -116,11 +116,59 @@ async updateStock(dto: UpdateStockDto) {
     return stock
   })
 }
+async getMovement(
+  branch_id: number,
+  page: number = 1,
+  limit: number = 10,
+  search?: string,
+) {
+  const skip = (page - 1) * limit
 
-  async getMovement(product_id: number) {
-    return this.movementRepo.find({
-      where: { product_id },
-      order: { created_at: 'DESC' },
-    });
+  const qb = this.movementRepo
+    .createQueryBuilder('movement')
+    .leftJoinAndSelect('movement.product', 'product') 
+    .where('movement.branch_id = :branch_id', { branch_id })
+
+  
+  if (search) {
+
+    qb.andWhere(
+      `(LOWER(product.title) LIKE LOWER(:search) 
+        OR LOWER(movement.type) LIKE LOWER(:search))`,
+      {
+        search: `%${search}%`,
+      },
+    )
   }
+
+  qb.orderBy('movement.created_at', 'DESC')
+    .skip(skip)
+    .take(limit)
+
+  const [movements, total] = await qb.getManyAndCount()
+
+
+    const data = movements.map((m) => {
+    return {
+    id: m.id,
+    product_id: m.product_id,
+    product_title: m.product.title,
+    change_qty: m.change_qty,
+    type: m.type,
+    note: m.note,
+    created_at: m.created_at,
+    ref:m.ref_id
+  
+  
+    }
+  })
+
+
+  return {
+    data,
+    total,
+    page,
+    last_page: Math.ceil(total / limit),
+  }
+}
 }

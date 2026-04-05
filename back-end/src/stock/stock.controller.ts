@@ -37,8 +37,18 @@ updateStock(
     branch_id, 
   })
 }
-  @Get('movement')
-  getMovement(@Query('product_id') product_id: number) {
-    return this.stockService.getMovement(product_id);
-  }
+@Get('movement')
+getMovement(
+  @Req() req,
+  @Query('page') page: string = '1',
+  @Query('limit') limit: string = '10', 
+   @Query('search') search: string,
+) {
+  return this.stockService.getMovement(
+    
+    req.user.branch_id,
+    +page,
+    +limit,search
+  )
+}
 }
