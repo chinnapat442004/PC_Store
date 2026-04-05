@@ -6,11 +6,16 @@ function getStocks(page: number, limit: number, search: string) {
 }
 
 
+function getmovements(page: number, limit: number, search: string) {
+  return http.get(`/stock/movement?page=${page}&limit=${limit}&search=${search}`)
+}
+
+
 function updateStock(data:UpdateStock) {
    return http.post('/stock/update', data);
 }
 
 export default {
-getStocks,updateStock
+getStocks,updateStock,getmovements
 
 }

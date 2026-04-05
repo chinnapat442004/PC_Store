@@ -22,7 +22,6 @@ const menusByRole: Record<UserRole, MenuItem[]> = {
     { name: 'manager-dashboard', label: 'Dashboard', path: { name: 'manager-dashboard' } },
     { name: 'manager-orders', label: 'Order Management', path: { name: 'manager-orders' } },
     { name: 'manager-stock', label: 'Stock', path: { name: 'manager-stock' } },
-    { name: 'manager-stock-movement', label: 'Stock Movement', path: { name: 'manager-stock-movement' } },
     { name: 'manager-shipment', label: 'Shipment', path: { name: 'manager-shipment' } },
     { name: 'manager-payment', label: 'Payment', path: { name: 'manager-payment' } },
     { name: 'manager-staff', label: 'Staff Management', path: { name: 'manager-staff' } },
