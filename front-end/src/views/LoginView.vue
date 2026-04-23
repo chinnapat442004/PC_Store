@@ -17,7 +17,7 @@ const loginError = ref('')
 const isToastActive = ref(false)
 
 watch([() => authStore.email, () => authStore.password], ([newEmail, newPassword]) => {
-  // ถ้าผู้ใช้พิมพ์ email หรือ password ให้เคลียร์ error ทั้งหมดทันที
+ 
   if (newEmail) {
     usernameError.value = ''
   }
@@ -25,7 +25,7 @@ watch([() => authStore.email, () => authStore.password], ([newEmail, newPassword
     passwordError.value = ''
   }
 
-  // ✅ เคลียร์ loginError เสมอเมื่อผู้ใช้พิมพ์บางอย่างใหม่
+
   if (newEmail || newPassword) {
     loginError.value = ''
   }
@@ -37,7 +37,7 @@ const notify = () => {
     toast.error('email หรือ รหัสผ่านไม่ถูกต้อง', {
       position: toast.POSITION.TOP_RIGHT,
       onClose: () => {
-        isToastActive.value = false // ปล่อยสถานะเมื่อแจ้งเตือนถูกปิด
+        isToastActive.value = false 
       },
     })
   }

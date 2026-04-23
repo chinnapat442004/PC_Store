@@ -22,11 +22,13 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = localStorage.getItem('access_token')
 
       if (res.data.user.role === 'admin') {
-        await router.replace( { name: 'dashboard' })
-      }else if (res.data.user.role === 'manager') {
+        await router.replace({ name: 'dashboard' })
+      } else if (res.data.user.role === 'manager') {
         await router.replace({ name: 'manager-dashboard' })
       } else if (res.data.user.role === 'customer') {
         await router.replace({ name: 'home' })
+      } else if (res.data.user.role === 'staff') {
+        await router.replace({ name: 'staff-dashboard' })
       }
 
     }
@@ -49,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function getCurrentUser() {
     const storedUser = localStorage.getItem('user')
     user.value = storedUser ? JSON.parse(storedUser) : null
-    
+
   }
   if (token.value) {
     console.log('login แล้ว')

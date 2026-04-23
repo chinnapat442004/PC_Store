@@ -13,7 +13,6 @@ export const useProductStore = defineStore('product', () => {
     title: '',
     description: '',
     price: 0,
-  
     images: [],
     categoryId: 0,
     files: [],
@@ -29,11 +28,11 @@ export const useProductStore = defineStore('product', () => {
   const total = ref(0)
   const search = ref('')
 
-  
+
   async function getProducts(p = page.value, l = limit.value, s = search.value) {
     loadingStore.doLoad()
     try {
-      console.log(loadingStore.loading)
+
       const res = await productService.getProducts(p, l, s)
       products.value = res.data.data
       page.value = res.data.page
@@ -44,7 +43,7 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
-  
+
   async function getProduct(id: number) {
     loadingStore.doLoad()
     try {
@@ -55,9 +54,9 @@ export const useProductStore = defineStore('product', () => {
         title: data.title,
         description: data.description,
         price: data.price,
-       
+
         images: data.images,
-      categoryId: data.category?.category_id ?? undefined,
+        categoryId: data.category?.category_id ?? undefined,
         files: []
       }
     } finally {
@@ -65,7 +64,7 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
- 
+
   async function addProduct() {
     loadingStore.doLoad()
     try {
@@ -119,9 +118,9 @@ export const useProductStore = defineStore('product', () => {
   return {
     getProducts,
     getProduct,
-    addProduct,      
-    updateProduct,  
-    deleteProduct,   
+    addProduct,
+    updateProduct,
+    deleteProduct,
     clearProduct,
     products,
     editedProduct,

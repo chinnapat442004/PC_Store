@@ -1,15 +1,10 @@
-import { Product } from 'src/products/entities/product.entity';
-import { User } from 'src/users/entities/user.entity';
+import { PaymentMethod } from "../emums/order-status.enum";
+
 
 export class CreateOrderDto {
-  order_status: string;
-  stripe_payment_id: string;
-  status: string;
-  currency: string;
-  orderDetail: {
+  payment_method: PaymentMethod;
+  details: {
+    product_id: number;
     quantity: number;
-    price: number;
-    product: Product;
   }[];
-  user: User;
 }

@@ -7,8 +7,8 @@ import {
   UpdateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { Cart } from './cart.entity'; // เชื่อมโยงกับ Cart
-import { Product } from 'src/products/entities/product.entity'; // เชื่อมโยงกับ Product
+import { Cart } from './cart.entity'; 
+import { Product } from 'src/products/entities/product.entity'; 
 
 @Entity()
 export class CartDetail {

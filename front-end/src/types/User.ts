@@ -11,6 +11,8 @@ export type User = {
   address?: string
   createdAt: string
   updatedAt: string
+
+
 }
 
 export type CreateUser = {
@@ -19,7 +21,7 @@ export type CreateUser = {
   name: string
   image?: string
   role?: UserRole
-  address?: string
+  branch_id: number
 }
 
 export type UpdateUser = {

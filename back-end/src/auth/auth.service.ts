@@ -7,7 +7,7 @@ export class AuthService {
   constructor(
     private usersService: UserService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async signIn(email: string, pass: string) {
     const user = await this.usersService.findOneByEmail(email)
@@ -24,7 +24,7 @@ export class AuthService {
       sub: user.user_id,
       email: user.email,
       role: user.role,
-      branch_id: user.branch?.branch_id, 
+      branch_id: user.branch?.branch_id,
     }
 
     const access_token = await this.jwtService.signAsync(payload)

@@ -11,16 +11,16 @@ export class BrandsService {
   constructor(
     @InjectRepository(Brand)
     private readonly brandRepository: Repository<Brand>,
-  ) {}
+  ) { }
 
   async create(createBrandDto: CreateBrandDto): Promise<Brand> {
-    const brand =new Brand();
-    brand.name =createBrandDto.name
-    brand.logo =createBrandDto.logo
+    const brand = new Brand();
+    brand.name = createBrandDto.name
+    brand.logo = createBrandDto.logo
     return await this.brandRepository.save(brand);
   }
 
-  
+
 
   async findAll(): Promise<Brand[]> {
     return await this.brandRepository.find();

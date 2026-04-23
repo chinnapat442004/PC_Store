@@ -1,6 +1,6 @@
 import { CartDetail } from 'src/carts/entities/cart_detail';
 import { Category } from 'src/categories/entities/category.entity';
-import { OrderDetail } from 'src/orders/entities/order_detail';
+
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -38,8 +38,6 @@ export class Product {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.product)
-  orderDetail: OrderDetail[];
 
   @ManyToOne(() => Category, (categery) => categery.products)
   @JoinColumn({ name: 'category_id' })
@@ -48,8 +46,10 @@ export class Product {
   @OneToMany(() => CartDetail, (cartDetails) => cartDetails.product)
   cartDetails: CartDetail[];
 
-  @OneToMany(() => Image, (image) => image.product,{  cascade: true,
-  onDelete: 'CASCADE',})
+  @OneToMany(() => Image, (image) => image.product, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   images: Image[];
 
   @ManyToOne(() => Brand, (brand) => brand.products)
@@ -57,5 +57,5 @@ export class Product {
   brand: Brand;
 
   @OneToMany(() => Stock, (stock) => stock.product)
-stocks: Stock[];
+  stocks: Stock[];
 }

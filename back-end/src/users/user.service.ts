@@ -13,7 +13,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async createUser(
     createUserDto: CreateUserDto,
@@ -56,12 +56,12 @@ export class UserService {
     return await this.userRepository.findOne({ where: { user_id } });
   }
 
- async findOneByEmail(email: string) {
-  return this.userRepository.findOne({
-    where: { email },
-    relations: ['branch'], 
-  });
-}
+  async findOneByEmail(email: string) {
+    return this.userRepository.findOne({
+      where: { email },
+      relations: ['branch'],
+    });
+  }
 
   async update(user_id: number, updateUserDto: UpdateUserDto) {
     const user = await this.userRepository.findOne({ where: { user_id } });
@@ -74,10 +74,6 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  // async remove(user_id: number) {
-  //   const user = await this.userRepository.findOne({ where: { user_id } });
-  //   return await this.userRepository.remove(user);
-  // }
 
   async findUsersByRole(
     role: Role,

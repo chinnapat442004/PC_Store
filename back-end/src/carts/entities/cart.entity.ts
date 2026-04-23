@@ -16,8 +16,14 @@ export class Cart {
   @PrimaryGeneratedColumn()
   cart_id: number;
 
-  @Column('float', { default: 0 })
-  total_amount: number;
+  @Column('numeric', { precision: 10, scale: 2, default: 0 })
+  subtotal: number;
+
+  @Column('numeric', { precision: 10, scale: 2, default: 0 })
+  discount_amount: number;
+
+  @Column('numeric', { precision: 10, scale: 2, default: 0 })
+  total: number;
 
   @CreateDateColumn()
   created_at: Date;

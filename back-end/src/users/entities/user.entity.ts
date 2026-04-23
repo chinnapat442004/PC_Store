@@ -12,6 +12,10 @@ import {
 } from 'typeorm';
 import { Role } from '../enums/role.enum';
 import { Branch } from 'src/branches/entities/branch.entity';
+import { Address } from 'src/address/entities/address.entity';
+import { OrderStatus } from 'src/orders/emums/order-status.enum';
+import { OrderStatusHistory } from 'src/orders/entities/order-status-history.entity';
+
 
 @Entity()
 export class User {
@@ -49,7 +53,17 @@ export class User {
   @OneToMany(() => Cart, (carts) => carts.user)
   carts: Cart[];
 
+  @OneToMany(() => Address, (addresses) => addresses.user)
+  addresses: Address[];
+
   @ManyToOne(() => Branch, (branch) => branch.users)
   @JoinColumn({ name: 'branch_id' })
   branch: Branch;
+
+  @OneToMany(() => OrderStatusHistory, (status) => status.user)
+  orderStatus: OrderStatus[];
+
+
+
+
 }

@@ -3,7 +3,8 @@ import type { User } from './User'
 
 type Cart = {
   cart_id?: number
-  total_amount: number
+  subtotal: number
+  total: number
   cartDetails: CartDetail[]
   user?: User
 }

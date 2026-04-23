@@ -17,13 +17,16 @@ const deleteConfirm = ref(false)
 
 const mode = ref<'create' | 'edit'>('create')
 
-// const openEdit = (category: Category) => {
+
+
+
+
 const openEdit = () => {
   mode.value = 'edit'
   showDialog.value = true
 }
 
-// const openDelete = (item: Category) => {
+
 const openDelete = () => {
   deleteConfirm.value = true
 
@@ -44,76 +47,69 @@ const openCreateDialog = () => {
 </script>
 
 <template>
- 
-   
 
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-white">Brand Management</h1>
 
-        <div class="flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search brand..."
-            v-model="search"
-            class="border px-3 py-2 rounded w-64"
-          />
 
-          <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md">
-            <span class="pi pi-search"></span>
-          </button>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-white">Brand Management</h1>
 
-          <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="">
-            <span class="pi pi-times"></span>
-          </button>
+    <div class="flex items-center gap-3">
+      <input type="text" placeholder="Search brand..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
-          <button
-            class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md"
-            @click="openCreateDialog()"
-          >
-            <span class="pi pi-plus"></span>
-            Create
-          </button>
-        </div>
-      </div>
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md">
+        <span class="pi pi-search"></span>
+      </button>
 
-      <!-- Table -->
-      <div class="bg-white rounded-lg overflow-hidden">
-        <table class="w-full text-left text-black">
-          <thead class="bg-[#383838] text-gray-300 text-sm">
-            <tr>
-              <th class="px-6 py-3"> Name</th>
-              <th class="px-6 py-3 text-center">Action</th>
-            </tr>
-          </thead>
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="">
+        <span class="pi pi-times"></span>
+      </button>
 
-          <tbody class="divide-y">
+      <button class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md"
+        @click="openCreateDialog()">
+        <span class="pi pi-plus"></span>
+        Create
+      </button>
+    </div>
+  </div>
 
-            <!-- <tr v-if=".length === 0">
+  <!-- Table -->
+  <div class="bg-white rounded-lg overflow-hidden">
+    <table class="w-full text-left text-black">
+      <thead class="bg-[#383838] text-gray-300 text-sm">
+        <tr>
+          <th class="px-6 py-3"> Name</th>
+          <th class="px-6 py-3 text-center">Action</th>
+        </tr>
+      </thead>
+
+      <tbody class="divide-y">
+
+        <!-- <tr v-if=".length === 0">
               <td colspan="2" class="text-center py-6 text-gray-500">
                 No data found
               </td>
             </tr> -->
 
-            <!-- <tr v-else v-for="category in categoryStore.categories" :key="category.category_id"> -->
-               <tr >
-              <td class="px-6 py-2"></td>
+        <!-- <tr v-else v-for="category in categoryStore.categories" :key="category.category_id"> -->
+        <tr>
+          <td class="px-6 py-2"></td>
 
-              <td class="px-6 py-3 flex justify-center space-x-2">
-                <button @click="openEdit()">
-                  <span class="pi pi-pencil"></span>
-                </button>
+          <td class="px-6 py-3 flex justify-center space-x-2">
+            <button @click="openEdit()">
+              <span class="pi pi-pencil"></span>
+            </button>
 
-                <button @click="openDelete()">
-                  <span class="pi pi-trash"></span>
-                </button>
-              </td>
-            </tr>
+            <button @click="openDelete()">
+              <span class="pi pi-trash"></span>
+            </button>
+          </td>
+        </tr>
 
-          </tbody>
-        </table>
-      </div>
-   
- 
+      </tbody>
+    </table>
+  </div>
+
+
   <!-- Dialog -->
   <div v-if="showDialog" class="overlay">
     <div class="dialog">
@@ -123,11 +119,7 @@ const openCreateDialog = () => {
 
       <div class="mb-3">
         <label class="block mb-1">Brand Name</label>
-        <input
-      
-          type="text"
-          class="border w-full px-3 py-2 rounded bg-gray-50"
-        />
+        <input type="text" class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
       <div class="flex justify-center gap-4">
@@ -142,20 +134,9 @@ const openCreateDialog = () => {
     </div>
   </div>
 
-  <ConfirmComponent
-    :show="showConfirm"
-    type="save"
-    message="บันทึกข้อมูลนี้หรือไม่"
+  <ConfirmComponent :show="showConfirm" type="save" message="บันทึกข้อมูลนี้หรือไม่" @cancel="showConfirm = false" />
 
-    @cancel="showConfirm = false"
-  />
-
-  <ConfirmComponent
-    :show="deleteConfirm"
-    type="delete"
-    message="ต้องการลบข้อมูลนี้หรือไม่"
- 
-  />
+  <ConfirmComponent :show="deleteConfirm" type="delete" message="ต้องการลบข้อมูลนี้หรือไม่" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

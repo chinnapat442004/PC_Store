@@ -7,7 +7,7 @@ import { UsersModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { OrdersModule } from './orders/orders.module';
 import { Order } from './orders/entities/order.entity';
-import { OrderDetail } from './orders/entities/order_detail';
+import { OrderDetail } from './orders/entities/order-detail';
 import { ProductsModule } from './products/products.module';
 import { Product } from './products/entities/product.entity';
 import { Image } from './products/entities/image.entity';
@@ -23,9 +23,18 @@ import { BrandsModule } from './brands/brands.module';
 import { Brand } from './brands/entities/brand.entity';
 import { StockModule } from './stock/stock.module';
 import { Stock } from './stock/entities/stock.entity';
+import { AddressModule } from './address/address.module';
+import { Address } from './address/entities/address.entity';
+import { OrderStatusHistory } from './orders/entities/order-status-history.entity';
+import { ShipmentModule } from './shipment/shipment.module';
+import { Shipment } from './shipment/entities/shipment.entity';
+import { PaymentModule } from './payment/payment.module';
+import { Payment } from './payment/entities/payment.entity';
+import { StorePaymentConfigModule } from './store-payment-config/store-payment-config.module';
+import { StorePaymentConfig } from './store-payment-config/entities/store-payment-config.entity';
 @Module({
   imports: [
-     ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
@@ -40,15 +49,16 @@ import { Stock } from './stock/entities/stock.entity';
         Branch,
         Order,
         OrderDetail,
+        OrderStatusHistory,
         Product,
         Category,
         Cart,
         CartDetail,
         Image,
-        Brand,Stock
+        Brand, Stock, Address, Shipment, Payment, StorePaymentConfig
       ],
     }),
-  
+
     BranchsModule,
     UsersModule,
     AuthModule,
@@ -57,11 +67,13 @@ import { Stock } from './stock/entities/stock.entity';
     CategoriesModule,
     CartsModule,
     BrandsModule,
-    StockModule
-   
+    StockModule,
+    AddressModule,
+    ShipmentModule, ShipmentModule, PaymentModule, StorePaymentConfigModule
+
   ],
 
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

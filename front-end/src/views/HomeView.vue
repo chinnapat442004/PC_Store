@@ -92,24 +92,16 @@ const nextSlide = () => {
     </div>
 
     <div class="flex justify-center relative mt-[50px]">
-      <!-- ปุ่มเลื่อนซ้าย -->
 
-      <!-- กล่อง Carousel -->
       <div class="flex transition-transform duration-500 ease-in-out justify-center items-center">
         <button class="transform bg-gray-500 text-white p-2 rounded-full z-20" @click="prevSlide">
           <IonIcon :icon="arrowBackOutline" />
         </button>
 
-        <div
-          class="w-[300px] h-[300px] flex-shrink-0 mx-2 bg-white rounded-[20px] shadow-lg select-"
-          v-for="(card, index) in visibleSlides"
-          :key="index"
-        >
-          <img
-            :src="card.img"
-            alt="Card Image"
-            class="w-full h-[150px] object-cover pointer-events-none select-none rounded-t-[20px]"
-          />
+        <div class="w-[300px] h-[300px] flex-shrink-0 mx-2 bg-white rounded-[20px] shadow-lg select-"
+          v-for="(card, index) in visibleSlides" :key="index">
+          <img :src="card.img" alt="Card Image"
+            class="w-full h-[150px] object-cover pointer-events-none select-none rounded-t-[20px]" />
           <div class="pr-7 pl-7 pt-2 select-none">
             <h3 class="font-bold text-[25px] mb-[20px]">{{ card.title }}</h3>
             <p>{{ card.description }}</p>
@@ -120,23 +112,18 @@ const nextSlide = () => {
         </button>
       </div>
 
-      <!-- ปุ่มเลื่อนขวา -->
+
     </div>
 
     <div class="flex justify-center mt-4">
-      <span
-        v-for="(card, index) in cards"
-        :key="'dot-' + index"
-        @click="currentIndex = index"
-        class="w-3 h-3 mx-1 rounded-full cursor-pointer"
-        :class="{
+      <span v-for="(card, index) in cards" :key="'dot-' + index" @click="currentIndex = index"
+        class="w-3 h-3 mx-1 rounded-full cursor-pointer" :class="{
           'bg-[#7194ff]': currentIndex === index,
           'bg-gray-300': currentIndex !== index,
-        }"
-      ></span>
+        }"></span>
     </div>
 
-    <div class="h-[700px]"></div>
+    <div class="h-[300px]"></div>
     <footer class="bg-[#202020] text-white py-5">
       <div class="container mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <!-- ส่วนของข้อมูลลิขสิทธิ์ -->

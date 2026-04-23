@@ -83,7 +83,8 @@ const checkNull = () => {
 async function onRegister() {
   submit.value = true
   try {
-    userStore.createUser.role = 'user'
+
+    userStore.createUser.role = 'customer'
     if (userStore.createUser.password === confirmPassword.value) {
       isValidEmail(userStore.createUser.email)
     }

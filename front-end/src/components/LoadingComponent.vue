@@ -10,7 +10,6 @@ defineProps({
 <template>
   <div v-if="modelValue" class="overlay">
     <div class="loading-box">
-    
       <img src="@/assets/Spinner@1x-1.0s-200px-200px .svg" class="loading-img select-none" />
     </div>
   </div>

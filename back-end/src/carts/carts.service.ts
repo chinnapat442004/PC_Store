@@ -13,12 +13,13 @@ export class CartsService {
     private cartRepository: Repository<Cart>,
     @InjectRepository(CartDetail)
     private cartDetailRepository: Repository<CartDetail>,
-  ) {}
+
+  ) { }
 
   async create(createCartDto: CreateCartDto) {
     const cart = new Cart();
     cart.user = createCartDto.user;
-    cart.total_amount = 0;
+    cart.subtotal = 0;
     await this.cartRepository.save(cart);
 
     const cartDetail = new CartDetail();
@@ -29,7 +30,10 @@ export class CartsService {
     cartDetail.cart = cart;
     await this.cartDetailRepository.save(cartDetail);
 
-    cart.total_amount += cartDetail.price;
+    cart.subtotal += cartDetail.price;
+
+    cart.total = cart.subtotal
+
 
     return await this.cartRepository.save(cart);
   }
@@ -50,7 +54,7 @@ export class CartsService {
     );
 
     if (existingDetail) {
-      // กรณีสินค้าซ้ำ
+
       existingDetail.quantity += updateCartDto.quantity;
       existingDetail.price =
         existingDetail.quantity * existingDetail.product.price;
@@ -69,10 +73,11 @@ export class CartsService {
       cart.cartDetails.push(newCartDetail);
     }
 
-    cart.total_amount = cart.cartDetails.reduce(
+    cart.subtotal = cart.cartDetails.reduce(
       (sum, detail) => sum + detail.price,
       0,
     );
+    cart.total = cart.subtotal
 
     return await this.cartRepository.save(cart);
   }
@@ -99,10 +104,11 @@ export class CartsService {
       await this.cartDetailRepository.save(detail);
     }
 
-    cart.total_amount = cart.cartDetails.reduce(
+    cart.subtotal = cart.cartDetails.reduce(
       (sum, detail) => sum + detail.price,
       0,
     );
+    cart.total = cart.subtotal
 
     return await this.cartRepository.save(cart);
   }
@@ -139,7 +145,7 @@ export class CartsService {
   }
 
   async removeDetail(cart_detail_id: number) {
-    console.log(cart_detail_id);
+
 
     const cartDetail = await this.cartDetailRepository.findOne({
       where: { cart_detail_id },
@@ -156,10 +162,11 @@ export class CartsService {
       (detail) => detail.cart_detail_id !== cart_detail_id,
     );
 
-    cart.total_amount = cart.cartDetails.reduce(
+    cart.subtotal = cart.cartDetails.reduce(
       (sum, detail) => sum + detail.price,
       0,
     );
+    cart.total = cart.subtotal
 
     await this.cartDetailRepository.remove(cartDetail);
 

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { BranchStatus } from '../enums/branch-status';
 import { Stock } from 'src/stock/entities/stock.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 @Entity()
 export class Branch {
@@ -38,5 +39,8 @@ export class Branch {
   users: User[];
 
   @OneToMany(() => Stock, (stock) => stock.branch)
-stocks: Stock[];
+  stocks: Stock[];
+
+  @OneToMany(() => Order, (order) => order.branch)
+  orders: Order[];
 }

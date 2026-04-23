@@ -16,7 +16,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import cloudinary from 'config/cloudinary.config';
-import path from 'path';
+
 
 @Controller('product')
 export class ProductsController {

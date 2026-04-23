@@ -14,8 +14,8 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 const loadingStore = useLoadingStore()
-const ProductStore = useProductStore()
-const CategoryStory =useCategoryStore()
+const productStore = useProductStore()
+const categoryStore = useCategoryStore()
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
@@ -27,26 +27,26 @@ const selectedCategory = ref<any>(null)
 
 
 onMounted(async () => {
-  await ProductStore.getProducts()
-  await CategoryStory.getCategories()
+  await productStore.getProducts()
+  await categoryStore.getCategories()
 
 })
 
 watch(selectedCategory, (val) => {
   if (val) {
-    ProductStore.editedProduct.categoryId = val.category_id
+    productStore.editedProduct.categoryId = val.category_id
   }
 })
 watch(
-  () => CategoryStory.categories,
+  () => categoryStore.categories,
   (cats) => {
     if (
       mode.value === 'edit' &&
-      ProductStore.editedProduct.categoryId
+      productStore.editedProduct.categoryId
     ) {
       selectedCategory.value =
         cats.find(
-          (c) => c.category_id === ProductStore.editedProduct.categoryId
+          (c) => c.category_id === productStore.editedProduct.categoryId
         ) || null
     }
   },
@@ -54,11 +54,11 @@ watch(
 )
 
 
-const  openEdit =async (product: Product) => {
+const openEdit = async (product: Product) => {
   mode.value = 'edit'
   editingId.value = product.product_id
 
-  ProductStore.editedProduct = {
+  productStore.editedProduct = {
     title: product.title,
     description: product.description,
     price: product.price,
@@ -67,9 +67,9 @@ const  openEdit =async (product: Product) => {
     categoryId: product.categoryId,
     files: []
   }
-  
-  if (CategoryStory.categories.length === 0) {
-    await CategoryStory.getCategories()
+
+  if (categoryStore.categories.length === 0) {
+    await categoryStore.getCategories()
   }
 
 
@@ -83,16 +83,16 @@ const  openEdit =async (product: Product) => {
 const saveProduct = async () => {
   try {
     if (mode.value === 'create') {
-      await ProductStore.addProduct()
+      await productStore.addProduct()
     } else if (mode.value === 'edit' && editingId.value) {
-      await ProductStore.updateProduct(editingId.value)
+      await productStore.updateProduct(editingId.value)
     }
 
-    await ProductStore.getProducts()
+    await productStore.getProducts()
 
     showDialog.value = false
     showConfirm.value = false
-    ProductStore.clearProduct()
+    productStore.clearProduct()
     previewImage.value = null
     editingId.value = null
   } catch (err) {
@@ -101,12 +101,12 @@ const saveProduct = async () => {
 }
 
 const closeDialog = () => {
-// ProductStore.clearProduct()
+
   showDialog.value = false
 }
 
 const openCreateDialog = () => {
-  ProductStore.clearProduct()
+  productStore.clearProduct()
   mode.value = 'create'
   showDialog.value = true
 }
@@ -114,22 +114,22 @@ const openCreateDialog = () => {
 
 
 const nextPage = async () => {
-  if (ProductStore.page < ProductStore.lastPage) {
-    ProductStore.page++
-    await ProductStore.getProducts()
+  if (productStore.page < productStore.lastPage) {
+    productStore.page++
+    await productStore.getProducts()
   }
 }
 
 const prevPage = async () => {
-  if (ProductStore.page > 1) {
-    ProductStore.page--
-    await ProductStore.getProducts()
+  if (productStore.page > 1) {
+    productStore.page--
+    await productStore.getProducts()
   }
 }
 
 const searchProduct = async () => {
-  ProductStore.search = search.value
-  await ProductStore.getProducts()
+  productStore.search = search.value
+  await productStore.getProducts()
 }
 
 const openDelete = (item: Product) => {
@@ -140,7 +140,7 @@ const openDelete = (item: Product) => {
 const removeItem = async () => {
   if (!editingId.value) return
 
-  await ProductStore.deleteProduct(editingId.value)
+  await productStore.deleteProduct(editingId.value)
 
   deleteConfirm.value = false
   editingId.value = null
@@ -152,17 +152,6 @@ const closeDialogDelete = () => {
 }
 
 
-// const handleFileUpload = (event: Event) => {
-//   const input = event.target as HTMLInputElement;
-//   const file = input.files?.[0];
-//   if (!file) return;
-
-//   // เก็บไฟล์ไว้ส่ง backend
-//   // ProductStore.editedProduct.images = file;
-
-//   // preview
-//   previewImage.value = URL.createObjectURL(file);
-// };
 
 
 const handleFileUpload = (event: Event) => {
@@ -170,7 +159,7 @@ const handleFileUpload = (event: Event) => {
   const files = input.files
   if (!files || files.length === 0) return
 
-  ProductStore.editedProduct.files = Array.from(files)
+  productStore.editedProduct.files = Array.from(files)
 
   previewImage.value = URL.createObjectURL(files[0])
 }
@@ -178,296 +167,227 @@ const handleFileUpload = (event: Event) => {
 
 const clearSearch = async () => {
   search.value = ''
-  ProductStore.search = ''
-  ProductStore.page = 1
-  await ProductStore.getProducts()
+  productStore.search = ''
+  productStore.page = 1
+  await productStore.getProducts()
 }
 const removeImage = () => {
   previewImage.value = null
-  ProductStore.editedProduct.files = []
-  
+  productStore.editedProduct.files = []
+
 }
 </script>
 
 <template>
- 
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-white">Product Management</h1>
 
-        <div class="flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search Product..."
-            v-model="search"
-            class="border px-3 py-2 rounded w-64"
-          />
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-white">Product Management</h1>
 
-          <button
-            class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-            @click="searchProduct()"
-          >
-            <span class="pi pi-search text-lg"></span>
+    <div class="flex items-center gap-3">
+      <input type="text" placeholder="Search Product..." v-model="search" class="border px-3 py-2 rounded w-64" />
+
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="searchProduct()">
+        <span class="pi pi-search text-lg"></span>
+      </button>
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="clearSearch()">
+        <span class="pi pi-times text-lg"></span>
+      </button>
+      <button
+        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8]  text-white px-4 py-2 rounded-md  transition"
+        @click="openCreateDialog()">
+        <span class="pi pi-plus text-lg"></span>
+        <span>Create</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-lg overflow-hidden">
+    <table class="w-full text-left text-black">
+      <thead class="bg-[#383838] text-gray-300 text-sm">
+        <tr>
+          <th class="px-6 py-3">รูปภาพ</th>
+          <th class="px-6 py-3">ชื่อสินค้า</th>
+
+          <th class="px-6 py-3">รายละเอียด</th>
+          <th class="px-6 py-3">หมวดหมู่</th>
+          <th class="px-6 py-3">ราคา</th>
+          <th class="px-6 py-3 text-center">จัดการ</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y">
+        <tr v-if="productStore.products.length === 0">
+          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
+        </tr>
+        <tr v-for="product in productStore.products" :key="product.product_id">
+          <td class="text-center align-middle">
+            <img :src="product.images[0].image" alt="" class="h-32 w-32 object-cover rounded" />
+          </td>
+          <td class="px-6 py-1">{{ product.title }}</td>
+
+
+          <td class="px-6 py-1">{{ product.description }}</td>
+          <td class="px-6 py-1">
+            {{ product.category?.name }}
+
+          </td>
+          <td class="px-6 py-1">{{ product.price }}</td>
+
+          <td class="px-6 py-1 align-middle">
+            <div class="flex justify-center items-center space-x-2">
+              <button class="edit-btn" @click="openEdit(product)">
+                <span class="pi pi-pencil"></span>
+              </button>
+
+              <button class="delete-btn" @click="openDelete(product)">
+                <span class="pi pi-trash"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
+      <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
+        <span class="pi pi-chevron-left text-sm"></span> Prev
+      </button>
+
+      <span class="text-sm text-gray-600">
+        {{ productStore.page }} of {{ productStore.lastPage }}</span>
+
+      <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
+        Next <span class="pi pi-chevron-right text-sm"></span>
+      </button>
+    </div>
+  </div>
+
+
+
+
+  <!-- Dialog -->
+  <div v-if="showDialog" class="overlay">
+    <div class="dialog">
+      <h2 class="text-lg font-semibold mb-4">
+        {{ mode === 'create' ? 'Create Product' : 'Edit Product' }}
+      </h2>
+
+
+      <div class="mb-3">
+        <label>Title</label>
+        <input v-model="productStore.editedProduct.title" type="text" placeholder="Enter product title"
+          class="border w-full px-3 py-2 rounded bg-gray-50" />
+      </div>
+
+
+      <div class="mb-3">
+        <label class="block mb-1 text-sm text-gray-700">Upload Image</label>
+
+        <button type="button" @click="$refs.fileInput.click()"
+          class="px-4 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition">
+          Choose Image
+        </button>
+
+        <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="handleFileUpload" />
+      </div>
+
+
+      <div class="mt-3 flex justify-center" v-if="previewImage || productStore.editedProduct.images?.length">
+        <div class="relative">
+
+          <img :src="previewImage || productStore.editedProduct.images?.[0]?.image"
+            class="w-40 h-40 object-cover rounded-lg border" />
+
+
+          <button v-if="previewImage !== null" @click="removeImage"
+            class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow">
+            ✕
           </button>
-          <button
-            class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-            @click="clearSearch()"
-          >
-            <span class="pi pi-times text-lg"></span>
-          </button>
-          <button
-            class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8]  text-white px-4 py-2 rounded-md  transition"
-            @click="openCreateDialog()"
-          >
-            <span class="pi pi-plus text-lg"></span>
-            <span>Create</span>
-          </button>
+
         </div>
       </div>
 
-      <!-- Table -->
-      <div class="bg-white rounded-lg overflow-hidden">
-        <table class="w-full text-left text-black">
-          <thead class="bg-[#383838] text-gray-300 text-sm">
-            <tr>
-              <th class="px-6 py-3">Product Name</th>
-              <th class="px-6 py-3">Product Name</th>
 
-              <th class="px-6 py-3">Description</th>
-              <th class="px-6 py-3">Category</th>
-              <th class="px-6 py-3">Price</th>
-              <th class="px-6 py-3 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y">
-            <tr v-if="ProductStore.products.length === 0">
-              <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
-            </tr>
-            <tr v-for="product in ProductStore.products" :key="product.product_id">
-              <td class="text-center align-middle">
-                <img
-                  :src="product.images[0].image"
-                  alt=""
-                  class="h-32 w-32 object-cover rounded"
-                />
-              </td>
-              <td class="px-6 py-1">{{ product.title }}</td>
-           
-  
-              <td class="px-6 py-1">{{ product.description }}</td>
-                           <td class="px-6 py-1">
- {{ product.category?.name }}
-  
-</td>
-              <td class="px-6 py-1">{{ product.price }}</td>
-
-            <td class="px-6 py-1 align-middle">
-  <div class="flex justify-center items-center space-x-2">
-    <button class="edit-btn" @click="openEdit(product)">
-      <span class="pi pi-pencil"></span>
-    </button>
-
-    <button class="delete-btn" @click="openDelete(product)">
-      <span class="pi pi-trash"></span>
-    </button>
-  </div>
-</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Pagination -->
-        <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
-          <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
-            <span class="pi pi-chevron-left text-sm"></span> Prev
-          </button>
-
-          <span class="text-sm text-gray-600">
-            {{ ProductStore.page }} of {{ ProductStore.lastPage }}</span
-          >
-
-          <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
-            Next <span class="pi pi-chevron-right text-sm"></span>
-          </button>
-        </div>
+      <!-- Description -->
+      <div class="mb-3">
+        <label>Description</label>
+        <textarea v-model="productStore.editedProduct.description" placeholder="Enter description"
+          class="border w-full px-3 py-2 rounded bg-gray-50"></textarea>
       </div>
- 
+
+      <!-- Price -->
+      <div class="mb-3">
+        <label>Price</label>
+        <input v-model.number="productStore.editedProduct.price" type="number" placeholder="Enter price"
+          class="border w-full px-3 py-2 rounded bg-gray-50" />
+      </div>
 
 
 
-<!-- Dialog -->
-<div v-if="showDialog " class="overlay">
-  <div class="dialog">
-    <h2 class="text-lg font-semibold mb-4">
-      {{ mode === 'create' ? 'Create Product' : 'Edit Product' }}
-    </h2>
 
-    <!-- Title -->
-    <div class="mb-3">
-      <label>Title</label>
-      <input
-        v-model="ProductStore.editedProduct.title"
-        type="text"
-        placeholder="Enter product title"
-        class="border w-full px-3 py-2 rounded bg-gray-50"
-      />
-    </div>
+      <div class="mb-3">
+        <label>Category</label>
 
-   <!-- Image Upload -->
-<div class="mb-3">
-  <label class="block mb-1 text-sm text-gray-700">Upload Image</label>
+        <Listbox v-model="selectedCategory">
+          <div class="relative">
 
-  <button
-    type="button"
-    @click="$refs.fileInput.click()"
-    class="px-4 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition"
-  >
-    Choose Image
-  </button>
 
-  <input
-    type="file"
-    accept="image/*"
-    ref="fileInput"
-    class="hidden"
-    @change="handleFileUpload"
-  />
-</div>
-
-   
-<div
-  class="mt-3 flex justify-center"
-  v-if="previewImage || ProductStore.editedProduct.images?.length"
->
-  <div class="relative">
-    
-    <img
-      :src="previewImage || ProductStore.editedProduct.images?.[0]?.image"
-      class="w-40 h-40 object-cover rounded-lg border"
-    />
-
-   
-    <button
-        v-if="previewImage !== null"
-      @click="removeImage"
-      class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow"
-    >
-      ✕
-    </button>
-
-  </div>
-</div>
-    
-
-    <!-- Description -->
-    <div class="mb-3">
-      <label>Description</label>
-      <textarea
-        v-model="ProductStore.editedProduct.description"
-        placeholder="Enter description"
-        class="border w-full px-3 py-2 rounded bg-gray-50"
-      ></textarea>
-    </div>
-
-    <!-- Price -->
-    <div class="mb-3">
-      <label>Price</label>
-      <input
-        v-model.number="ProductStore.editedProduct.price"
-        type="number"
-        placeholder="Enter price"
-        class="border w-full px-3 py-2 rounded bg-gray-50"
-      />
-    </div>
-
-  
-
-   <!-- Category -->
-<div class="mb-3">
-  <label >Category</label>
-
-  <Listbox v-model="selectedCategory">
-    <div class="relative">
-
-      <!-- Button -->
-      <ListboxButton
-        class="w-full border border-gray-300 bg-gray-50 px-3 py-2 rounded text-left text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-400 flex justify-between items-center"
-      >
-        <span class="truncate">
-   {{ selectedCategory?.name ?? 'Select category' }}
-        </span>
-
-        <ChevronUpDownIcon class="w-4 h-4 text-gray-400" />
-      </ListboxButton>
-
-      <!-- Dropdown -->
-      <transition
-        enter-active-class="transition duration-100 ease-out"
-        enter-from-class="opacity-0 scale-95"
-        enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition duration-75 ease-in"
-        leave-from-class="opacity-100 scale-100"
-        leave-to-class="opacity-0 scale-95"
-      >
-        <ListboxOptions
-          class="absolute z-50 bottom-full mb-1 w-full max-h-60 overflow-auto rounded border border-gray-200 bg-white shadow-md text-sm"
-        >
-          <ListboxOption
-            v-for="cat in CategoryStory.categories"
-            :key="cat.category_id"
-            :value="cat"
-            v-slot="{ active, selected }"
-          >
-            <li
-              :class="[
-                'cursor-pointer px-3 py-2 flex justify-between items-center',
-                active ? 'bg-gray-100' : '',
-              ]"
-            >
-              <span :class="selected ? 'font-medium text-gray-900' : 'text-gray-700'">
-                {{ cat.name }}
+            <ListboxButton
+              class="w-full border border-gray-300 bg-gray-50 px-3 py-2 rounded text-left text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-400 flex justify-between items-center">
+              <span class="truncate">
+                {{ selectedCategory?.name ?? 'Select category' }}
               </span>
 
-              <CheckIcon
-                v-if="selected"
-                class="w-4 h-4 text-gray-500"
-              />
-            </li>
-          </ListboxOption>
-        </ListboxOptions>
-      </transition>
+              <ChevronUpDownIcon class="w-4 h-4 text-gray-400" />
+            </ListboxButton>
 
-    </div>
-  </Listbox>
-</div>
 
-    <!-- Buttons -->
-    <div class="flex justify-center gap-4">
-      <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">
-        Close
-      </button>
+            <transition enter-active-class="transition duration-100 ease-out" enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-75 ease-in"
+              leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+              <ListboxOptions
+                class="absolute z-50 bottom-full mb-1 w-full max-h-60 overflow-auto rounded border border-gray-200 bg-white shadow-md text-sm">
+                <ListboxOption v-for="cat in categoryStore.categories" :key="cat.category_id" :value="cat"
+                  v-slot="{ active, selected }">
+                  <li :class="[
+                    'cursor-pointer px-3 py-2 flex justify-between items-center',
+                    active ? 'bg-gray-100' : '',
+                  ]">
+                    <span :class="selected ? 'font-medium text-gray-900' : 'text-gray-700'">
+                      {{ cat.name }}
+                    </span>
 
-      <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
-        Save
-      </button>
+                    <CheckIcon v-if="selected" class="w-4 h-4 text-gray-500" />
+                  </li>
+                </ListboxOption>
+              </ListboxOptions>
+            </transition>
+
+          </div>
+        </Listbox>
+      </div>
+
+
+      <div class="flex justify-center gap-4">
+        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">
+          Close
+        </button>
+
+        <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
+          Save
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
-  <ConfirmComponent
-    :show="showConfirm"
-    type="save"
-    message="คุณต้องการที่จะบันทึกข้อมูลนี้"
-    @confirm="saveProduct()"
-    @cancel="showConfirm = false"
-  />
+  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการที่จะบันทึกข้อมูลนี้" @confirm="saveProduct()"
+    @cancel="showConfirm = false" />
 
- <ConfirmComponent
-  :show="deleteConfirm"
-  type="delete"
-  message="คุณต้องการที่จะลบข้อมูลนี้ใช่หรือไม่"
-  @confirm="removeItem"
-  @cancel="closeDialogDelete()"
-/>
+  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการที่จะลบข้อมูลนี้ใช่หรือไม่"
+    @confirm="removeItem" @cancel="closeDialogDelete()" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>
