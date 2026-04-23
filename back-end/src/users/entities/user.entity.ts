@@ -9,6 +9,7 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { Role } from '../enums/role.enum';
 import { Branch } from 'src/branches/entities/branch.entity';
@@ -50,8 +51,8 @@ export class User {
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 
-  @OneToMany(() => Cart, (carts) => carts.user)
-  carts: Cart[];
+  @OneToOne(() => Cart, (cart) => cart.user)
+  cart: Cart;
 
   @OneToMany(() => Address, (addresses) => addresses.user)
   addresses: Address[];

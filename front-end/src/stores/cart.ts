@@ -51,7 +51,7 @@ export const useCartStore = defineStore('Cart', () => {
     loadingStore.doLoad()
     if (authStore.user) {
 
-      const res = await cartService.getCart(authStore.user)
+      const res = await cartService.getCart()
       cart.value = res.data
       console.log(cart.value?.cartDetails)
 
@@ -60,20 +60,21 @@ export const useCartStore = defineStore('Cart', () => {
     loadingStore.finishLoad()
   }
 
-  async function addCartDetail(cart: Cart, cartDetail: CartDetail) {
-    await cartService.addCartDetail(cart, cartDetail)
+  async function addCartDetail(cartDetail: CartDetail) {
+    await cartService.addCartDetail(cartDetail)
   }
 
-  async function update(cart: Cart, cartDetail: CartDetail) {
-    await cartService.update(cart, cartDetail)
+  async function update(cartDetail: CartDetail) {
+    await cartService.updateCart(cartDetail)
   }
 
   async function remove(cartDetail: CartDetail) {
-    return cartService.remove(cartDetail)
+    if (!cartDetail.cart_detail_id) return
+    return cartService.remove(cartDetail.cart_detail_id)
   }
 
   async function clearChart() {
-    cart.value = undefined
+    cartService.clearCart()
   }
 
 

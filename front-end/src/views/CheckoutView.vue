@@ -195,6 +195,7 @@ const goToOrderSuccess = async () => {
     })
 
     const order = await orderStore.createOrder()
+    cartStore.clearChart()
 
     orderStore.getOrderById(order.order_id)
 

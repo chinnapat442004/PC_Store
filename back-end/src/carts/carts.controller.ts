@@ -4,8 +4,9 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
+  Req,
+  Param,
 } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CreateCartDto } from './dto/create-cart.dto';
@@ -13,7 +14,7 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Controller('cart')
 export class CartsController {
-  constructor(private readonly cartsService: CartsService) {}
+  constructor(private readonly cartsService: CartsService) { }
 
   @Post()
   create(@Body() createCartDto: CreateCartDto) {
@@ -21,27 +22,27 @@ export class CartsController {
   }
 
   @Get()
-  findAll() {
-    return this.cartsService.findAll();
+  findMyCart(@Req() req) {
+    return this.cartsService.findOne(req.user_id);
   }
 
-  @Get(':user_id')
-  findOne(@Param('user_id') id: string) {
-    return this.cartsService.findOne(+id);
+  @Patch()
+  addCartDetail(@Req() req, @Body() updateCartDto: UpdateCartDto) {
+    return this.cartsService.addCartDetail(req.user_id, updateCartDto);
   }
 
-  @Patch(':id')
-  addCartDetail(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartsService.addCartDetail(+id, updateCartDto);
+  @Patch('update')
+  update(@Req() req, @Body() updateCartDto: UpdateCartDto) {
+    return this.cartsService.update(req.user_id, updateCartDto);
   }
 
-  @Patch('/update/:id')
-  update(@Param('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartsService.update(+id, updateCartDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete('detail/:id')
+  removeDetail(@Param('id') id: number) {
     return this.cartsService.removeDetail(+id);
+  }
+
+  @Delete('clear')
+  clearCart(@Req() req) {
+    return this.cartsService.clearCartByUser(req.user_id);
   }
 }

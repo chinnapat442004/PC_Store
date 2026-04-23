@@ -56,7 +56,7 @@ async function addCart() {
   } else {
     cartStore.editedCartDetail.quantity = number.value
     if (cartStore.cart)
-      await cartStore.addCartDetail(cartStore.cart, cartStore.editedCartDetail)
+      await cartStore.addCartDetail(cartStore.editedCartDetail)
     await cartStore.getCarts()
     addProduct()
   }

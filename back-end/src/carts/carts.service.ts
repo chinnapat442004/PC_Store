@@ -13,104 +13,97 @@ export class CartsService {
     private cartRepository: Repository<Cart>,
     @InjectRepository(CartDetail)
     private cartDetailRepository: Repository<CartDetail>,
-
   ) { }
 
   async create(createCartDto: CreateCartDto) {
-    const cart = new Cart();
-    cart.user = createCartDto.user;
-    cart.subtotal = 0;
-    await this.cartRepository.save(cart);
-
-    const cartDetail = new CartDetail();
-    cartDetail.price = createCartDto.product.price * createCartDto.quantity;
-
-    cartDetail.quantity = createCartDto.quantity;
-    cartDetail.product = createCartDto.product;
-    cartDetail.cart = cart;
-    await this.cartDetailRepository.save(cartDetail);
-
-    cart.subtotal += cartDetail.price;
-
-    cart.total = cart.subtotal
-
-
-    return await this.cartRepository.save(cart);
-  }
-
-  async addCartDetail(cart_id: number, updateCartDto: UpdateCartDto) {
-    const cart = await this.cartRepository.findOne({
-      where: { cart_id },
+    let cart = await this.cartRepository.findOne({
+      where: { user: { user_id: createCartDto.user.user_id } },
       relations: ['cartDetails', 'cartDetails.product'],
     });
 
     if (!cart) {
-      throw new Error('Cart not found');
+      cart = this.cartRepository.create({
+        user: createCartDto.user,
+        subtotal: 0,
+        total: 0,
+        cartDetails: [],
+      });
+      cart = await this.cartRepository.save(cart);
     }
 
+    const cartDetail = this.cartDetailRepository.create({
+      product: createCartDto.product,
+      quantity: createCartDto.quantity,
+      price: createCartDto.product.price * createCartDto.quantity,
+      cart,
+    });
+
+    await this.cartDetailRepository.save(cartDetail);
+
+    cart.subtotal += cartDetail.price;
+    cart.total = cart.subtotal;
+
+    return this.cartRepository.save(cart);
+  }
+
+  async addCartDetail(user_id: number, updateCartDto: UpdateCartDto) {
+    const cart = await this.cartRepository.findOne({
+      where: { user: { user_id } },
+      relations: ['cartDetails', 'cartDetails.product'],
+    });
+
+    if (!cart) throw new Error('Cart not found');
+
     const existingDetail = cart.cartDetails.find(
-      (detail) =>
-        detail.product.product_id === updateCartDto.product.product_id,
+      (d) => d.product.product_id === updateCartDto.product.product_id,
     );
 
     if (existingDetail) {
-
       existingDetail.quantity += updateCartDto.quantity;
       existingDetail.price =
         existingDetail.quantity * existingDetail.product.price;
 
       await this.cartDetailRepository.save(existingDetail);
     } else {
-      const newCartDetail = this.cartDetailRepository.create({
+      const newDetail = this.cartDetailRepository.create({
         cart,
         product: updateCartDto.product,
         quantity: updateCartDto.quantity,
         price: updateCartDto.quantity * updateCartDto.product.price,
       });
 
-      await this.cartDetailRepository.save(newCartDetail);
-
-      cart.cartDetails.push(newCartDetail);
+      await this.cartDetailRepository.save(newDetail);
+      cart.cartDetails.push(newDetail);
     }
 
-    cart.subtotal = cart.cartDetails.reduce(
-      (sum, detail) => sum + detail.price,
-      0,
-    );
-    cart.total = cart.subtotal
+    cart.subtotal = cart.cartDetails.reduce((s, d) => s + d.price, 0);
+    cart.total = cart.subtotal;
 
-    return await this.cartRepository.save(cart);
+    return this.cartRepository.save(cart);
   }
 
-  async update(cart_id: number, updateCartDto: UpdateCartDto) {
+  async update(user_id: number, updateCartDto: UpdateCartDto) {
     const cart = await this.cartRepository.findOne({
-      where: { cart_id },
+      where: { user: { user_id } },
       relations: ['cartDetails', 'cartDetails.product'],
     });
 
-    if (!cart) {
-      throw new Error('Cart not found');
-    }
+    if (!cart) throw new Error('Cart not found');
 
     const detail = cart.cartDetails.find(
-      (detail) =>
-        detail.product.product_id === updateCartDto.product.product_id,
+      (d) => d.product.product_id === updateCartDto.product.product_id,
     );
 
     if (detail) {
       detail.quantity = updateCartDto.quantity;
       detail.price = detail.quantity * detail.product.price;
-
       await this.cartDetailRepository.save(detail);
     }
 
-    cart.subtotal = cart.cartDetails.reduce(
-      (sum, detail) => sum + detail.price,
-      0,
-    );
-    cart.total = cart.subtotal
+    cart.subtotal = cart.cartDetails.reduce((s, d) => s + d.price, 0);
+    cart.total = cart.subtotal;
 
-    return await this.cartRepository.save(cart);
+    return this.cartRepository.save(cart);
   }
 
   async findAll() {
@@ -131,10 +124,8 @@ export class CartsService {
   }
 
   async findOne(user_id: number) {
-    return await this.cartRepository.findOne({
-      where: {
-        user: { user_id },
-      },
+    return this.cartRepository.findOne({
+      where: { user: { user_id } },
       relations: {
         cartDetails: {
           product: { images: true },
@@ -145,31 +136,43 @@ export class CartsService {
   }
 
   async removeDetail(cart_detail_id: number) {
-
-
     const cartDetail = await this.cartDetailRepository.findOne({
       where: { cart_detail_id },
       relations: ['cart', 'cart.cartDetails'],
     });
 
-    if (!cartDetail) {
-      throw new Error('Cart detail not found');
-    }
+    if (!cartDetail) throw new Error('Cart detail not found');
 
     const cart = cartDetail.cart;
 
     cart.cartDetails = cart.cartDetails.filter(
-      (detail) => detail.cart_detail_id !== cart_detail_id,
+      (d) => d.cart_detail_id !== cart_detail_id,
     );
 
-    cart.subtotal = cart.cartDetails.reduce(
-      (sum, detail) => sum + detail.price,
-      0,
-    );
-    cart.total = cart.subtotal
+    cart.subtotal = cart.cartDetails.reduce((s, d) => s + d.price, 0);
+    cart.total = cart.subtotal;
 
     await this.cartDetailRepository.remove(cartDetail);
 
-    return await this.cartRepository.save(cart);
+    return this.cartRepository.save(cart);
+  }
+
+  async clearCartByUser(user_id: number) {
+    const cart = await this.cartRepository.findOne({
+      where: { user: { user_id } },
+      relations: ['cartDetails'],
+    });
+
+    if (!cart) throw new Error('Cart not found');
+
+    if (cart.cartDetails.length > 0) {
+      await this.cartDetailRepository.remove(cart.cartDetails);
+    }
+
+    cart.cartDetails = [];
+    cart.subtotal = 0;
+    cart.total = 0;
+
+    return this.cartRepository.save(cart);
   }
 }

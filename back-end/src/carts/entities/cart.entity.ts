@@ -2,11 +2,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { CartDetail } from './cart_detail';
@@ -34,7 +35,7 @@ export class Cart {
   @OneToMany(() => CartDetail, (cartDetail) => cartDetail.cart)
   cartDetails: CartDetail[];
 
-  @ManyToOne(() => User, (user) => user.carts)
+  @OneToOne(() => User, (user) => user.cart)
   @JoinColumn({ name: 'user_id' })
   user: User;
 }

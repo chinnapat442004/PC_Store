@@ -47,7 +47,7 @@ async function plus(detail: CartDetail) {
 
   try {
     if (cartStore.cart) {
-      await cartStore.update(cartStore.cart, detail)
+      await cartStore.update(detail)
     }
   } catch (error) {
     console.error('Failed to update cart:', error)
@@ -67,7 +67,7 @@ async function minus(detail: CartDetail) {
 
   try {
     if (cartStore.cart) {
-      await cartStore.update(cartStore.cart, detail)
+      await cartStore.update(detail)
     }
   } catch (error) {
     console.error('Failed to update cart:', error)
@@ -101,7 +101,7 @@ const goToCheckout = () => {
 </script>
 
 <template>
-  <div
+  <div v-if="cartStore.cart?.cartDetails?.length"
     class="flex justify-center w-full h-full  gap-3 md:flex-nowrap flex-wrap  py-[30px] px-[10px] md:px-[20px] m-auto pb-[20px] ">
 
 
@@ -190,7 +190,27 @@ const goToCheckout = () => {
 
     </div>
   </div>
+  <div v-else class="flex justify-center   w-full py-[30px] px-[10px] md:px-[20px]">
+    <div
+      class="max-w-[750px] w-full min-w-[300px] flex flex-col items-center justify-center bg-white rounded-[10px] p-10  text-gray-500">
 
+      <div class="text-lg font-semibold text-gray-700 mb-1">
+        ไม่มีสินค้าในตะกร้า
+      </div>
+
+
+      <div class="text-sm text-gray-500 mb-4">
+        กรุณาเพิ่มสินค้าลงตะกร้าก่อนดำเนินการต่อ
+      </div>
+
+
+      <button class=" text-white bg-[#637aad] hover:bg-[#4a68a8] rounded-lg px-3 py-1 transition"
+        @click="$router.push('/shop')">
+        ไปหน้า Shop
+      </button>
+
+    </div>
+  </div>
 
 
   <LoadingComponent v-model="loadingStore.loading" />
