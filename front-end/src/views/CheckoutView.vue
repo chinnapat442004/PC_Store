@@ -186,7 +186,6 @@ const goToOrderSuccess = async () => {
       return
     }
 
-
     orderStore.setOrder({
       details: cartStore.cart.cartDetails.map(item => ({
         product_id: item.product.product_id,
@@ -195,23 +194,20 @@ const goToOrderSuccess = async () => {
     })
 
     const order = await orderStore.createOrder()
-    cartStore.clearChart()
 
-    orderStore.getOrderById(order.order_id)
+    await cartStore.clearChart()
 
-    if (orderStore.selectedOrder?.payment_method == 'promptpay') {
+    if (order.payment_method === 'promptpay') {
       router.push({
         name: 'payment-confirmation',
         params: { orderId: order.order_id }
       })
-    } else if (orderStore.selectedOrder?.payment_method == 'cod') {
+    } else {
       router.push({
         name: 'order-succes',
         params: { orderId: order.order_id }
       })
     }
-
-
 
   } catch (error) {
     console.error(error)

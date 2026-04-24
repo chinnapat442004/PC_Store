@@ -53,11 +53,11 @@ const openEdit = (user: User) => {
 
 
 const saveUser = async () => {
-  console.log(mode.value)
+
   if (mode.value === 'create') {
-    console.log(userStore.createUser)
+
     await userStore.addUser(userStore.createUser)
-    console.log(userStore.createUser)
+
     userStore.clearCreateUser()
   } else if (mode.value === 'edit' && userStore.editedUser) {
     await userStore.updateUser(userStore.editedUser)
@@ -167,17 +167,17 @@ const clearSearch = async () => {
           <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
         </tr>
 
-        <tr v-else v-for="User in userStore.users" :key="User.user_id">
-          <td class="px-6 py-1">{{ User.name }}</td>
-          <td class="px-6 py-1">{{ User.email }}</td>
-          <td class="px-6 py-1">{{ User.role }}</td>
-          <td class="px-6 py-1">{{ User.enabled }}</td>
-          <td class="px-6 py-1">{{ User.email }}</td>
+        <tr v-else v-for="user in userStore.users" :key="user.user_id">
+          <td class="px-6 py-1">{{ user.name }}</td>
+          <td class="px-6 py-1">{{ user.email }}</td>
+          <td class="px-6 py-1">{{ user.role }}</td>
+          <td class="px-6 py-1">{{ user.enabled }}</td>
+          <td v-if="user.branch" class="px-6 py-1">{{ user.branch.branch_name }}</td>
 
 
 
           <td class="px-6 py-3 flex justify-center space-x-2">
-            <button class="edit-btn" @click="openEdit(User)">
+            <button class="edit-btn" @click="openEdit(user)">
               <span class="pi pi-pencil"></span>
             </button>
           </td>
@@ -210,9 +210,16 @@ const clearSearch = async () => {
       </h2>
 
       <!-- Name -->
-      <div class="mb-3">
+      <div v-if="mode === 'create'" class="mb-3">
         <label>User Name</label>
         <input v-model="userStore.createUser.name" type="text" placeholder="Enter user name"
+          class="border w-full px-3 py-2 rounded bg-gray-50" />
+      </div>
+
+      <!-- Name -->
+      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
+        <label>User Name</label>
+        <input v-model="userStore.editedUser.name" type="text" placeholder="Enter user name"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
@@ -238,10 +245,21 @@ const clearSearch = async () => {
         <label>Role</label>
         <input v-model="formUser.role" class="border w-full px-3 py-2 rounded bg-gray-200" disabled />
       </div>
-      <div class="mb-3">
+      <div v-if="mode === 'create'" class="mb-3">
         <label>Branch</label>
 
         <select v-model="userStore.createUser.branch_id" class="border w-full px-3 py-2 rounded bg-gray-50">
+          <option value="" disabled>Select branch</option>
+
+          <option v-for="b in branchStore.branches" :key="b.branch_id" :value="b.branch_id">
+            {{ b.branch_name }}
+          </option>
+        </select>
+      </div>
+      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
+        <label>Branch</label>
+
+        <select v-model="userStore.editedUser.branch.branch_id" class="border w-full px-3 py-2 rounded bg-gray-50">
           <option value="" disabled>Select branch</option>
 
           <option v-for="b in branchStore.branches" :key="b.branch_id" :value="b.branch_id">
@@ -265,6 +283,8 @@ const clearSearch = async () => {
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
           Save
         </button>
+
+
       </div>
     </div>
   </div>

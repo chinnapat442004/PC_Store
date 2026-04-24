@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Role } from './enums/role.enum';
+import { Branch } from 'src/branches/entities/branch.entity';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,8 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Branch)
+    private branchRepository: Repository<Branch>,
   ) { }
 
   async createUser(
@@ -36,6 +39,9 @@ export class UserService {
     user.image = createUserDto.image;
     user.name = createUserDto.name;
     user.password = createUserDto.password;
+    user.branch = await this.branchRepository.findOne({
+      where: { branch_id: createUserDto.branch_id },
+    })
 
     if (creatorRole === Role.ADMIN) {
       user.role = Role.MANAGER;
@@ -49,11 +55,11 @@ export class UserService {
   }
 
   async findAll() {
-    return await this.userRepository.find();
+    return await this.userRepository.find({ relations: { branch: true } });
   }
 
   async findOne(user_id: number) {
-    return await this.userRepository.findOne({ where: { user_id } });
+    return await this.userRepository.findOne({ where: { user_id }, relations: { branch: true } });
   }
 
   async findOneByEmail(email: string) {
@@ -79,21 +85,27 @@ export class UserService {
     role: Role,
     page: number,
     limit: number,
-    search?: string,
+    search?: string, branch_id?: number,
   ) {
     const skip = (page - 1) * limit;
 
     let where: any = { role };
 
+    if (branch_id) {
+      where.branch = { branch_id };
+    }
+
     if (search) {
       where = [
         { role, name: Like(`%${search}%`) },
-        { role, email: Like(`%${search}%`) },
+        { role, email: Like(`%${search}%`) }
       ];
     }
 
     const [data, total] = await this.userRepository.findAndCount({
-      where,
+      where, relations: {
+        branch: true,
+      },
       skip,
       take: limit,
       order: {

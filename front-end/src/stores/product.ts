@@ -7,6 +7,7 @@ import { useLoadingStore } from './loading'
 export const useProductStore = defineStore('product', () => {
 
   const products = ref<Product[]>([])
+  const product = ref<Product>()
   const loadingStore = useLoadingStore()
 
   const initialProduct: CreateProductPayload & { files: File[] } = {
@@ -48,15 +49,15 @@ export const useProductStore = defineStore('product', () => {
     loadingStore.doLoad()
     try {
       const res = await productService.getProduct(id)
-      const data: Product = res.data
+      product.value = res.data
 
+      if (!product.value) return
       editedProduct.value = {
-        title: data.title,
-        description: data.description,
-        price: data.price,
-
-        images: data.images,
-        categoryId: data.category?.category_id ?? undefined,
+        title: product.value.title,
+        description: product.value.description,
+        price: product.value.price,
+        images: product.value.images,
+        categoryId: product.value.category?.category_id ?? undefined,
         files: []
       }
     } finally {
@@ -123,6 +124,7 @@ export const useProductStore = defineStore('product', () => {
     deleteProduct,
     clearProduct,
     products,
+    product,
     editedProduct,
     initialProduct,
     page,

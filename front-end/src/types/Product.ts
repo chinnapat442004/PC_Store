@@ -21,14 +21,15 @@ type Product = {
   title: string
   description: string
   price: number
-  quantity: number 
+  quantity: number
   orderDetail?: OrderDetail[]
   images: Image[]
   categoryId: number
   category?: Category
+  stock_quantity: number
 }
 
-export { 
+export {
   type CreateProductPayload,
   type UpdateProductPayload,
   type Product

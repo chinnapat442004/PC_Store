@@ -94,7 +94,7 @@ const searchProduct = async () => {
 </script>
 
 <template>
-  <div class="w-full h-full  lg:px-[20px] min-h-screen ">
+  <div class="w-full h-full  lg:px-[20px]  ">
     <div class="flex flex-col lg:flex-row justify-center  py-[30px] px-[10px] md:px-[20px] max-w-[1300px] m-auto gap-4">
       <div class=" flex flex-col gap-3 items-center">
 
@@ -130,9 +130,9 @@ const searchProduct = async () => {
                 outline: 'none',
                 boxShadow: 'none',
               }" :dot-hover-style="{
-              backgroundColor: '#cccccc',
-              border: '2px solid black',
-            }" />
+                backgroundColor: '#cccccc',
+                border: '2px solid black',
+              }" />
             <hr class="border-t-2 border-gray-300 my-4" />
           </div>
           <!-- Categories -->
@@ -162,16 +162,35 @@ const searchProduct = async () => {
             <div
               class="bg-[#ffffff] w-full max-w-[245px] aspect-[3/4] rounded-[10px] p-[10px] md:p-[15px] shadow-xl transition-transform duration-400 hover:scale-[1.03] cursor-pointer flex flex-col"
               @click="goToProduct(item)">
-              <div class="flex justify-center flex-1 overflow-hidden rounded-[5px]">
-                <img class="w-full h-full object-cover pointer-events-none select-none rounded-[5px]"
+              <div class="relative flex justify-center flex-1 overflow-hidden rounded-[5px] bg-gray-50">
+
+                <img
+                  class="w-full h-full object-cover pointer-events-none select-none rounded-[5px] transition-all duration-300"
+                  :class="{ 'grayscale opacity-60': item.stock_quantity === 0 }"
                   :src="item.images && item.images.length > 0 ? item.images[0].image : ''" alt="" />
+
+
+
               </div>
+
               <div class="flex justify-between flex-col h-[70px] md:h-[90px] pt-[10px]">
                 <div class="font-bold text-sm md:text-base line-clamp-2 md:line-clamp-1 break-words leading-tight"
-                  :title="item.title">{{ item.title }}</div>
+                  :class="{ 'text-gray-400': item.stock_quantity === 0 }" :title="item.title">
+                  {{ item.title }}
+                </div>
+
                 <div class="flex justify-between items-end mt-1">
-                  <div class="font-medium text-red-400 text-sm md:text-base">฿{{ item.price.toLocaleString() }}</div>
-                  <div></div>
+                  <div class="font-medium text-sm md:text-base"
+                    :class="item.stock_quantity === 0 ? 'text-gray-400' : 'text-red-400'">
+                    ฿{{ item.price.toLocaleString() }}
+                  </div>
+
+                  <div class="text-[10px] md:text-base font-medium">
+                    <span v-if="item.stock_quantity === 0"
+                      class="bg-red-50 text-red-500 px-2 py-1 rounded border border-red-200">
+                      สินค้าหมด
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

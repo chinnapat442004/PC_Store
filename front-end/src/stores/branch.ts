@@ -5,11 +5,11 @@ import type { Branch } from '@/types/Branch'
 import { useLoadingStore } from './loading'
 export const useBranchStore = defineStore('branch', () => {
   const branches = ref<Branch[]>([])
-    const loadingStore = useLoadingStore()
+  const loadingStore = useLoadingStore()
   const initialBranch: Branch = {
     address: '',
     branch_name: '',
-    status: '',
+    status: 'active',
     lat: undefined,
     lng: undefined,
   }
@@ -23,14 +23,14 @@ export const useBranchStore = defineStore('branch', () => {
   const editedBranch = ref(<Branch>JSON.parse(JSON.stringify(initialBranch)))
 
   async function getBranches(p = page.value, l = limit.value, s = search.value) {
-       loadingStore.doLoad()
+    loadingStore.doLoad()
     const res = await branchService.getBranches(p, l, s)
 
     branches.value = res.data.data
     page.value = res.data.page
     lastPage.value = res.data.lastPage
     total.value = res.data.total
-       loadingStore.finishLoad()
+    loadingStore.finishLoad()
   }
 
   async function addBranch(branch: Branch) {

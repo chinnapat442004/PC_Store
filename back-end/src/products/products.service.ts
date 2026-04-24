@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository, Like } from 'typeorm';
 import { Image } from './entities/image.entity';
+import { Branch } from 'src/branches/entities/branch.entity';
+import { Stock } from 'src/stock/entities/stock.entity';
 
 @Injectable()
 export class ProductsService {
@@ -13,6 +15,10 @@ export class ProductsService {
     private productRepository: Repository<Product>,
     @InjectRepository(Image)
     private imageRepository: Repository<Image>,
+    @InjectRepository(Branch)
+    private branchRepository: Repository<Branch>,
+    @InjectRepository(Stock)
+    private stockRepository: Repository<Stock>,
   ) { }
 
   async create(createProductDto: CreateProductDto) {
@@ -40,6 +46,16 @@ export class ProductsService {
       );
 
       await this.imageRepository.save(images);
+
+      const branches = await this.branchRepository.find()
+
+      const stocks = branches.map((branch) =>
+        this.stockRepository.create({
+          product_id: savedProduct.product_id,
+          branch_id: branch.branch_id,
+          quantity: 0,
+        }),
+      )
     }
 
     return savedProduct;
@@ -60,8 +76,9 @@ export class ProductsService {
       relations: {
         images: true,
         category: true,
+        stocks: true,
       },
-      skip: skip,
+      skip,
       take: limit,
       order: {
         category: {
@@ -71,23 +88,50 @@ export class ProductsService {
       },
     });
 
+    const dataWithStock = data.map((product) => {
+
+      const stock_quantity =
+        product.stocks?.reduce((sum, s) => sum + s.quantity, 0) || 0;
+
+      const { stocks, ...restProduct } = product;
+
+
+      return {
+        ...restProduct,
+        stock_quantity,
+      };
+    });
+
     return {
-      data,
+      data: dataWithStock,
       total,
       page,
       lastPage: Math.ceil(total / limit),
     };
   }
 
-  async findOne(product_id: number) {
-    return await this.productRepository.findOne({
-      where: { product_id },
-      relations: {
-        images: true,
-        category: true,
-      },
-    });
-  }
+async findOne(product_id: number) {
+  const product = await this.productRepository.findOne({
+    where: { product_id },
+    relations: {
+      images: true,
+      category: true,
+      stocks: true,
+    },
+  });
+
+  if (!product) return null;
+
+  const stock_quantity =
+    product.stocks?.reduce((sum, s) => sum + s.quantity, 0) || 0;
+
+  const { stocks, ...restProduct } = product;
+
+  return {
+    ...restProduct,
+    stock_quantity,
+  };
+}
 
   async update(product_id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.findOne({

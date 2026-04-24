@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, In } from 'typeorm';
+import { Repository, DataSource, In, EntityManager } from 'typeorm';
 
 import { Order } from './entities/order.entity';
 import { OrderStatusHistory } from './entities/order-status-history.entity';
@@ -19,6 +19,7 @@ import { Branch } from 'src/branches/entities/branch.entity';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { UpdateTrackingDto } from './dto/update-tracking.dto';
 import { Shipment } from 'src/shipment/entities/shipment.entity';
+import { Stock } from 'src/stock/entities/stock.entity';
 
 
 @Injectable()
@@ -30,6 +31,8 @@ export class OrdersService {
     private orderRepository: Repository<Order>,
   ) { }
 
+
+  //หาสาขาที่ใกล้ที่สุด
   private getDistance(
     lat1: number,
     lng1: number,
@@ -51,6 +54,45 @@ export class OrdersService {
   }
 
 
+  private async findBranchWithStock(
+    branches: Branch[],
+    lat: number,
+    lng: number,
+    manager: EntityManager,
+    productItems: { product_id: number; quantity: number }[],
+  ) {
+    const sortedBranches = branches
+      .map((b) => ({
+        branch: b,
+        distance: this.getDistance(lat, lng, b.lat, b.lng),
+      }))
+      .sort((a, b) => a.distance - b.distance)
+
+    for (const item of sortedBranches) {
+      let allStockEnough = true
+
+      for (const product of productItems) {
+        const stock = await manager.findOne(Stock, {
+          where: {
+            product_id: product.product_id,
+            branch_id: item.branch.branch_id,
+          },
+        })
+
+        if (!stock || stock.quantity < product.quantity) {
+          allStockEnough = false
+          break
+        }
+      }
+
+      if (allStockEnough) {
+        return item.branch
+      }
+    }
+
+    return null
+  }
+
   async create(createOrderDto: CreateOrderDto, user_id: number) {
     return this.dataSource.transaction(async (manager) => {
       const address = await manager.findOne(Address, {
@@ -70,25 +112,17 @@ export class OrdersService {
       if (!branches.length)
         throw new BadRequestException('No branches found');
 
-      let nearestBranch = branches[0];
-      let minDistance = Infinity;
+      const nearestBranch = await this.findBranchWithStock(
+        branches,
+        address.lat,
+        address.lng,
+        manager,
+        createOrderDto.details,
+      );
 
-      for (const branch of branches) {
-        if (!branch.lat || !branch.lng) continue;
-
-        const distance = this.getDistance(
-          address.lat,
-          address.lng,
-          branch.lat,
-          branch.lng,
-        );
-
-        if (distance < minDistance) {
-          minDistance = distance;
-          nearestBranch = branch;
-        }
+      if (!nearestBranch) {
+        throw new BadRequestException('สินค้าหมดทุกสาขา');
       }
-
 
       let total = 0;
 
@@ -100,21 +134,18 @@ export class OrdersService {
           });
 
           if (!product) {
-            throw new NotFoundException(
-              `Product ${item.product_id} not found`,
-            );
+            throw new NotFoundException(`Product ${item.product_id} not found`);
           }
 
           total += product.price * item.quantity;
+
           return { product, quantity: item.quantity };
         }),
       );
 
-
       const user = await manager.findOne(User, {
         where: { user_id },
       });
-
 
       const order = new Order();
       order.user = user;
@@ -127,10 +158,9 @@ export class OrdersService {
       order.district = address.district;
       order.province = address.province;
       order.zipcode = address.zipcode;
-      order.subtotal = total
-      order.discount_amount = 0
-      order.total_amount = order.subtotal - order.discount_amount;
-
+      order.subtotal = total;
+      order.discount_amount = 0;
+      order.total_amount = order.subtotal;
 
       if (createOrderDto.payment_method === PaymentMethod.PROMPTPAY) {
         order.order_status = OrderStatus.PENDING;
@@ -140,7 +170,6 @@ export class OrdersService {
 
       const savedOrder = await manager.save(order);
 
-
       const details = products.map(({ product, quantity }) => {
         const detail = new OrderDetail();
         detail.product_id = product.product_id;
@@ -148,7 +177,6 @@ export class OrdersService {
         detail.price = product.price;
         detail.product_title = product.title;
         detail.product_image = product.images[0]?.image;
-
         detail.order = savedOrder;
         return detail;
       });
@@ -162,6 +190,19 @@ export class OrdersService {
 
       await manager.save(history);
 
+      for (const item of createOrderDto.details) {
+        const stock = await manager.findOne(Stock, {
+          where: {
+            product_id: item.product_id,
+            branch_id: nearestBranch.branch_id,
+          },
+        });
+
+        if (stock) {
+          stock.quantity -= item.quantity;
+          await manager.save(stock);
+        }
+      }
 
       if (createOrderDto.payment_method === PaymentMethod.PROMPTPAY) {
         const payment = new Payment();
@@ -174,17 +215,24 @@ export class OrdersService {
     });
   }
 
-  async findAll(page: number, limit: number, order_status?: OrderStatus | OrderStatus[]) {
+  async findAll(page: number, limit: number, order_status?: OrderStatus | OrderStatus[], branch_id?: number) {
     const skip = (page - 1) * limit;
 
     let where = {}
 
-    if (order_status) {
-      where = Array.isArray(order_status)
-        ? { order_status: In(order_status) }
-        : { order_status }
-    }
+    if (order_status || branch_id) {
+      where = {
+        ...(order_status && (Array.isArray(order_status)
+          ? { order_status: In(order_status) }
+          : { order_status })),
 
+        ...(branch_id && {
+          branch: {
+            branch_id: branch_id,
+          },
+        }),
+      }
+    }
     const [data, total] = await this.orderRepository.findAndCount({
       where,
       relations: {
@@ -220,23 +268,30 @@ export class OrdersService {
     };
   }
 
-  async findOne(order_id: number) {
+  async findOne(order_id: number, branch_id?: number) {
     const order = await this.orderRepository.findOne({
-      where: { order_id },
+      where: {
+        order_id,
+        ...(branch_id && {
+          branch: {
+            branch_id,
+          },
+        }),
+      },
       relations: {
         details: true,
-        shipment: true, orderHistory: true
-
+        shipment: true,
+        orderHistory: true,
+        branch: true,
       },
-    });
+    })
 
     if (!order) {
-      throw new NotFoundException('Order not found');
+      throw new NotFoundException('Order not found')
     }
 
-    return order;
+    return order
   }
-
 
   async updateStatus(
     order_id: number,

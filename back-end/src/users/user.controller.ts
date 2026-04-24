@@ -29,15 +29,13 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-
+  constructor(private readonly userService: UserService) { }
   @Get()
   async findAll(
     @Req() req: any,
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
-    @Query('search') search: string,
+    @Query('search') search?: string,
   ) {
     const currentUser = req.user;
 
@@ -50,16 +48,14 @@ export class UserController {
       );
     }
 
-    if (currentUser.role) {
-      if (currentUser.role !== Role.STAFF) {
-        throw new ForbiddenException('คุณไม่มีสิทธิ์ดูข้อมูลผู้ใช้งานระดับนี้');
-      }
+
+    if (currentUser.role === Role.MANAGER) {
 
       return this.userService.findUsersByRole(
         Role.STAFF,
         +page,
         +limit,
-        search,
+        search, currentUser.branch_id,
       );
     }
 
@@ -88,9 +84,14 @@ export class UserController {
     @Body() createUserDto: CreateUserDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
+
     if (image) {
       createUserDto.image = image.filename;
     }
+
+    const currentUser = req.user;
+    if (currentUser.role === Role.ADMIN) { }
+    createUserDto.branch_id = currentUser.branch_id
 
     const creatorRole = req.user.role;
 
@@ -101,15 +102,16 @@ export class UserController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './public/images/users', 
+        destination: './public/images/users',
         filename: (req, image, cd) => {
-    
+
           return cd(null, name + extname(image.originalname));
         },
       }),
     }),
   )
   update(
+
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() image: Express.Multer.File,
     @Param('id') id: string,
@@ -117,6 +119,7 @@ export class UserController {
     if (image) {
       updateUserDto.image = image.filename;
     }
+
 
     return this.userService.update(+id, updateUserDto);
   }

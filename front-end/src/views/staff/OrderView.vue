@@ -15,7 +15,7 @@ import {
 import { formatThaiDateTime } from '@/utils/formatDate'
 import { usePaymentStore } from '@/stores/payment'
 import { PaymentMethodLabel } from '@/constants/paymentMethod'
-const trackingCode = ref('')
+
 const loadingStore = useLoadingStore()
 const orderStore = useOrderStore()
 const shimpentStore = useShipmentStore()

@@ -3,7 +3,7 @@ import { onMounted, ref, computed, watch } from 'vue'
 import { useOrderStore } from '@/stores/order'
 import { useLoadingStore } from '@/stores/loading'
 import { OrderStatusColor, OrderStatusLabel } from '@/constants/orderStatus'
-
+import LoadingComponent from '@/components/LoadingComponent.vue'
 
 const orderStore = useOrderStore()
 const loadingStore = useLoadingStore()

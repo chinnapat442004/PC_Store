@@ -61,6 +61,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', checkScreenSize)
 })
 
+
+
+
 async function logout() {
   await authStore.clearUser()
   updateLoginStatus()

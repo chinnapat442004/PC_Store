@@ -1,3 +1,4 @@
+import type { Branch } from "./Branch"
 import type { UserRole } from "./Menu"
 
 
@@ -11,7 +12,7 @@ export type User = {
   address?: string
   createdAt: string
   updatedAt: string
-
+  branch: Branch
 
 }
 

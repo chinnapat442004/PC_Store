@@ -4,17 +4,36 @@ import { UpdateBranchDto } from './dto/update-branch.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Branch } from './entities/branch.entity';
 import { Like, Repository } from 'typeorm';
+import { Product } from 'src/products/entities/product.entity';
+import { Stock } from 'src/stock/entities/stock.entity';
 
 @Injectable()
 export class BranchsService {
   constructor(
     @InjectRepository(Branch)
     private branchRepository: Repository<Branch>,
-  ) {}
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+    @InjectRepository(Stock) private stockRepository: Repository<Stock>,
+  ) { }
 
   async create(createBranchDto: CreateBranchDto) {
-    const branch = this.branchRepository.create(createBranchDto);
-    return await this.branchRepository.save(branch);
+    const branch = this.branchRepository.create(createBranchDto)
+    const savedBranch = await this.branchRepository.save(branch)
+
+    const products = await this.productRepository.find()
+
+    const stocks = products.map((product) =>
+      this.stockRepository.create({
+        product_id: product.product_id,
+        branch_id: savedBranch.branch_id,
+        quantity: 0,
+      }),
+    )
+
+    await this.stockRepository.save(stocks)
+
+    return savedBranch
   }
 
   async findAll(page: number, limit: number, search?: string) {
@@ -22,10 +41,10 @@ export class BranchsService {
 
     const where = search
       ? [
-          { branch_name: Like(`%${search}%`) },
-          // { address: Like(`%${search}%`) },
-          // { status: Like(`%${search}%`) },
-        ]
+        { branch_name: Like(`%${search}%`) },
+        // { address: Like(`%${search}%`) },
+        // { status: Like(`%${search}%`) },
+      ]
       : {};
 
     const [data, total] = await this.branchRepository.findAndCount({
