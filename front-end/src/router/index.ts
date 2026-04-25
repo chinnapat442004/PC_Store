@@ -19,6 +19,7 @@ import OrderView from '@/views/OrderView.vue'
 import PaymentConfirmation from '@/views/PaymentConfirmation.vue'
 import ShipmentView from '@/views/admin/ShipmentView.vue'
 import OrderDetailView from '@/views/OrderDetailView.vue'
+import CouponView from '@/views/admin/CouponView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -83,6 +84,7 @@ const router = createRouter({
         { path: 'category', name: 'category', component: CategoryView },
         { path: 'brand', name: 'brand', component: BrandView },
         { path: 'shipment', name: 'manager-shipment', component: ShipmentView },
+        { path: 'coupon', name: 'coupon', component: CouponView },
 
       ],
     }, {

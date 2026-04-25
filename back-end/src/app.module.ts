@@ -32,6 +32,8 @@ import { PaymentModule } from './payment/payment.module';
 import { Payment } from './payment/entities/payment.entity';
 import { StorePaymentConfigModule } from './store-payment-config/store-payment-config.module';
 import { StorePaymentConfig } from './store-payment-config/entities/store-payment-config.entity';
+import { CouponModule } from './coupon/coupon.module';
+import { Coupon } from './coupon/entities/coupon.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -55,7 +57,7 @@ import { StorePaymentConfig } from './store-payment-config/entities/store-paymen
         Cart,
         CartDetail,
         Image,
-        Brand, Stock, Address, Shipment, Payment, StorePaymentConfig
+        Brand, Stock, Address, Shipment, Payment, StorePaymentConfig, Coupon
       ],
     }),
 
@@ -69,7 +71,7 @@ import { StorePaymentConfig } from './store-payment-config/entities/store-paymen
     BrandsModule,
     StockModule,
     AddressModule,
-    ShipmentModule, ShipmentModule, PaymentModule, StorePaymentConfigModule
+    ShipmentModule, ShipmentModule, PaymentModule, StorePaymentConfigModule, CouponModule
 
   ],
 

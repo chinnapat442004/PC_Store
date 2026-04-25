@@ -32,6 +32,8 @@ export class Cart {
   @UpdateDateColumn()
   updated_at: Date;
 
+
+
   @OneToMany(() => CartDetail, (cartDetail) => cartDetail.cart)
   cartDetails: CartDetail[];
 

@@ -15,7 +15,8 @@ const menusByRole: Record<UserRole, MenuItem[]> = {
     { name: 'category', label: 'Category Management', path: { name: 'category' } },
     { name: 'editproduct', label: 'Product Management', path: { name: 'editproduct' } },
     { name: 'brand', label: 'Brand Management', path: { name: 'brand' } },
-    { name: 'manager-shipment', label: 'Shipment', path: { name: 'manager-shipment' } }
+    { name: 'manager-shipment', label: 'Shipment Management', path: { name: 'manager-shipment' } },
+    { name: 'coupon', label: 'Coupon Management', path: { name: 'coupon' } }
   ],
 
   manager: [
