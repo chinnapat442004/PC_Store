@@ -7,11 +7,16 @@ import {
   Delete,
   Req,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { UpdateCartDto } from './dto/update-cart.dto';
+import { ApplyCouponDto } from './dto/apply-coupon.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+
+@UseGuards(JwtAuthGuard)
 @Controller('cart')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) { }
@@ -21,19 +26,31 @@ export class CartsController {
     return this.cartsService.create(createCartDto);
   }
 
+  @Post('apply-coupon')
+  applyCoupon(
+    @Req() req,
+    @Body() body: ApplyCouponDto,
+  ) {
+
+
+
+    return this.cartsService.applyCoupon(req.user.user_id, body.code);
+  }
+
   @Get()
   findMyCart(@Req() req) {
-    return this.cartsService.findOne(req.user_id);
+    console.log(req.user)
+    return this.cartsService.findOne(req.user.user_id);
   }
 
   @Patch()
   addCartDetail(@Req() req, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartsService.addCartDetail(req.user_id, updateCartDto);
+    return this.cartsService.addCartDetail(req.user.user_id, updateCartDto);
   }
 
   @Patch('update')
   update(@Req() req, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartsService.update(req.user_id, updateCartDto);
+    return this.cartsService.update(req.user.user_id, updateCartDto);
   }
 
   @Delete('detail/:id')
@@ -43,6 +60,11 @@ export class CartsController {
 
   @Delete('clear')
   clearCart(@Req() req) {
-    return this.cartsService.clearCartByUser(req.user_id);
+    return this.cartsService.clearCartByUser(req.user.user_id);
+  }
+
+  @Delete('remove-coupon')
+  async removeCoupon(@Req() req) {
+    return this.cartsService.removeCoupon(req.user.user_id);
   }
 }

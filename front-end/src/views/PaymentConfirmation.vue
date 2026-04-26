@@ -21,6 +21,7 @@ const paymentStore = usePaymentStore()
 const orderStore = useOrderStore()
 const route = useRoute()
 const orderId = Number(route.params.orderId as string)
+const isDragging = ref(false)
 
 
 
@@ -78,6 +79,39 @@ const removeSlip = () => {
 }
 
 
+const onDropFile = (e: DragEvent) => {
+    const files = e.dataTransfer?.files
+    if (!files || files.length === 0) return
+
+    const file = files[0]
+
+    // เช็คว่าเป็นรูป
+    if (!file.type.startsWith('image/')) {
+        alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น')
+        return
+    }
+
+    slipFile.value = file
+    slipPreview.value = URL.createObjectURL(file)
+}
+
+
+const handleDrop = (e: DragEvent) => {
+    isDragging.value = false
+
+    const files = e.dataTransfer?.files
+    if (!files || files.length === 0) return
+
+    const file = files[0]
+
+    if (!file.type.startsWith('image/')) {
+        alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น')
+        return
+    }
+
+    slipFile.value = file
+    slipPreview.value = URL.createObjectURL(file)
+}
 </script>
 
 <template>
@@ -87,7 +121,7 @@ const removeSlip = () => {
             <div class="bg-white p-6 rounded-xl shadow-md">
 
                 <h2 class="text-xl font-semibold text-gray-800 mb-5 text-center">
-                    Payment Confirmation
+                    ยืนยันการชำระเงิน
                 </h2>
 
 
@@ -98,7 +132,7 @@ const removeSlip = () => {
 
 
                 <div class="text-center mb-5">
-                    <p class="text-gray-400 text-sm">Amount to Pay</p>
+                    <p class="text-gray-400 text-sm">ยอดที่ต้องชำระ</p>
                     <p class="text-3xl font-bold text-green-600 tracking-wide">
                         ฿{{ orderStore.selectedOrder?.total_amount }}
                     </p>
@@ -107,31 +141,37 @@ const removeSlip = () => {
 
                 <div class="bg-gray-50 rounded-xl p-4 space-y-3 text-sm">
                     <div class="flex justify-between">
-                        <span class="text-gray-500">PromptPay</span>
+                        <span class="text-gray-500"> พร้อมเพย์</span>
                         <span class="font-medium text-gray-800">{{ paymentStore.paymentAccount?.promptpay_number
                             }}</span>
                     </div>
 
                     <div class="flex justify-between">
-                        <span class="text-gray-500">Account Name</span>
+                        <span class="text-gray-500">ชื่อบัญชี</span>
                         <span class="font-medium text-gray-800">{{ paymentStore.paymentAccount?.account_name
                             }}</span>
                     </div>
                 </div>
 
 
-                <button class="mt-4 w-full bg-gray-900 text-white py-2.5 rounded-xl hover:bg-gray-700 transition"
-                    @click="copyPromptPay">
-                    คัดลอกเลขพร้อมเพย์
+                <button class="mt-4 w-full flex items-center justify-center gap-2 
+        py-2.5 rounded-xl   border hover:bg-gray-100
+         " @click="copyPromptPay">
+                    <span class="pi pi-copy text-sm"></span>
+                    <span>คัดลอกเลขพร้อมเพย์</span>
                 </button>
 
                 <div class="mt-6">
                     <p class="text-sm font-medium text-gray-700 mb-2">
-                        Upload Payment Slip
+                        อัปโหลดสลิปการชำระเงิน
                     </p>
 
-                    <label v-if="!slipFile"
-                        class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-gray-400 transition">
+                    <label v-if="!slipFile" class="flex flex-col items-center justify-center w-full h-32 
+         border-2 border-dashed rounded-xl cursor-pointer 
+         transition" :class="isDragging
+            ? 'border-blue-400 bg-blue-50'
+            : 'border-gray-300 hover:border-gray-400'" @dragover.prevent @dragenter.prevent="isDragging = true"
+                        @dragleave.prevent="isDragging = false" @drop.prevent="handleDrop">
                         <span class="text-gray-500 text-sm">
                             คลิกเพื่ออัปโหลด หรือ ลากรูปมาใส่
                         </span>
@@ -140,7 +180,7 @@ const removeSlip = () => {
                     </label>
 
 
-                    <div v-if="slipPreview" class="mt-4 relative">
+                    <div v-if="slipPreview" class="mt-4 relative  max-w-[250px] mx-auto">
 
                         <button @click="removeSlip"
                             class="absolute top-2 right-2 bg-black/60 text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black transition">
@@ -161,28 +201,31 @@ const removeSlip = () => {
             <div class="bg-white p-6 rounded-xl shadow-sm border h-fit">
 
                 <h2 class="text-lg font-semibold text-gray-700 mb-4">
-                    Order Summary
+                    สรุปรายการสั่งซื้อ
                 </h2>
 
 
                 <div class="flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-2">
 
                     <div v-for="detail in orderStore.selectedOrder?.details" :key="detail.order_detail_id"
-                        class="border rounded-xl flex items-center gap-3 p-3 w-full hover:bg-gray-50 transition">
-                        <img :src="detail.product_image" class="w-[70px] h-[70px] object-cover rounded-md" />
+                        class="border rounded-xl flex items-center gap-3 p-3 w-full  transition">
+                        <img :src="detail.product_image" class="w-[70px] h-[70px] object-cover rounded-md border" />
 
                         <div class="flex-1 flex flex-col gap-1">
                             <div class="flex justify-between">
                                 <div class="font-medium text-sm line-clamp-2 text-gray-800">
                                     {{ detail.product_title }}
                                 </div>
-                                <div class="text-gray-700 font-medium text-sm">
+                                <div class="text-red-500 font-medium text-sm sm:text-base whitespace-nowrap">
                                     ฿{{ detail.price }}
                                 </div>
                             </div>
 
-                            <div class="text-xs text-gray-400">
-                                Qty: {{ detail.quantity }}
+                            <div class="flex justify-between items-center text-sm text-gray-600">
+                                <div class="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded-md">
+                                    <span class="text-xs">จำนวน</span>
+                                    <span class="font-medium">{{ detail.quantity }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -193,20 +236,20 @@ const removeSlip = () => {
                 <div class="mt-4 text-sm space-y-2 text-gray-600">
 
                     <div class="flex justify-between">
-                        <span>Subtotal</span>
+                        <span>ยอดรวมสินค้า</span>
 
                         <span>฿ {{ orderStore.selectedOrder?.subtotal }}</span>
                     </div>
 
                     <div class="flex justify-between">
-                        <span>Discount</span>
+                        <span>ส่วนลด</span>
                         <span>฿ {{ orderStore.selectedOrder?.discount_amount }}</span>
                     </div>
 
                     <hr class="my-2" />
 
                     <div class="flex justify-between font-medium text-gray-800">
-                        <span>Total</span>
+                        <span>ยอดชำระทั้งหมด</span>
                         <span>฿ {{ orderStore.selectedOrder?.total_amount }}</span>
                     </div>
 
@@ -218,10 +261,10 @@ const removeSlip = () => {
                 </div>
 
                 <button :disabled="!slipFile" @click="submitSlip"
-                    class="mt-4 w-full py-2.5 rounded-xl text-white font-medium transition" :class="slipFile
-                        ? 'bg-green-600 hover:bg-green-700'
+                    class=" w-full mt-[20px] h-[35px]  rounded-[10px] text-white font-medium" :class="slipFile
+                        ? 'bg-[#82d182] hover:bg-[#69c769]'
                         : 'bg-gray-300 cursor-not-allowed'">
-                    Submit Payment
+                    ยืนยันการชำระเงิน
                 </button>
             </div>
 

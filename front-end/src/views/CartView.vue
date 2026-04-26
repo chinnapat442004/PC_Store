@@ -166,6 +166,11 @@ const goToCheckout = () => {
           <div>ราคา:</div>
           <div>฿{{ cartStore.cart?.subtotal }}</div>
         </div>
+        <div class="flex justify-between text-sm mb-2">
+          <div>ส่วนลด:</div>
+          <div>฿{{ cartStore.cart?.discount_amount }}</div>
+        </div>
+
 
 
 

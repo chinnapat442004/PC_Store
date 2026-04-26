@@ -1,3 +1,4 @@
+import type { ApplyCouponDto } from '@/types/Cart'
 import http from './http'
 import type { CartDetail } from '@/types/CartDetail'
 
@@ -20,6 +21,15 @@ function remove(cartDetailId: number) {
 function clearCart() {
   return http.delete('/cart/clear')
 }
+function applyCoupon(code: ApplyCouponDto) {
+  return http.post('/cart/apply-coupon', code)
+}
+
+
+function removeCoupon() {
+  return http.delete('/cart/remove-coupon/')
+}
+
 
 export default {
   getCart,
@@ -27,4 +37,6 @@ export default {
   updateCart,
   remove,
   clearCart,
+  applyCoupon,
+  removeCoupon
 }

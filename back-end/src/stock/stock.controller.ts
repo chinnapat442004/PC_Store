@@ -19,7 +19,8 @@ export class StockController {
     @Query('limit') limit: string = '10',
     @Query('search') search: string,
   ) {
-    console.log("ทดสอบ", req.user.branch_id)
+
+
     return this.stockService.getStock(req.user.branch_id, +page,
       +limit,
       search,)

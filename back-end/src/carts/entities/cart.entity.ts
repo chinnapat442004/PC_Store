@@ -8,9 +8,11 @@ import {
   OneToMany,
   JoinColumn,
   OneToOne,
+  ManyToOne,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { CartDetail } from './cart_detail';
+import { Coupon } from 'src/coupon/entities/coupon.entity';
 
 @Entity()
 export class Cart {
@@ -40,4 +42,8 @@ export class Cart {
   @OneToOne(() => User, (user) => user.cart)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ManyToOne(() => Coupon, { nullable: true })
+  @JoinColumn({ name: 'coupon_id' })
+  coupon: Coupon;
 }

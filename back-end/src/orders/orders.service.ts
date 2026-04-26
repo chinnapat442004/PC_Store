@@ -20,6 +20,9 @@ import { Payment } from 'src/payment/entities/payment.entity';
 import { UpdateTrackingDto } from './dto/update-tracking.dto';
 import { Shipment } from 'src/shipment/entities/shipment.entity';
 import { Stock } from 'src/stock/entities/stock.entity';
+import { Coupon } from 'src/coupon/entities/coupon.entity';
+import { Cart } from 'src/carts/entities/cart.entity';
+import { CartDetail } from 'src/carts/entities/cart_detail';
 
 
 @Injectable()
@@ -29,6 +32,8 @@ export class OrdersService {
 
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
+
+
   ) { }
 
 
@@ -95,6 +100,23 @@ export class OrdersService {
 
   async create(createOrderDto: CreateOrderDto, user_id: number) {
     return this.dataSource.transaction(async (manager) => {
+
+      const cart = await manager.findOne(Cart, {
+        where: { user: { user_id } },
+        relations: [
+          'cartDetails',
+          'cartDetails.product',
+          'cartDetails.product.images',
+        ]
+      });
+      console.log(cart)
+
+      // 'cartDetails',
+      // 'cartDetails.product',
+      // 'cartDetails.product.images',
+      // 'coupon',
+      // 'user',
+
       const address = await manager.findOne(Address, {
         where: {
           user: { user_id },
@@ -103,7 +125,7 @@ export class OrdersService {
       });
 
       if (!address) throw new BadRequestException('No default address');
-      if (!createOrderDto.details?.length)
+      if (!cart.cartDetails.length)
         throw new BadRequestException('No order details');
       if (!address.lat || !address.lng)
         throw new BadRequestException('Address has no location');
@@ -112,12 +134,18 @@ export class OrdersService {
       if (!branches.length)
         throw new BadRequestException('No branches found');
 
+
+      const productItems = cart.cartDetails.map((d) => ({
+        product_id: d.product.product_id,
+        quantity: d.quantity,
+      }));
+
       const nearestBranch = await this.findBranchWithStock(
         branches,
         address.lat,
         address.lng,
         manager,
-        createOrderDto.details,
+        productItems,
       );
 
       if (!nearestBranch) {
@@ -127,17 +155,18 @@ export class OrdersService {
       let total = 0;
 
       const products = await Promise.all(
-        createOrderDto.details.map(async (item) => {
+        cart.cartDetails.map(async (item) => {
           const product = await manager.findOne(Product, {
-            where: { product_id: item.product_id },
+            where: { product_id: item.product.product_id },
             relations: { images: true },
           });
 
           if (!product) {
-            throw new NotFoundException(`Product ${item.product_id} not found`);
+            throw new NotFoundException(`Product ${item.product.product_id} not found`);
           }
 
           total += product.price * item.quantity;
+
 
           return { product, quantity: item.quantity };
         }),
@@ -159,8 +188,56 @@ export class OrdersService {
       order.province = address.province;
       order.zipcode = address.zipcode;
       order.subtotal = total;
-      order.discount_amount = 0;
-      order.total_amount = order.subtotal;
+
+      if (createOrderDto.coupon_code) {
+
+        const coupon = await manager.findOne(Coupon, {
+          where: { code: createOrderDto.coupon_code },
+        });
+
+        // 1. ตรวจสอบสถานะคูปอง (เหมือนที่ทำใน Cart)
+        if (!coupon) throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
+
+        const now = new Date();
+        if (now < coupon.start_date || now > coupon.end_date) {
+          throw new BadRequestException('โค้ดส่วนลดนี้หมดอายุแล้วหรือไม่สามารถใช้ได้ในขณะนี้');
+        }
+
+        if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
+          throw new BadRequestException('โค้ดส่วนลดถูกใช้งานครบแล้ว');
+        }
+
+        if (coupon.min_order && total < coupon.min_order) {
+          throw new BadRequestException('ยอดสั่งซื้อไม่ถึงขั้นต่ำ');
+        }
+
+
+        let discount = 0;
+        if (coupon.discount_type === 'percent') {
+          discount = total * (coupon.discount_value / 100);
+          if (coupon.max_discount) {
+            discount = Math.min(discount, coupon.max_discount);
+          }
+        } else {
+          // ส่วนลดแบบเงินสด (fixed)
+          discount = coupon.discount_value;
+        }
+
+        // ป้องกันส่วนลดเกินราคาสินค้า
+        discount = Math.min(discount, total);
+        discount = Number(discount.toFixed(2));
+
+        // 3. บันทึกข้อมูลส่วนลดลงใน Order
+        order.coupon_code = coupon.code;
+        order.discount_type = coupon.discount_type;
+        order.discount_value = coupon.discount_value;
+        order.discount_amount = discount;
+        order.total_amount = total - discount;
+
+        // 4. อัปเดตจำนวนครั้งที่คูปองถูกใช้งาน (สำคัญมาก ต้องทำใน Transaction นี้)
+        coupon.used_count += 1;
+        await manager.save(coupon);
+      }
 
       if (createOrderDto.payment_method === PaymentMethod.PROMPTPAY) {
         order.order_status = OrderStatus.PENDING;
@@ -190,10 +267,10 @@ export class OrdersService {
 
       await manager.save(history);
 
-      for (const item of createOrderDto.details) {
+      for (const item of cart.cartDetails) {
         const stock = await manager.findOne(Stock, {
           where: {
-            product_id: item.product_id,
+            product_id: item.product.product_id,
             branch_id: nearestBranch.branch_id,
           },
         });
@@ -210,6 +287,8 @@ export class OrdersService {
         payment.amount = order.total_amount;
         await manager.save(payment);
       }
+
+
 
       return savedOrder;
     });

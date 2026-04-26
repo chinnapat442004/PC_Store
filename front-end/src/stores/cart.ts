@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { Cart } from '@/types/Cart'
+import type { ApplyCouponDto, Cart } from '@/types/Cart'
 import cartService from '@/service/cart'
 import type { CartDetail } from '@/types/CartDetail'
 import { useLoadingStore } from './loading'
@@ -18,9 +18,12 @@ export const useCartStore = defineStore('Cart', () => {
 
   const initialCart: Cart = {
     subtotal: 0,
+    discount_amount: 0,
     total: 0,
     cartDetails: [],
   }
+
+
 
   const initialCartDetail: CartDetail = {
     quantity: 0,
@@ -36,6 +39,12 @@ export const useCartStore = defineStore('Cart', () => {
     }
   }
 
+
+  const initialCoupon: ApplyCouponDto = {
+    code: ''
+  }
+
+  const editedCode = ref(<ApplyCouponDto>{ ...initialCoupon })
 
   const cartDetailCount = computed(() => {
     return cart.value?.cartDetails?.length || 0
@@ -77,6 +86,17 @@ export const useCartStore = defineStore('Cart', () => {
     cartService.clearCart()
   }
 
+  function applyCoupon() {
+    return cartService.applyCoupon(editedCode.value)
+  }
 
-  return { getCarts, addCartDetail, clearChart, update, remove, cart, editedCart, editedCartDetail, cartDetailCount, }
+  function removeCoupon() {
+
+    return cartService.removeCoupon()
+
+
+  }
+
+  return { getCarts, addCartDetail, clearChart, update, remove, applyCoupon, removeCoupon, cart, editedCart, editedCartDetail, cartDetailCount, editedCode }
 })
+

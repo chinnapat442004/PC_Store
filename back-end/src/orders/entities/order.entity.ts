@@ -35,12 +35,24 @@ export class Order {
   subtotal: number;
 
 
-  @Column('numeric', { precision: 10, scale: 2, default: 0 })
-  discount_amount: number;
 
 
   @Column('numeric', { precision: 10, scale: 2 })
   total_amount: number;
+
+
+  @Column({ nullable: true })
+  coupon_code: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  discount_type: 'percent' | 'fixed';
+
+  @Column('numeric', { precision: 10, scale: 2, nullable: true })
+  discount_value: number;
+
+  @Column('numeric', { precision: 10, scale: 2, default: 0 })
+  discount_amount: number;
+
 
   @Column({
     type: 'enum',

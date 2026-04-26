@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cart } from './entities/cart.entity';
 import { Repository } from 'typeorm';
 import { CartDetail } from './entities/cart_detail';
+import { Coupon } from 'src/coupon/entities/coupon.entity';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class CartsService {
@@ -13,6 +15,8 @@ export class CartsService {
     private cartRepository: Repository<Cart>,
     @InjectRepository(CartDetail)
     private cartDetailRepository: Repository<CartDetail>,
+    @InjectRepository(Coupon)
+    private couponRepository: Repository<Coupon>,
   ) { }
 
   async create(createCartDto: CreateCartDto) {
@@ -106,6 +110,7 @@ export class CartsService {
     return this.cartRepository.save(cart);
   }
 
+
   async findAll() {
     const carts = await this.cartRepository.find({
       relations: {
@@ -129,7 +134,7 @@ export class CartsService {
       relations: {
         cartDetails: {
           product: { images: true },
-        },
+        }, coupon: true,
         user: true,
       },
     });
@@ -175,4 +180,88 @@ export class CartsService {
 
     return this.cartRepository.save(cart);
   }
+
+
+
+  private calculateDiscount(subtotal: number, coupon: Coupon): number {
+
+    if (subtotal < coupon.min_order) {
+      throw new Error('ยอดสั่งซื้อไม่ถึงขั้นต่ำ');
+    }
+
+    let discount = 0;
+
+    if (coupon.discount_type === 'percent') {
+      discount = subtotal * (coupon.discount_value / 100);
+
+      if (coupon.max_discount) {
+        discount = Math.min(discount, coupon.max_discount);
+      }
+    } else {
+      discount = coupon.discount_value;
+    }
+
+    discount = Math.min(discount, subtotal);
+
+    return Number(discount.toFixed(2));
+  }
+
+
+  async applyCoupon(user_id: number, code: string) {
+    const cart = await this.cartRepository.findOne({
+      where: { user: { user_id } }
+    });
+
+    if (!cart) throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
+
+    const coupon = await this.couponRepository.findOne({
+      where: { code },
+    });
+
+    if (!coupon) throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
+
+    const now = new Date();
+
+    if (now < coupon.start_date || now > coupon.end_date) {
+      throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
+    }
+
+    if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
+      throw new BadRequestException('โค้ดส่วนลดถูกใช้งานครบแล้ว');
+    }
+
+    if (coupon.min_order && cart.subtotal < coupon.min_order) {
+      throw new BadRequestException('ยอดสั่งซื้อไม่ถึงขั้นต่ำ');
+    }
+
+
+    const discount = this.calculateDiscount(cart.subtotal, coupon);
+
+    cart.discount_amount = discount;
+    cart.total = cart.subtotal - discount;
+    cart.coupon = coupon;
+
+    return this.cartRepository.save(cart);
+  }
+
+
+  async removeCoupon(user_id: number) {
+    const cart = await this.cartRepository.findOne({
+      where: { user: { user_id } },
+    });
+
+    if (!cart) throw new Error('Cart not found');
+
+    cart.discount_amount = 0;
+    cart.total = cart.subtotal;
+
+    cart.coupon = null
+
+    return this.cartRepository.save(cart);
+  }
+
+
+
+
+
 }

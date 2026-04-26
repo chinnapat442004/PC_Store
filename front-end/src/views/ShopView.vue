@@ -18,7 +18,7 @@ const cartStore = useCartStore()
 const min = ref(0)
 const max = ref(100000)
 const range = ref([0, 100000])
-const selectAll = ref(false)
+
 const checkbox = ref<number[]>([])
 
 const sliderKey = ref(0)

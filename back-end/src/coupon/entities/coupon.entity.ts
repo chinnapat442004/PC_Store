@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Cart } from 'src/carts/entities/cart.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum DiscountType {
     PERCENT = 'percent',
@@ -57,4 +58,7 @@ export class Coupon {
 
     @Column({ default: true, })
     is_active: boolean;
+
+    @OneToMany(() => Cart, (cart) => cart.coupon)
+    carts: Cart[];
 }

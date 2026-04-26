@@ -11,7 +11,7 @@ export const useOrderStore = defineStore('order', () => {
     const orders = ref<Order[]>([])
     const initialCreateOrder: CreateOrder = {
         payment_method: 'promptpay',
-        details: []
+
     }
 
     const initialtrackingForm: UpdateTracking = {
@@ -74,6 +74,8 @@ export const useOrderStore = defineStore('order', () => {
     function setOrder(data: Partial<CreateOrder>) {
 
         orderForm.value = { ...orderForm.value, ...data }
+
+
 
     }
 

@@ -1,3 +1,4 @@
+import type { DiscountType } from "./Coupon";
 import type { OrderDetail } from "./OrderDetail";
 import type { PaymentMethod } from "./Payment";
 import type { Shipment } from "./Shipment";
@@ -14,10 +15,7 @@ export type OrderStatus =
 
 type CreateOrder = {
     payment_method: PaymentMethod;
-    details: {
-        product_id: number;
-        quantity: number;
-    }[];
+    coupon_code?: string
 }
 
 
@@ -38,7 +36,10 @@ type Order = {
     updated_at: string
     stripe_payment_id: string | null
     subtotal: number
-    discount_amount: number
+    coupon_code?: string
+    discount_type?: DiscountType
+    discount_value?: number
+    discount_amount?: number
     total_amount: number
     order_status: OrderStatus
     payment_method: PaymentMethod
@@ -55,6 +56,8 @@ type Order = {
     orderHistory: OrderStatusHistory[]
 
 }
+
+
 
 export type OrderStatusHistory = {
     id: number;
