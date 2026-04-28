@@ -7,7 +7,7 @@ import ProductView from '../views/ProductView.vue'
 import DashboardView from '../views/admin/DashboardView.vue'
 import EditProductView from '../views/admin/ProductView.vue'
 import RegisterView from '../views/RegisterView.vue'
-import BrandView from '@/views/admin/BrandView.vue'
+
 import { useAuthStore } from '@/stores/auth'
 import UserView from '@/views/admin/UserView.vue'
 import BranchView from '@/views/admin/BranchView.vue'
@@ -82,7 +82,6 @@ const router = createRouter({
         { path: 'user', name: 'user', component: UserView },
         { path: 'branch', name: 'branch', component: BranchView },
         { path: 'category', name: 'category', component: CategoryView },
-        { path: 'brand', name: 'brand', component: BrandView },
         { path: 'shipment', name: 'manager-shipment', component: ShipmentView },
         { path: 'coupon', name: 'coupon', component: CouponView },
 

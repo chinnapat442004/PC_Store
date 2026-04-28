@@ -22,8 +22,11 @@ export const useOrderStore = defineStore('order', () => {
     const counts = ref<Record<OrderStatus, number>>({} as Record<OrderStatus, number>)
     const selectedOrder = ref<Order | null>(null)
 
-    const orderForm = ref<CreateOrder>({ ...initialCreateOrder })
-    const trackingForm = ref<UpdateTracking>({ ...initialtrackingForm })
+
+
+
+    const orderForm = ref<CreateOrder>(structuredClone(initialCreateOrder))
+    const trackingForm = ref<UpdateTracking>(structuredClone(initialtrackingForm))
 
 
     const page = ref(1)

@@ -7,20 +7,20 @@ import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useLoadingStore } from '@/stores/loading'
-const loadingStore = useLoadingStore()
-const router = useRouter()
-const search = ref('')
 
+const router = useRouter()
+
+const loadingStore = useLoadingStore()
 const productStore = useProductStore()
 const categoryStore = useCategoryStore()
 const cartStore = useCartStore()
 
+
+const search = ref('')
 const min = ref(0)
 const max = ref(100000)
 const range = ref([0, 100000])
-
 const checkbox = ref<number[]>([])
-
 const sliderKey = ref(0)
 
 onMounted(async () => {

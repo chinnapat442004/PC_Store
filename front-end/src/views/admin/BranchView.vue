@@ -7,8 +7,11 @@ import MapPicker from '@/components/MapPicker.vue'
 import type { Branch } from '@/types/Branch'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+
 const loadingStore = useLoadingStore()
 const branchStore = useBranchStore()
+
+const mode = ref<'create' | 'edit'>('create')
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
@@ -18,7 +21,7 @@ onMounted(async () => {
   await branchStore.getBranches()
 })
 
-const mode = ref<'create' | 'edit'>('create')
+
 
 const openEdit = (branch: Branch) => {
   mode.value = 'edit'
@@ -26,7 +29,6 @@ const openEdit = (branch: Branch) => {
   console.log(branchStore.editedBranch)
   showDialog.value = true
 }
-
 
 
 const saveBranch = async () => {

@@ -12,7 +12,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Image } from './image.entity';
-import { Brand } from 'src/brands/entities/brand.entity';
+
 import { Stock } from 'src/stock/entities/stock.entity';
 @Entity()
 export class Product {
@@ -52,9 +52,6 @@ export class Product {
   })
   images: Image[];
 
-  @ManyToOne(() => Brand, (brand) => brand.products)
-  @JoinColumn({ name: 'brand_id' })
-  brand: Brand;
 
   @OneToMany(() => Stock, (stock) => stock.product)
   stocks: Stock[];

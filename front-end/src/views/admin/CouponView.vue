@@ -6,8 +6,8 @@ import type { Category } from '@/types/Category'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useCouponStore } from '@/stores/coupon'
-import { formatThaiDate, formatThaiDateTime } from '@/utils/formatDate'
-import { formatDiscount, formatType } from '@/utils/formatDiscount'
+import { formatThaiDate, } from '@/utils/formatDate'
+import { formatDiscount } from '@/utils/formatDiscount'
 import type { Coupon } from '@/types/Coupon'
 
 const loadingStore = useLoadingStore()
@@ -55,22 +55,6 @@ const openCreateDialog = () => {
     showDialog.value = true
 }
 
-const removeItem = async (category: Category) => {
-    // await categoryStore.deleteCategory(category.category_id!)
-    // await categoryStore.getCategories()
-    // categoryStore.resetForm()
-}
-
-
-const openDelete = () => {
-    deleteConfirm.value = true
-    // categoryStore.editedCategory = item
-}
-
-const closeDialogDelete = () => {
-    deleteConfirm.value = false
-    // categoryStore.resetForm()
-}
 
 const clearSearch = async () => {
     search.value = ''

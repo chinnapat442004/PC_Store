@@ -8,8 +8,27 @@ import { useOrderStore } from '@/stores/order'
 import { OrderStatusColor, OrderStatusLabelCustomer } from '@/constants/orderStatus'
 import router from '@/router'
 
-const tab = ref<typeof tabs[number]['key']>('all')
+
 const orderStore = useOrderStore()
+const loadingStore = useLoadingStore()
+
+
+const tab = ref<typeof tabs[number]['key']>('all')
+
+type Tab = {
+  key: string
+  label: string
+  status?: OrderStatus[]
+}
+
+const tabs = [
+  { key: 'all', label: 'ทั้งหมด' },
+  { key: 'pending', label: 'รอชำระเงิน', status: ['pending', 'waiting_verify'] as OrderStatus[] },
+  { key: 'processing', label: 'กำลังดำเนินการ', status: ['confirmed', 'picking',] as OrderStatus[] },
+  { key: 'shipped', label: 'กำลังจัดส่ง', status: ['shipped'] as OrderStatus[] },
+  { key: 'done', label: 'สำเร็จ', status: ['done'] as OrderStatus[] },
+  { key: 'cancelled', label: 'ยกเลิก', status: ['cancelled'] as OrderStatus[] },
+]
 
 onMounted(async () => {
   await fetchOrders()
@@ -24,7 +43,6 @@ watch(tab, async () => {
 
 const fetchOrders = async () => {
   const selectedTab = tabs.find(t => t.key === tab.value)
-
   await orderStore.getOrders(
     orderStore.page,
     orderStore.limit,
@@ -33,26 +51,6 @@ const fetchOrders = async () => {
 }
 
 
-type Tab = {
-  key: string
-  label: string
-  status?: OrderStatus[]
-}
-
-const tabs = [
-  { key: 'all', label: 'ทั้งหมด' },
-
-  { key: 'pending', label: 'รอชำระเงิน', status: ['pending', 'waiting_verify'] as OrderStatus[] },
-
-  { key: 'processing', label: 'กำลังดำเนินการ', status: ['confirmed', 'picking',] as OrderStatus[] },
-
-  { key: 'shipped', label: 'กำลังจัดส่ง', status: ['shipped'] as OrderStatus[] },
-
-  { key: 'done', label: 'สำเร็จ', status: ['done'] as OrderStatus[] },
-
-  { key: 'cancelled', label: 'ยกเลิก', status: ['cancelled'] as OrderStatus[] },
-]
-const loadingStore = useLoadingStore()
 
 
 const cancelOrder = async (orderId: number) => {
@@ -64,15 +62,12 @@ const cancelOrder = async (orderId: number) => {
   }
 }
 
-
 const createUpdatePayload = (status: OrderStatus): UpdateOrder => ({
   status: status
 })
 
 const payOrder = async (orderId: number) => {
   try {
-
-
     await fetchOrders()
     router.push({
       name: 'payment-confirmation',
@@ -92,22 +87,15 @@ const confirmReceived = async (orderId: number) => {
   }
 }
 
-const buyAgain = (order: any) => {
-
-
-}
 
 const getCountByTab = (t: Tab) => {
-
   if (t.key === 'all') {
     return Object.values(orderStore.counts || {}).reduce(
       (sum, count) => sum + count,
       0
     )
   }
-
   if (!t.status) return 0
-
   return t.status.reduce((sum, s) => {
     return sum + (orderStore.counts[s] || 0)
   }, 0)

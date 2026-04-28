@@ -9,8 +9,6 @@ import LoadingComponent from '@/components/LoadingComponent.vue'
 import { computed } from 'vue'
 import { useBranchStore } from '@/stores/branch'
 
-
-
 const loadingStore = useLoadingStore()
 const userStore = useUserStore()
 const showDialog = ref(false)
@@ -28,8 +26,6 @@ onMounted(async () => {
 
 
 
-
-
 const formUser = computed(() => {
   return mode.value === 'create' ? userStore.createUser : userStore.editedUser
 })
@@ -39,11 +35,9 @@ const mode = ref<'create' | 'edit'>('create')
 const openEdit = (user: User) => {
   mode.value = 'edit'
   userStore.editedUser = { ...user }
-
   if (authStore.user?.role === 'admin') {
     userStore.createUser.role = 'manager'
   }
-
   if (authStore.user?.role === 'manager') {
     userStore.createUser.role = 'staff'
   }
@@ -53,11 +47,8 @@ const openEdit = (user: User) => {
 
 
 const saveUser = async () => {
-
   if (mode.value === 'create') {
-
     await userStore.addUser(userStore.createUser)
-
     userStore.clearCreateUser()
   } else if (mode.value === 'edit' && userStore.editedUser) {
     await userStore.updateUser(userStore.editedUser)
@@ -65,7 +56,6 @@ const saveUser = async () => {
   }
 
   await userStore.getUsers()
-
   showDialog.value = false
   showConfirm.value = false
 }
@@ -80,11 +70,9 @@ const openCreateDialog = () => {
   if (authStore.user?.role === 'admin') {
     userStore.createUser.role = 'manager'
   }
-
   if (authStore.user?.role === 'manager') {
     userStore.createUser.role = 'staff'
   }
-
   showDialog.value = true
 }
 

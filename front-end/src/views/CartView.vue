@@ -18,7 +18,6 @@ const authStore = useAuthStore()
 onMounted(async () => {
   await authStore.getCurrentUser()
   cartStore.getCarts()
-
 })
 
 
@@ -27,24 +26,18 @@ function recalculateCart(cart: Cart) {
     (sum, item) => sum + (item.price || 0),
     0
   )
-
-
   const total = subtotal
-
   cart.subtotal = Number(subtotal.toFixed(2))
-
   cart.total = Number(total.toFixed(2))
 }
 
 async function plus(detail: CartDetail) {
   detail.quantity++
   detail.price = detail.product.price * detail.quantity
-
   const cart = cartStore.cart
   if (cart) {
     recalculateCart(cart)
   }
-
   try {
     if (cartStore.cart) {
       await cartStore.update(detail)
@@ -56,15 +49,12 @@ async function plus(detail: CartDetail) {
 
 async function minus(detail: CartDetail) {
   if (detail.quantity <= 1) return
-
   detail.quantity--
   detail.price = detail.product.price * detail.quantity
-
   const cart = cartStore.cart
   if (cart) {
     recalculateCart(cart)
   }
-
   try {
     if (cartStore.cart) {
       await cartStore.update(detail)
@@ -79,12 +69,10 @@ async function remove(cartDetail: CartDetail) {
   await cartStore.getCarts()
   const cart = cartStore.cart
   if (cart && cart.cartDetails) {
-
     cart.cartDetails = cart.cartDetails.filter(
       (detail) => detail.cart_detail_id !== cartDetail.cart_detail_id,
     )
   }
-
   if (cart) {
     cart.subtotal = cart.cartDetails.reduce((total, cartDetail) => {
       if (cartDetail.price) {
@@ -170,20 +158,11 @@ const goToCheckout = () => {
           <div>ส่วนลด:</div>
           <div>฿{{ cartStore.cart?.discount_amount }}</div>
         </div>
-
-
-
-
         <hr class="my-3" />
-
-
         <div class="flex justify-between text-lg font-bold ">
           <div>ยอดรวม:</div>
           <div>฿{{ cartStore.cart?.total }}</div>
         </div>
-
-
-
         <div>
           <button
             class="bg-[#82d182] w-full mt-[20px] h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
@@ -195,20 +174,36 @@ const goToCheckout = () => {
 
     </div>
   </div>
-  <div v-else class="flex justify-center   w-full py-[30px] px-[10px] md:px-[20px]">
+
+
+  <div v-else-if="!authStore.token" class="flex justify-center   w-full py-[30px] px-[10px] md:px-[20px]">
     <div
       class="max-w-[750px] w-full min-w-[300px] flex flex-col items-center justify-center bg-white rounded-[10px] p-10  text-gray-500">
 
       <div class="text-lg font-semibold text-gray-700 mb-1">
-        ไม่มีสินค้าในตะกร้า
+        กรุณาเข้าสู่ระบบก่อน
       </div>
 
+      <div class="text-sm text-gray-500 mb-4">
+        คุณยังไม่ได้เข้าสู่ระบบ กรุณาเข้าสู่ระบบเพื่อใช้งานตะกร้าสินค้า
+      </div>
 
+      <button class=" text-white bg-[#637aad] hover:bg-[#4a68a8] rounded-lg px-3 py-1 transition"
+        @click="$router.push('/login')">
+        ไปหน้าเข้าสู่ระบบ
+      </button>
+
+    </div>
+  </div>
+  <div v-else class="flex justify-center   w-full py-[30px] px-[10px] md:px-[20px]">
+    <div
+      class="max-w-[750px] w-full min-w-[300px] flex flex-col items-center justify-center bg-white rounded-[10px] p-10  text-gray-500">
+      <div class="text-lg font-semibold text-gray-700 mb-1">
+        ไม่มีสินค้าในตะกร้า
+      </div>
       <div class="text-sm text-gray-500 mb-4">
         กรุณาเพิ่มสินค้าลงตะกร้าก่อนดำเนินการต่อ
       </div>
-
-
       <button class=" text-white bg-[#637aad] hover:bg-[#4a68a8] rounded-lg px-3 py-1 transition"
         @click="$router.push('/shop')">
         ไปหน้า Shop
@@ -216,6 +211,8 @@ const goToCheckout = () => {
 
     </div>
   </div>
+
+
 
 
   <LoadingComponent v-model="loadingStore.loading" />

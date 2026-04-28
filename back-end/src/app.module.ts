@@ -19,8 +19,6 @@ import { CartDetail } from './carts/entities/cart_detail';
 import { BranchsModule } from './branches/branchs.module';
 import { Branch } from './branches/entities/branch.entity';
 import { ConfigModule } from '@nestjs/config';
-import { BrandsModule } from './brands/brands.module';
-import { Brand } from './brands/entities/brand.entity';
 import { StockModule } from './stock/stock.module';
 import { Stock } from './stock/entities/stock.entity';
 import { AddressModule } from './address/address.module';
@@ -34,6 +32,11 @@ import { StorePaymentConfigModule } from './store-payment-config/store-payment-c
 import { StorePaymentConfig } from './store-payment-config/entities/store-payment-config.entity';
 import { CouponModule } from './coupon/coupon.module';
 import { Coupon } from './coupon/entities/coupon.entity';
+
+import { DashboardModule } from './dashboard/dashboard.module';
+import { DashboardController } from './dashboard/dashboard.controller';
+import { DashboardService } from './dashboard/dashboard.service';
+import { AdminDashboardService } from './dashboard/admin/admin-dashboard.service';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -57,7 +60,7 @@ import { Coupon } from './coupon/entities/coupon.entity';
         Cart,
         CartDetail,
         Image,
-        Brand, Stock, Address, Shipment, Payment, StorePaymentConfig, Coupon
+        Stock, Address, Shipment, Payment, StorePaymentConfig, Coupon
       ],
     }),
 
@@ -68,14 +71,13 @@ import { Coupon } from './coupon/entities/coupon.entity';
     ProductsModule,
     CategoriesModule,
     CartsModule,
-    BrandsModule,
     StockModule,
     AddressModule,
-    ShipmentModule, ShipmentModule, PaymentModule, StorePaymentConfigModule, CouponModule
+    ShipmentModule, ShipmentModule, PaymentModule, StorePaymentConfigModule, CouponModule, DashboardModule
 
   ],
 
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, DashboardController],
+  providers: [AppService, DashboardService, AdminDashboardService],
 })
 export class AppModule { }

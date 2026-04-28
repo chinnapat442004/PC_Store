@@ -7,16 +7,27 @@ import { formatThaiDateTime } from '@/utils/formatDate'
 const stockStore = useStockStore()
 const loadingStore = useLoadingStore()
 
-
 const tab = ref<'stock' | 'history'>('stock')
 const search = ref('')
-
-
 const showDialog = ref(false)
 const selectedStock = ref<StockItem | null>(null)
 const quantity = ref(0)
 const note = ref('')
 
+
+
+
+
+
+onMounted(async () => {
+  await fetchData()
+})
+
+
+watch(tab, async () => {
+  stockStore.page = 1
+  await fetchData()
+})
 
 
 const formatQty = (qty: number, type: string) => {
@@ -32,18 +43,6 @@ const fetchData = async () => {
     await stockStore.getMovements()
   }
 }
-
-
-onMounted(async () => {
-  await fetchData()
-})
-
-
-watch(tab, async () => {
-  stockStore.page = 1
-  await fetchData()
-})
-
 
 const searchData = async () => {
   stockStore.search = search.value
@@ -98,7 +97,6 @@ const updateStock = async () => {
     quantity: quantity.value,
     note: note.value || undefined,
   })
-
   showDialog.value = false
 }
 
@@ -223,7 +221,6 @@ const updateStock = async () => {
     <table class="w-full text-left  text-black ">
       <thead class="bg-[#383838] text-gray-300 text-sm">
         <tr>
-
           <th class="px-6 py-3 ">Name</th>
           <th class="px-6 py-3"> จำนวน</th>
           <th class="px-6 py-3 ">type</th>

@@ -120,4 +120,46 @@ export class UserService {
       lastPage: Math.ceil(total / limit),
     };
   }
+
+
+  async getNewCustomersMonth() {
+    const start = new Date();
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.role = :role', { role: 'CUSTOMER' })
+      .andWhere('user.createdAt BETWEEN :start AND :end', {
+        start,
+        end,
+      })
+      .getCount();
+  }
+
+
+
+  async getUserStats() {
+    const total = await this.userRepository.count();
+
+    const staff = await this.userRepository.count({
+      where: { role: Role.STAFF },
+    });
+
+    const manager = await this.userRepository.count({
+      where: { role: Role.MANAGER },
+    });
+
+    const customer = await this.userRepository.count({
+      where: { role: Role.CUSTOMER },
+    });
+
+
+    return {
+      total,
+      manager,
+      staff,
+      customer
+    };
+  }
 }

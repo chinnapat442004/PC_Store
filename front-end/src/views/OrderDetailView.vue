@@ -11,12 +11,14 @@ import { OrderStatusLabelCustomer, OrderStatusIcon } from '@/constants/orderStat
 import { formatThaiDateTime } from '@/utils/formatDate'
 import type { OrderStatus, UpdateOrder } from '@/types/Order';
 import router from '@/router'
+
 const authStore = useAuthStore()
 const addressStore = useAddressStore()
 const loadingStore = useLoadingStore()
 const orderStore = useOrderStore()
-const route = useRoute()
 const paymentStore = usePaymentStore()
+
+const route = useRoute()
 const orderId = Number(route.params.orderId as string)
 
 onMounted(async () => {
@@ -49,8 +51,6 @@ const confirmReceived = async (orderId: number) => {
 
 const payOrder = async (orderId: number) => {
     try {
-
-
         fetchOrders()
         router.push({
             name: 'payment-confirmation',

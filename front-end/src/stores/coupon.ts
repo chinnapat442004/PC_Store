@@ -31,11 +31,7 @@ export const useCouponStore = defineStore('coupon', () => {
     }
 
     const editedCoupon = ref<CouponPayload>(
-        { ...initialCoupon })
-
-
-
-
+        structuredClone(initialCoupon))
 
 
 
@@ -54,7 +50,7 @@ export const useCouponStore = defineStore('coupon', () => {
     }
 
     function setEditCoupon(coupon: Coupon) {
-        editedCoupon.value = { ...coupon }
+        editedCoupon.value = structuredClone(coupon)
     }
 
     function cerateCoupon() {

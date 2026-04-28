@@ -5,8 +5,6 @@ import { useAuthStore } from '@/stores/auth'
 import { onMounted, ref } from 'vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 
-
-
 import { useLoadingStore } from '@/stores/loading'
 import { usePaymentStore } from '@/stores/payment'
 import { useRoute } from 'vue-router'
@@ -19,9 +17,14 @@ const addressStore = useAddressStore()
 const loadingStore = useLoadingStore()
 const paymentStore = usePaymentStore()
 const orderStore = useOrderStore()
+
 const route = useRoute()
+
+
 const orderId = Number(route.params.orderId as string)
 const isDragging = ref(false)
+const slipFile = ref<File | null>(null)
+const slipPreview = ref<string | null>(null)
 
 
 
@@ -36,8 +39,6 @@ onMounted(async () => {
 
 
 
-const slipFile = ref<File | null>(null)
-const slipPreview = ref<string | null>(null)
 
 const onFileChange = (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0]
@@ -50,20 +51,13 @@ const onFileChange = (e: Event) => {
 const submitSlip = async () => {
 
     if (!slipFile.value) return
-
-
     await orderStore.getOrderById(orderId)
-
     const paymentId = paymentStore.paymentAccount?.payment_id
-
     if (!paymentId) {
         alert('ไม่พบ payment')
         return
     }
-
     await paymentStore.uploadSlip(paymentId, slipFile.value)
-
-
     router.push({
         name: 'order-succes',
         params: { orderId: orderId }
@@ -73,45 +67,26 @@ const copyPromptPay = () => {
     navigator.clipboard.writeText('0123456789')
 }
 
+
 const removeSlip = () => {
     slipFile.value = null
     slipPreview.value = null
 }
 
 
-const onDropFile = (e: DragEvent) => {
-    const files = e.dataTransfer?.files
-    if (!files || files.length === 0) return
-
-    const file = files[0]
-
-    // เช็คว่าเป็นรูป
-    if (!file.type.startsWith('image/')) {
-        alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น')
-        return
-    }
-
-    slipFile.value = file
-    slipPreview.value = URL.createObjectURL(file)
-}
-
-
 const handleDrop = (e: DragEvent) => {
     isDragging.value = false
-
     const files = e.dataTransfer?.files
     if (!files || files.length === 0) return
-
     const file = files[0]
-
     if (!file.type.startsWith('image/')) {
         alert('กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น')
         return
     }
-
     slipFile.value = file
     slipPreview.value = URL.createObjectURL(file)
 }
+
 </script>
 
 <template>

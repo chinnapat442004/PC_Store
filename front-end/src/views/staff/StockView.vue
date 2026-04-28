@@ -12,15 +12,10 @@ const loadingStore = useLoadingStore()
 const tab = ref<'stock' | 'history'>('stock')
 const search = ref('')
 
-
 const showDialog = ref(false)
 const selectedStock = ref<StockItem | null>(null)
 const quantity = ref(0)
 const note = ref('')
-
-
-
-
 
 
 onMounted(async () => {
@@ -84,14 +79,12 @@ const openEdit = (stock: StockItem) => {
   note.value = ''
   showDialog.value = true
 }
-
 const closeDialog = () => {
   showDialog.value = false
 }
 
 const updateStock = async () => {
   if (!selectedStock.value) return
-
   if (quantity.value === selectedStock.value.quantity) {
     showDialog.value = false
     return
@@ -102,7 +95,6 @@ const updateStock = async () => {
     quantity: quantity.value,
     note: note.value || undefined,
   })
-
   showDialog.value = false
 }
 
@@ -282,14 +274,6 @@ const updateStock = async () => {
       </button>
     </div>
   </div>
-
-
-
-
-
-
-
-
 
   <!-- Dialog -->
   <div v-if="showDialog" class="overlay">

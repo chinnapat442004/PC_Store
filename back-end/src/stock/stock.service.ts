@@ -23,7 +23,6 @@ export class StockService {
 
 
   async getStock(
-
     branch_id: number,
     page: number = 1,
     limit: number = 10,
@@ -158,8 +157,6 @@ export class StockService {
         note: m.note,
         created_at: m.created_at,
         ref: m.ref_id
-
-
       }
     })
 

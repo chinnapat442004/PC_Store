@@ -16,6 +16,7 @@ import LoadingComponent from '@/components/LoadingComponent.vue'
 const loadingStore = useLoadingStore()
 const productStore = useProductStore()
 const categoryStore = useCategoryStore()
+
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
@@ -24,6 +25,7 @@ const previewImage = ref<string | null>(null);
 const mode = ref<'create' | 'edit'>('create')
 const editingId = ref<number | null>(null)
 const selectedCategory = ref<any>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
 
 
 onMounted(async () => {
@@ -62,11 +64,12 @@ const openEdit = async (product: Product) => {
     title: product.title,
     description: product.description,
     price: product.price,
-    quantity: product.quantity,
     images: product.images,
     categoryId: product.categoryId,
     files: []
   }
+
+
 
   if (categoryStore.categories.length === 0) {
     await categoryStore.getCategories()
@@ -286,7 +289,7 @@ const removeImage = () => {
       <div class="mb-3">
         <label class="block mb-1 text-sm text-gray-700">Upload Image</label>
 
-        <button type="button" @click="$refs.fileInput.click()"
+        <button type="button" @click="fileInput?.click()"
           class="px-4 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition">
           Choose Image
         </button>

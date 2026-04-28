@@ -22,7 +22,7 @@ import { Shipment } from 'src/shipment/entities/shipment.entity';
 import { Stock } from 'src/stock/entities/stock.entity';
 import { Coupon } from 'src/coupon/entities/coupon.entity';
 import { Cart } from 'src/carts/entities/cart.entity';
-import { CartDetail } from 'src/carts/entities/cart_detail';
+
 
 
 @Injectable()
@@ -99,6 +99,7 @@ export class OrdersService {
   }
 
   async create(createOrderDto: CreateOrderDto, user_id: number) {
+
     return this.dataSource.transaction(async (manager) => {
 
       const cart = await manager.findOne(Cart, {
@@ -111,11 +112,7 @@ export class OrdersService {
       });
       console.log(cart)
 
-      // 'cartDetails',
-      // 'cartDetails.product',
-      // 'cartDetails.product.images',
-      // 'coupon',
-      // 'user',
+
 
       const address = await manager.findOne(Address, {
         where: {
@@ -195,7 +192,7 @@ export class OrdersService {
           where: { code: createOrderDto.coupon_code },
         });
 
-        // 1. ตรวจสอบสถานะคูปอง (เหมือนที่ทำใน Cart)
+        // 1. ตรวจสอบสถานะคูปอง 
         if (!coupon) throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
 
         const now = new Date();
@@ -227,6 +224,8 @@ export class OrdersService {
         discount = Math.min(discount, total);
         discount = Number(discount.toFixed(2));
 
+
+
         // 3. บันทึกข้อมูลส่วนลดลงใน Order
         order.coupon_code = coupon.code;
         order.discount_type = coupon.discount_type;
@@ -234,9 +233,11 @@ export class OrdersService {
         order.discount_amount = discount;
         order.total_amount = total - discount;
 
-        // 4. อัปเดตจำนวนครั้งที่คูปองถูกใช้งาน (สำคัญมาก ต้องทำใน Transaction นี้)
+        // 4. อัปเดตจำนวนครั้งที่คูปองถูกใช้งาน
         coupon.used_count += 1;
         await manager.save(coupon);
+      } else {
+        order.total_amount = total
       }
 
       if (createOrderDto.payment_method === PaymentMethod.PROMPTPAY) {
@@ -482,4 +483,122 @@ export class OrdersService {
       );
     }
   }
+
+
+
+
+  // รายได้ของ วันนี้"(order ที่สำเร็จ)
+  async getTodayRevenue() {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    const result = await this.orderRepository
+      .createQueryBuilder('orders')
+      .select('SUM(orders.total_amount)', 'revenue')
+      .where('orders.order_status = :status', { status: OrderStatus.DONE })
+      .andWhere('orders.created_at BETWEEN :start AND :end', {
+        start,
+        end,
+      })
+      .getRawOne();
+
+    return Number(result.revenue || 0);
+  }
+
+
+  // รายได้ของ เดือนปัจจุบัน ( order ที่สำเร็จ)
+  async getMonthlyRevenue() {
+    const start = new Date();
+    start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    const result = await this.orderRepository
+      .createQueryBuilder('orders')
+      .select('SUM(orders.total_amount)', 'revenue')
+      .where('orders.order_status = :status', { status: OrderStatus.DONE })
+      .andWhere('orders.created_at BETWEEN :start AND :end', {
+        start,
+        end,
+      })
+      .getRawOne();
+    return Number(result.revenue || 0);
+  }
+
+
+  // นับจำนวนออเดอร์ทั้งหมด / สำเร็จ / ยกเลิก
+  async getTotalOrders() {
+    const total = await this.orderRepository.count();
+    const success = await this.orderRepository.count({
+      where: { order_status: OrderStatus.DONE },
+    });
+    const cancelled = await this.orderRepository.count({
+      where: { order_status: OrderStatus.CANCELLED },
+    });
+    return { total, success, cancelled };
+  }
+
+
+  // รายได้ย้อนหลัง 7 วัน 
+  async getSalesLast7Days() {
+    return this.orderRepository
+      .createQueryBuilder('o')
+      .select("DATE(o.created_at)", "date")
+      .addSelect("SUM(o.total_amount)", "revenue")
+      .where("o.order_status = :status", { status: OrderStatus.DONE })
+      .andWhere("o.created_at >= NOW() - INTERVAL '7 days'")
+      .groupBy("DATE(o.created_at)")
+      .orderBy("date", "ASC")
+      .getRawMany();
+  }
+
+
+  // รายได้แยกตามหมวดหมู่ 
+  async getSalesByCategory() {
+    const raw = await this.orderRepository
+      .createQueryBuilder('o')
+      .innerJoin('o.details', 'd')
+      .innerJoin(Product, 'p', 'p.product_id = d.product_id')
+      .innerJoin('p.category', 'c')
+      .select('c.name', 'category')
+      .addSelect('SUM(d.quantity * d.price)', 'revenue')
+      .where('o.order_status = :status', { status: OrderStatus.DONE })
+      .groupBy('c.name')
+      .orderBy('revenue', 'DESC')
+      .getRawMany();
+
+    const top5 = raw.slice(0, 5);
+    const others = raw.slice(5).reduce((sum, item) => {
+      return sum + Number(item.revenue);
+    }, 0);
+
+    if (others > 0) {
+      top5.push({
+        category: 'อื่นๆ',
+        revenue: others,
+      });
+    }
+
+    return top5;
+  }
+
+
+  // สินค้าขายดี (เรียงตามจำนวนที่ขายได้)
+  async getTopProducts(limit = 5) {
+    return this.orderRepository
+      .createQueryBuilder('o')
+      .innerJoin('o.details', 'd')
+      .innerJoin(Product, 'p', 'p.product_id = d.product_id')
+      .select('p.product_id', 'productId')
+      .addSelect('p.title', 'name')
+      .addSelect('SUM(d.quantity)', 'sold')
+      .where('o.order_status = :status', { status: OrderStatus.DONE })
+      .groupBy('p.product_id')
+      .addGroupBy('p.title')
+      .orderBy('sold', 'DESC')
+      .limit(limit)
+      .getRawMany();
+  }
+
 }
+

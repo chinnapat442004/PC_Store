@@ -6,9 +6,7 @@ import { onMounted, } from 'vue'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { OrderStatusColor, OrderStatusLabelCustomer } from '@/constants/orderStatus'
 
-
 import { useLoadingStore } from '@/stores/loading'
-
 import { useOrderStore } from '@/stores/order'
 import { usePaymentStore } from '@/stores/payment'
 
@@ -21,6 +19,7 @@ const loadingStore = useLoadingStore()
 const orderStore = useOrderStore()
 const route = useRoute()
 const paymentStore = usePaymentStore()
+
 const orderId = Number(route.params.orderId as string)
 
 
@@ -32,20 +31,6 @@ onMounted(async () => {
   paymentStore.fetchPaymentQr(orderId)
 
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </script>

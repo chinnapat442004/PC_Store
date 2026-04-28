@@ -11,8 +11,7 @@ export const useCategoryStore = defineStore('category', () => {
   }
 
   const editedCategory = ref<Category>(
-    JSON.parse(JSON.stringify(initialCategory))
-  )
+    structuredClone(initialCategory))
 
   async function getCategories() {
     const res = await categoryService.getCategories()
@@ -37,11 +36,11 @@ export const useCategoryStore = defineStore('category', () => {
   }
 
   function resetForm() {
-    editedCategory.value = JSON.parse(JSON.stringify(initialCategory))
+    editedCategory.value = structuredClone(initialCategory)
   }
 
   function setEditCategory(category: Category) {
-    editedCategory.value = JSON.parse(JSON.stringify(category))
+    editedCategory.value = structuredClone(category)
   }
 
   return {

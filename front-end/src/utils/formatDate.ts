@@ -9,7 +9,6 @@ export const formatThaiDateTime = (date: string | Date) => {
     const day = d.getDate()
     const month = months[d.getMonth()]
     const year = d.getFullYear() + 543
-
     const hours = String(d.getHours()).padStart(2, '0')
     const minutes = String(d.getMinutes()).padStart(2, '0')
 

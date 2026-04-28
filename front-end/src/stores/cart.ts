@@ -35,7 +35,8 @@ export const useCartStore = defineStore('Cart', () => {
       quantity: 0,
       images: [],
       categoryId: 0,
-      category: undefined
+      category: undefined,
+      stock_quantity: 0
     }
   }
 
@@ -44,15 +45,15 @@ export const useCartStore = defineStore('Cart', () => {
     code: ''
   }
 
-  const editedCode = ref(<ApplyCouponDto>{ ...initialCoupon })
+  const editedCode = ref(<ApplyCouponDto>structuredClone(initialCoupon))
 
   const cartDetailCount = computed(() => {
     return cart.value?.cartDetails?.length || 0
   })
 
-  const editedCart = ref(<Cart>JSON.parse(JSON.stringify(initialCart)))
+  const editedCart = ref(<Cart>structuredClone(initialCart))
 
-  const editedCartDetail = ref(<CartDetail>JSON.parse(JSON.stringify(initialCartDetail)))
+  const editedCartDetail = ref(<CartDetail>structuredClone(initialCartDetail))
 
 
 

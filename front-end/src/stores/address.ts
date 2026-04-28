@@ -24,7 +24,7 @@ export const useAddressStore = defineStore('address', () => {
     }
 
     const editedAddress = ref<Address>(
-        JSON.parse(JSON.stringify(initialForm))
+        structuredClone(initialForm)
     )
 
     async function getAddresses() {

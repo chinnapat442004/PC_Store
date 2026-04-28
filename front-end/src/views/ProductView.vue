@@ -13,10 +13,13 @@ const productStore = useProductStore()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const loadingStore = useLoadingStore()
+
+const route = useRoute()
+
 const number = ref(1)
 const isToastActive = ref(false)
 
-const route = useRoute()
+
 onMounted(async () => {
   cartStore.getCarts()
   const id = await Number(route.params.id as string)

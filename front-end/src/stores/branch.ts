@@ -20,7 +20,7 @@ export const useBranchStore = defineStore('branch', () => {
   const total = ref(0)
   const search = ref('')
 
-  const editedBranch = ref(<Branch>JSON.parse(JSON.stringify(initialBranch)))
+  const editedBranch = ref(<Branch>structuredClone(initialBranch))
 
   async function getBranches(p = page.value, l = limit.value, s = search.value) {
     loadingStore.doLoad()

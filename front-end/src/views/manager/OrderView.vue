@@ -8,11 +8,8 @@ import LoadingComponent from '@/components/LoadingComponent.vue'
 const orderStore = useOrderStore()
 const loadingStore = useLoadingStore()
 
-
 const tab = ref<'order' | 'history'>('order')
 const search = ref('')
-
-
 const showDialog = ref(false)
 
 
@@ -26,8 +23,6 @@ const formatDate = (date: string | Date) => {
     '0'
   )}:${String(d.getMinutes()).padStart(2, '0')}`
 }
-
-
 
 
 
@@ -55,7 +50,6 @@ const clearSearch = async () => {
   await orderStore.getOrders()
 }
 
-
 const nextPage = async () => {
   if (orderStore.page < orderStore.lastPage) {
     orderStore.page++
@@ -71,10 +65,7 @@ const prevPage = async () => {
 }
 
 
-
-
 const openOrderDetail = (id: number) => {
-
   orderStore.getOrderById(id)
   showDialog.value = true
 
@@ -83,7 +74,6 @@ const openOrderDetail = (id: number) => {
 const closeDialog = () => {
   showDialog.value = false
 }
-
 
 
 </script>

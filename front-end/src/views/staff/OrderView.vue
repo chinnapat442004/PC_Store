@@ -23,13 +23,19 @@ const paymentStore = usePaymentStore()
 
 const selectedShipment = ref<any>(null)
 const tab = ref<typeof tabs[number]['key']>('all')
-
 const search = ref('')
-
-
 const orderDialog = ref(false)
 const trackingCodeDialog = ref(false)
 const checkSlipDialog = ref(false)
+
+type OrderAction = {
+  icon: string
+  status: OrderStatus
+  text: string
+  updateTo: OrderStatus
+  type?: 'primary' | 'danger'
+}
+
 
 const tabs = [
   { key: 'all', label: 'ทั้งหมด' },
@@ -41,16 +47,6 @@ const tabs = [
   { key: 'done', label: 'สำเร็จ', status: 'done' as OrderStatus },
   { key: 'cancelled', label: 'ยกเลิก', status: 'cancelled' as OrderStatus },
 ]
-
-
-type OrderAction = {
-  icon: string
-  status: OrderStatus
-  text: string
-  updateTo: OrderStatus
-  type?: 'primary' | 'danger'
-}
-
 
 
 const orderActions: OrderAction[] = [
@@ -130,10 +126,6 @@ watch(
 )
 
 
-
-
-
-
 const searchData = async () => {
   orderStore.page = 1
   await orderStore.getOrders()
@@ -145,7 +137,6 @@ const clearSearch = async () => {
   await fetchOrders()
 }
 
-
 const fetchOrders = async () => {
   const selectedTab = tabs.find(t => t.key === tab.value)
 
@@ -155,7 +146,6 @@ const fetchOrders = async () => {
     selectedTab?.status
   )
 }
-
 
 const nextPage = async () => {
   if (orderStore.page < orderStore.lastPage) {
@@ -170,8 +160,6 @@ const prevPage = async () => {
     await fetchOrders()
   }
 }
-
-
 
 
 const openOrderDetail = (id: number) => {
@@ -201,9 +189,6 @@ const closeTrackingCodeDialog = () => {
   trackingCodeDialog.value = false
   orderStore.clearTrackingForm()
 }
-
-
-
 
 
 const getAction = (status: OrderStatus): OrderAction[] => {
@@ -250,7 +235,6 @@ const handleClick = (order: Order, action: OrderAction) => {
   }
 }
 
-
 const saveTrackingCodeDialog = async () => {
 
   if (orderStore.selectedOrder) {
@@ -260,10 +244,7 @@ const saveTrackingCodeDialog = async () => {
       orderStore.limit, 'picking')
     orderStore.clearTrackingForm()
   }
-
-
 }
-
 
 const approveSlip = async () => {
   try {
@@ -273,8 +254,6 @@ const approveSlip = async () => {
       orderStore.selectedOrder.order_id,
       { status: 'confirmed' }
     )
-
-
     await orderStore.getOrders()
     checkSlipDialog.value = false
   } catch (err) {
@@ -285,13 +264,10 @@ const approveSlip = async () => {
 const rejectSlip = async () => {
   try {
     if (!orderStore.selectedOrder) return
-
     await orderStore.updateStatus(
       orderStore.selectedOrder.order_id,
       { status: 'cancelled' }
     )
-
-
     await orderStore.getOrders()
     checkSlipDialog.value = false
   } catch (err) {

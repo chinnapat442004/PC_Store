@@ -1,22 +1,33 @@
   <script setup lang="ts">
+
+  import { onMounted, ref, computed, watch } from 'vue'
+
+  import { useForm } from 'vee-validate'
+  import * as yup from 'yup'
+
+  import LoadingComponent from '@/components/LoadingComponent.vue'
+
   import { useAddressStore } from '@/stores/address'
   import { useAuthStore } from '@/stores/auth'
   import { useCartStore } from '@/stores/cart'
-  import { onMounted, ref, computed, watch } from 'vue'
-  import LoadingComponent from '@/components/LoadingComponent.vue'
-  import { useForm } from 'vee-validate'
-  import * as yup from 'yup'
+  import { useLoadingStore } from '@/stores/loading'
+  import { useOrderStore } from '@/stores/order'
+
+  import type { Address } from '@/types/Address'
+  import type { PaymentMethod } from '@/types/Payment'
+
+  import router from '@/router'
+
   import {
     Listbox,
     ListboxButton,
     ListboxOptions,
     ListboxOption,
   } from '@headlessui/vue'
-  import type { Address } from '@/types/Address'
-  import { useLoadingStore } from '@/stores/loading'
-  import router from '@/router'
-  import { useOrderStore } from '@/stores/order'
-  import type { PaymentMethod } from '@/types/Payment'
+
+
+
+
 
 
   const cartStore = useCartStore()
@@ -25,29 +36,15 @@
   const loadingStore = useLoadingStore()
   const orderStore = useOrderStore()
 
+
   const shippingMethod = ref('standard')
-
-
   const selectedAddressId = ref<number | null>(null)
-
-
   const showForm = ref(false)
   const showAddressManager = ref(false)
   const availableSubDistricts = ref<any[]>([])
   const selectedSubDistrict = ref<any>(null)
   const thaiAddressDB = ref<any[]>([])
   const selectedPayment = ref<PaymentMethod>('promptpay')
-
-
-
-
-
-
-
-
-
-
-
 
 
   const couponSchema = yup.object({
@@ -70,20 +67,14 @@
 
 
 
-
-
   onMounted(async () => {
     await authStore.getCurrentUser()
     await addressStore.getAddresses()
-
     cartStore.getCarts()
-
-
     const defaultAddr = addressStore.addresses.find(a => a.is_default)
     if (defaultAddr?.address_id) {
       selectedAddressId.value = defaultAddr.address_id
     }
-
     try {
       const response = await fetch('https://raw.githubusercontent.com/earthchie/jquery.Thailand.js/master/jquery.Thailand.js/database/raw_database/raw_database.json')
       if (response.ok) {
@@ -93,6 +84,7 @@
       console.error(error)
     }
   })
+
 
   watch(
     selectedPayment,
@@ -105,7 +97,6 @@
   const defaultAddress = computed(() => {
     return addressStore.addresses?.find(addr => addr.is_default)
   })
-
 
 
   const autoFillAddress = () => {
@@ -127,7 +118,6 @@
         (item) => String(item.zipcode) === String(addressStore.editedAddress.zipcode)
       )
       availableSubDistricts.value = matches
-
       if (matches.length > 0) {
         const target = matches[0]
         selectedSubDistrict.value = target

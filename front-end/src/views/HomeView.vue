@@ -34,10 +34,19 @@ const cards = ref([
   },
 ])
 
-const currentIndex = ref(0) // index ปัจจุบัน
-const visibleCards = ref(3) // จำนวนกล่องที่แสดง
+const currentIndex = ref(0)
+const visibleCards = ref(3)
 
-// คำนวณกล่องที่แสดงใน Carousel
+
+
+
+onMounted(() => {
+  updateVisibleCards()
+  window.addEventListener('resize', updateVisibleCards)
+  cartStore.getCarts()
+})
+
+
 
 const updateVisibleCards = () => {
   if (window.innerWidth >= 1100) {
@@ -48,12 +57,6 @@ const updateVisibleCards = () => {
     visibleCards.value = 1
   }
 }
-
-onMounted(() => {
-  updateVisibleCards()
-  window.addEventListener('resize', updateVisibleCards)
-  cartStore.getCarts()
-})
 
 watch(() => window.innerWidth, updateVisibleCards)
 
@@ -67,6 +70,10 @@ const visibleSlides = computed(() => {
     return [...cards.value.slice(start, cards.value.length), ...cards.value.slice(0, end)]
   }
 })
+
+
+
+
 
 const prevSlide = () => {
   currentIndex.value = (currentIndex.value - 1 + cards.value.length) % cards.value.length

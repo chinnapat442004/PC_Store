@@ -21,8 +21,6 @@ const mode = ref<'create' | 'edit'>('create')
 
 onMounted(async () => {
   await shimpentStore.getShipments()
-
-
 })
 
 const openEdit = (item: Shipment) => {
@@ -34,12 +32,10 @@ const openEdit = (item: Shipment) => {
 
 const openDelete = () => {
   deleteConfirm.value = true
-
 }
 
 
 const closeDialog = () => {
-
   showDialog.value = false
   shimpentStore.resetForm()
 }
