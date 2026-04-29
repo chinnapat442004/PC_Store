@@ -5,4 +5,8 @@ function getAdminDashboard() {
     return http.get('/dashboard/admin/overview')
 }
 
-export default { getAdminDashboard }
+function getManagerDashboard() {
+    return http.get('/dashboard/manager/overview')
+}
+
+export default { getAdminDashboard, getManagerDashboard }

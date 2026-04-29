@@ -7,6 +7,8 @@ import { OrdersModule } from 'src/orders/orders.module';
 import { ProductsModule } from 'src/products/products.module';
 import { UsersModule } from 'src/users/user.module';
 import { CouponModule } from 'src/coupon/coupon.module';
+import { ManagerDashboardService } from './manager/manager-dashboard.service';
+import { StockModule } from 'src/stock/stock.module';
 
 
 @Module({
@@ -15,12 +17,14 @@ import { CouponModule } from 'src/coupon/coupon.module';
     UsersModule,
     CouponModule,
     ProductsModule,
+    StockModule
 
   ],
   controllers: [DashboardController],
   providers: [
     DashboardService,
     AdminDashboardService,
+    ManagerDashboardService
 
   ],
 })

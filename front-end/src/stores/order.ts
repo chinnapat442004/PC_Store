@@ -46,6 +46,7 @@ export const useOrderStore = defineStore('order', () => {
                 orders.value = res.data.data
                 counts.value = res.data.counts || {}
                 total.value = res.data.total
+                lastPage.value = res.data.lastPage
 
             } else {
 
@@ -53,6 +54,7 @@ export const useOrderStore = defineStore('order', () => {
                 orders.value = res.data.data
                 counts.value = res.data.counts || {}
                 total.value = res.data.total
+                lastPage.value = res.data.lastPage
 
             }
 

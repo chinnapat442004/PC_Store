@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useAdminDashboardStore } from '@/stores/dashboard'
+import { useDashboardStore } from '@/stores/dashboard'
 import { onMounted, computed } from 'vue'
 
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 
-const dashboardStore = useAdminDashboardStore()
+const dashboardStore = useDashboardStore()
 const loadingStore = useLoadingStore()
 
 onMounted(async () => {

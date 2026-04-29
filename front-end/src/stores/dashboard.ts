@@ -3,15 +3,16 @@ import { defineStore } from 'pinia'
 import dashboardService from '../service/dashboard'
 
 import { ref } from 'vue'
-import type { AdminDashboardResponse } from '@/types/Dashboard'
+import type { AdminDashboardResponse, ManagerDashboardResponse } from '@/types/Dashboard'
 import { useLoadingStore } from './loading'
 
-export const useAdminDashboardStore = defineStore('admin-dashboard', () => {
+export const useDashboardStore = defineStore('admin-dashboard', () => {
 
     const loadingStore = useLoadingStore()
 
 
     const adminDashboard = ref<AdminDashboardResponse>()
+    const managerDashboard = ref<ManagerDashboardResponse>()
 
 
     async function getAdminDashboard() {
@@ -22,9 +23,16 @@ export const useAdminDashboardStore = defineStore('admin-dashboard', () => {
     }
 
 
+    async function getManagerDashboard() {
+        loadingStore.doLoad()
+        const res = await dashboardService.getManagerDashboard()
+        managerDashboard.value = res.data
+        loadingStore.finishLoad()
+    }
+
 
 
     return {
-        getAdminDashboard, adminDashboard
+        getAdminDashboard, getManagerDashboard, adminDashboard, managerDashboard
     }
 })

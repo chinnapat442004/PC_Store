@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, In, EntityManager } from 'typeorm';
+import { Repository, DataSource, In, EntityManager, Or } from 'typeorm';
 
 import { Order } from './entities/order.entity';
 import { OrderStatusHistory } from './entities/order-status-history.entity';
@@ -488,81 +488,119 @@ export class OrdersService {
 
 
   // รายได้ของ วันนี้"(order ที่สำเร็จ)
-  async getTodayRevenue() {
+  async getTodayRevenue(branchId?: number) {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
     const end = new Date();
     end.setHours(23, 59, 59, 999);
-    const result = await this.orderRepository
+    const qb = this.orderRepository
       .createQueryBuilder('orders')
       .select('SUM(orders.total_amount)', 'revenue')
       .where('orders.order_status = :status', { status: OrderStatus.DONE })
       .andWhere('orders.created_at BETWEEN :start AND :end', {
         start,
         end,
-      })
-      .getRawOne();
+      });
+
+
+    if (branchId) {
+
+      qb.andWhere('orders.branch = :branchId', { branchId })
+    }
+
+    const result = await qb.getRawOne();
 
     return Number(result.revenue || 0);
   }
 
 
   // รายได้ของ เดือนปัจจุบัน ( order ที่สำเร็จ)
-  async getMonthlyRevenue() {
+  async getMonthlyRevenue(branchId?: number) {
     const start = new Date();
     start.setDate(1);
     start.setHours(0, 0, 0, 0);
     const end = new Date();
-    const result = await this.orderRepository
+    const qb = this.orderRepository
       .createQueryBuilder('orders')
       .select('SUM(orders.total_amount)', 'revenue')
       .where('orders.order_status = :status', { status: OrderStatus.DONE })
       .andWhere('orders.created_at BETWEEN :start AND :end', {
         start,
         end,
-      })
-      .getRawOne();
+      });
+    if (branchId) {
+      qb.andWhere('orders.branch = :branchId', { branchId })
+    }
+
+    const result = await qb.getRawOne()
     return Number(result.revenue || 0);
   }
 
 
   // นับจำนวนออเดอร์ทั้งหมด / สำเร็จ / ยกเลิก
-  async getTotalOrders() {
-    const total = await this.orderRepository.count();
+  async getTotalOrders(branchId?: number) {
+    const where = branchId
+      ? { branch: { branch_id: branchId } }
+      : {};
+
+    const total = await this.orderRepository.count({
+      where,
+    });
+
     const success = await this.orderRepository.count({
-      where: { order_status: OrderStatus.DONE },
+      where: {
+        ...where,
+        order_status: OrderStatus.DONE,
+      },
     });
+
     const cancelled = await this.orderRepository.count({
-      where: { order_status: OrderStatus.CANCELLED },
+      where: {
+        ...where,
+        order_status: OrderStatus.CANCELLED,
+      },
     });
+
     return { total, success, cancelled };
   }
 
 
   // รายได้ย้อนหลัง 7 วัน 
-  async getSalesLast7Days() {
-    return this.orderRepository
-      .createQueryBuilder('o')
+  async getSalesLast7Days(branchId?: number) {
+    const qb = this.orderRepository.createQueryBuilder('o')
       .select("DATE(o.created_at)", "date")
       .addSelect("SUM(o.total_amount)", "revenue")
       .where("o.order_status = :status", { status: OrderStatus.DONE })
       .andWhere("o.created_at >= NOW() - INTERVAL '7 days'")
       .groupBy("DATE(o.created_at)")
       .orderBy("date", "ASC")
-      .getRawMany();
+
+
+
+    if (branchId) {
+      qb.andWhere('o.branch= :branchId', { branchId })
+    }
+    const result = qb.getRawMany();
+
+    return result
   }
 
 
-  // รายได้แยกตามหมวดหมู่ 
-  async getSalesByCategory() {
-    const raw = await this.orderRepository
+  async getSalesByCategory(branchId?: number) {
+    const query = this.orderRepository
       .createQueryBuilder('o')
       .innerJoin('o.details', 'd')
       .innerJoin(Product, 'p', 'p.product_id = d.product_id')
       .innerJoin('p.category', 'c')
       .select('c.name', 'category')
       .addSelect('SUM(d.quantity * d.price)', 'revenue')
-      .where('o.order_status = :status', { status: OrderStatus.DONE })
+      .where('o.order_status = :status', { status: OrderStatus.DONE });
+
+    if (branchId) {
+      query.andWhere('o.branch = :branchId', { branchId });
+    }
+
+    const raw = await query
       .groupBy('c.name')
       .orderBy('revenue', 'DESC')
       .getRawMany();
@@ -582,22 +620,71 @@ export class OrdersService {
     return top5;
   }
 
-
   // สินค้าขายดี (เรียงตามจำนวนที่ขายได้)
-  async getTopProducts(limit = 5) {
-    return this.orderRepository
+  async getTopProducts(limit = 5, branchId?: number) {
+    const query = this.orderRepository
       .createQueryBuilder('o')
       .innerJoin('o.details', 'd')
       .innerJoin(Product, 'p', 'p.product_id = d.product_id')
       .select('p.product_id', 'productId')
       .addSelect('p.title', 'name')
       .addSelect('SUM(d.quantity)', 'sold')
-      .where('o.order_status = :status', { status: OrderStatus.DONE })
+      .where('o.order_status = :status', { status: OrderStatus.DONE });
+
+    if (branchId) {
+      query.andWhere('o.branch= :branchId', { branchId });
+    }
+
+    return query
       .groupBy('p.product_id')
       .addGroupBy('p.title')
       .orderBy('sold', 'DESC')
       .limit(limit)
       .getRawMany();
+  }
+
+
+  async getPendingOrdersDashboard(branchId: number) {
+    const activeStatuses = [
+      OrderStatus.PENDING,
+      OrderStatus.WAITING_VERIFY,
+      OrderStatus.CONFIRMED,
+      OrderStatus.PICKING,
+      OrderStatus.SHIPPED,
+    ];
+
+    const result = await this.orderRepository
+      .createQueryBuilder('o')
+      .select('o.order_status', 'status')
+      .addSelect('COUNT(o.order_id)', 'total')
+      .where('o.branch_id = :branchId', { branchId })
+      .andWhere('o.order_status IN (:...status)', {
+        status: activeStatuses,
+      })
+      .groupBy('o.order_status')
+      .getRawMany();
+
+    const map = result.reduce((acc, item) => {
+      acc[item.status] = Number(item.total);
+      return acc;
+    }, {} as Record<string, number>);
+
+    // เติมค่า default = 0 ทุก status
+    const statusData = activeStatuses.reduce((acc, status) => {
+      acc[status] = map[status] || 0;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // 🔥 งานค้างรวม
+    const totalPending = Object.values(statusData).reduce(
+      (sum, val) => sum + val,
+      0,
+    );
+
+    return {
+      status: statusData,
+      totalPending,
+    };
   }
 
 }

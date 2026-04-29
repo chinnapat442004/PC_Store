@@ -11,10 +11,10 @@ import { StockMovement } from './entities/stock-movement.entity';
 export class StockService {
   constructor(
     @InjectRepository(Stock)
-    private stockRepo: Repository<Stock>,
+    private stockRepository: Repository<Stock>,
 
     @InjectRepository(StockMovement)
-    private movementRepo: Repository<StockMovement>,
+    private movementRepository: Repository<StockMovement>,
 
     private dataSource: DataSource,
   ) { }
@@ -30,12 +30,11 @@ export class StockService {
   ) {
     const skip = (page - 1) * limit
 
-    const qb = this.stockRepo
+    const qb = this.stockRepository
       .createQueryBuilder('stock')
       .leftJoinAndSelect('stock.product', 'product')
       .leftJoinAndSelect('product.images', 'images')
       .where('stock.branch_id = :branch_id', { branch_id })
-
 
     if (search) {
       qb.andWhere('LOWER(product.title) LIKE LOWER(:search)', {
@@ -115,6 +114,7 @@ export class StockService {
       return stock
     })
   }
+
   async getMovement(
     branch_id: number,
     page: number = 1,
@@ -123,7 +123,7 @@ export class StockService {
   ) {
     const skip = (page - 1) * limit
 
-    const qb = this.movementRepo
+    const qb = this.movementRepository
       .createQueryBuilder('movement')
       .leftJoinAndSelect('movement.product', 'product')
       .where('movement.branch_id = :branch_id', { branch_id })
@@ -167,5 +167,32 @@ export class StockService {
       page,
       last_page: Math.ceil(total / limit),
     }
+
+  }
+
+  async getLowStock(branch_id: number) {
+    const lowStockThreshold = 5; // กำหนดค่า threshold ไว้ให้แก้ไขง่ายในอนาคต
+
+    return this.stockRepository
+      .createQueryBuilder('stock')
+      .leftJoin('stock.product', 'product')
+      .where('stock.branch_id = :branch_id', { branch_id })
+
+      .andWhere('stock.quantity <= :threshold', { threshold: lowStockThreshold })
+      .select([
+        'product.product_id AS product_id',
+        'product.title AS product_title',
+        'stock.quantity AS quantity',
+      ])
+
+      .addSelect(
+        `CASE 
+          WHEN stock.quantity = 0 THEN 'out of stock' 
+          ELSE 'low stock' 
+        END`,
+        'status',
+      )
+      .orderBy('stock.quantity', 'ASC')
+      .getRawMany();
   }
 }

@@ -23,7 +23,6 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto) {
     const product = new Product();
-
     product.title = createProductDto.title;
     product.description = createProductDto.description;
     product.price = createProductDto.price;
@@ -54,9 +53,12 @@ export class ProductsService {
           product_id: savedProduct.product_id,
           branch_id: branch.branch_id,
           quantity: 0,
-        }),
+        })
+
       )
+      await this.stockRepository.save(stocks);
     }
+
 
     return savedProduct;
   }
@@ -110,28 +112,28 @@ export class ProductsService {
     };
   }
 
-async findOne(product_id: number) {
-  const product = await this.productRepository.findOne({
-    where: { product_id },
-    relations: {
-      images: true,
-      category: true,
-      stocks: true,
-    },
-  });
+  async findOne(product_id: number) {
+    const product = await this.productRepository.findOne({
+      where: { product_id },
+      relations: {
+        images: true,
+        category: true,
+        stocks: true,
+      },
+    });
 
-  if (!product) return null;
+    if (!product) return null;
 
-  const stock_quantity =
-    product.stocks?.reduce((sum, s) => sum + s.quantity, 0) || 0;
+    const stock_quantity =
+      product.stocks?.reduce((sum, s) => sum + s.quantity, 0) || 0;
 
-  const { stocks, ...restProduct } = product;
+    const { stocks, ...restProduct } = product;
 
-  return {
-    ...restProduct,
-    stock_quantity,
-  };
-}
+    return {
+      ...restProduct,
+      stock_quantity,
+    };
+  }
 
   async update(product_id: number, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.findOne({

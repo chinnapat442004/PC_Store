@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OrdersService } from 'src/orders/orders.service';
+
 import { UserService } from 'src/users/user.service';
 
 @Injectable()
@@ -7,6 +8,7 @@ export class AdminDashboardService {
     constructor(
         private readonly ordersService: OrdersService,
         private readonly usersService: UserService,
+
     ) { }
 
     async getKPI() {
@@ -24,20 +26,18 @@ export class AdminDashboardService {
             orders,
             newUsers,
         };
-    } async getDashboardOverview() {
-        const [
-            kpi,
-            sales7days,
-            categorySales,
-            topProducts,
-            users,
-        ] = await Promise.all([
-            this.getKPI(),
-            this.ordersService.getSalesLast7Days(),
-            this.ordersService.getSalesByCategory(),
-            this.ordersService.getTopProducts(),
-            this.usersService.getUserStats(),
-        ]);
+    }
+
+
+    async getDashboardOverview() {
+        const [kpi, sales7days, categorySales, topProducts, users,] =
+            await Promise.all([
+                this.getKPI(),
+                this.ordersService.getSalesLast7Days(),
+                this.ordersService.getSalesByCategory(),
+                this.ordersService.getTopProducts(),
+                this.usersService.getUserStats(),
+            ]);
 
         return {
             kpi,

@@ -1,4 +1,3 @@
-
 export interface AdminDashboardResponse {
     kpi: AdminDashboardKPI
     sales7days: Sales7DaysItem[]
@@ -6,8 +5,6 @@ export interface AdminDashboardResponse {
     topProducts: TopProductItem[]
     users: UsersOverview
 }
-
-
 
 export interface AdminDashboardKPI {
     todayRevenue: number
@@ -20,21 +17,15 @@ export interface AdminDashboardKPI {
     newUsers: number
 }
 
-
-
 export interface Sales7DaysItem {
     date: string
     revenue: number
 }
 
-
-
 export interface CategorySalesItem {
     category: string
     revenue: number
 }
-
-
 
 export interface TopProductItem {
     productId: number
@@ -42,18 +33,53 @@ export interface TopProductItem {
     sold: number
 }
 
-
-
+export interface LowStock {
+    product_id: number;
+    product_title: string;
+    quantity: number;
+    status: 'in stock' | 'low stock' | 'out of stock';
+}
 export interface UsersOverview {
     total: number
     manager: number
     staff: number
     customer: number
-
 }
-
 
 export interface ChartData {
     labels: string[]
     series: number[]
+}
+
+
+export interface OrderStatus {
+    pending: number
+    waiting_verify: number
+    confirmed: number
+    picking: number
+    shipped: number
+}
+
+export interface OrderStatusSummary {
+    status: OrderStatus
+    totalPending: number
+}
+export interface ManagerDashboardResponse {
+    kpi: ManagerDashboardKPI
+    sales7days: Sales7DaysItem[]
+    categorySales: CategorySalesItem[]
+    orderStatusSummary: OrderStatusSummary
+    topProducts: TopProductItem[]
+    lowStock: LowStock[]
+}
+
+export interface ManagerDashboardKPI {
+    todayRevenue: number
+    monthlyRevenue: number
+    orders: {
+        total: number
+        success: number
+        cancelled: number
+    }
+    countStaff: number
 }

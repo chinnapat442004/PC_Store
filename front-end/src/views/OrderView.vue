@@ -32,7 +32,10 @@ const tabs = [
 
 onMounted(async () => {
   await fetchOrders()
+
 })
+
+
 
 
 watch(tab, async () => {
@@ -51,6 +54,19 @@ const fetchOrders = async () => {
 }
 
 
+const nextPage = async () => {
+  if (orderStore.page < orderStore.lastPage) {
+    orderStore.page++
+    await orderStore.getOrders()
+  }
+}
+
+const prevPage = async () => {
+  if (orderStore.page > 1) {
+    orderStore.page--
+    await orderStore.getOrders()
+  }
+}
 
 
 const cancelOrder = async (orderId: number) => {
@@ -108,9 +124,7 @@ const goToOrderDetail = (orderId: number) => {
 </script>
 <template>
   <LoadingComponent v-model="loadingStore.loading" />
-  <div class="w-full min-h-screen flex flex-col items-center gap-3 py-[30px] px-[10px] md:px-[20px]">
-
-
+  <div class=" w-full min-h-screen flex flex-col items-center gap-3 py-[30px] px-[10px] md:px-[20px]">
     <div class="w-full max-w-[750px] flex bg-gray-100 rounded-xl ">
       <button v-for="t in tabs" :key="t.key" @click="tab = t.key" class="flex-1 py-2 
          text-xs sm:text-sm 
@@ -237,7 +251,26 @@ const goToOrderDetail = (orderId: number) => {
         </div>
 
       </div>
+
     </template>
+    <div class="flex-1 w-full max-w-[750px]">
+      <div class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-4 md:mr-3">
+        <button
+          class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          @click="prevPage()">
+          <span class="pi pi-chevron-left text-sm"></span> Prev
+        </button>
+
+        <span class="text-sm text-white bg-[#555] px-3 py-1 rounded">
+          {{ orderStore.page }} of {{ orderStore.lastPage }}</span>
+
+        <button
+          class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          @click="nextPage()">
+          Next <span class="pi pi-chevron-right text-sm"></span>
+        </button>
+      </div>
+    </div>
   </div>
 
 </template>

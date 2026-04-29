@@ -162,4 +162,15 @@ export class UserService {
       customer
     };
   }
+
+  async countStaffInMyBranch(branchId: number) {
+    return this.userRepository.count({
+      where: {
+        role: Role.STAFF,
+        branch: {
+          branch_id: branchId,
+        },
+      },
+    });
+  }
 }

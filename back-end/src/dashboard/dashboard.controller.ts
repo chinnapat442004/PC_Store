@@ -1,18 +1,24 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('dashboard')
 export class DashboardController {
     constructor(private readonly dashboard: DashboardService) { }
 
-    @Get('admin/kpi')
-    adminKPI() {
-        return this.dashboard.getAdminKPI();
-    }
+
     @Get('admin/overview')
     adminOverview() {
         return this.dashboard.getAdminOverview();
     }
+
+    @Get('manager/overview')
+
+    managerOverview(@Req() req,) {
+        return this.dashboard.getManagerOverview(req.user.branch_id)
+    }
+
 
 
 }

@@ -6,10 +6,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StockMovement } from './entities/stock-movement.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Stock,StockMovement])],
+  imports: [TypeOrmModule.forFeature([Stock, StockMovement])],
   controllers: [StockController],
-  providers: [StockService],
+  providers: [StockService], exports: [StockService]
 })
-export class StockModule {}
+export class StockModule { }
 
 
