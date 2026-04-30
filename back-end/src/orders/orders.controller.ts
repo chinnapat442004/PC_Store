@@ -42,6 +42,19 @@ export class OrdersController {
     return this.ordersService.findAll(+page, +limit, status, req.user.branch_id);
   }
 
+  @Get('customer')
+  getMyOrders(
+    @Req() req,
+    @Query('page') page = '1',
+    @Query('limit') limit = '10',
+    @Query('status') status?: OrderStatus,
+
+  ) {
+
+    return this.ordersService.findAll(+page, +limit, status, req.user.branch_id);
+  }
+
+
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Req() req,) {

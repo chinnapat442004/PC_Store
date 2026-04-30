@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, In, EntityManager, Or } from 'typeorm';
+import { Repository, DataSource, In, EntityManager, } from 'typeorm';
 
 import { Order } from './entities/order.entity';
 import { OrderStatusHistory } from './entities/order-status-history.entity';

@@ -202,10 +202,9 @@ const searchProduct = async () => {
           </div>
         </div>
 
-        <div class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-4 md:mr-3">
-          <button
-            class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            @click="prevPage" :disabled="currentPage === 1">
+        <div class=" flex justify-center md:justify-end items-center gap-2 md:gap-4 py-4 md:mr-3">
+          <button class=" bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50
+            disabled:cursor-not-allowed transition-colors" @click="prevPage" :disabled="currentPage === 1">
             <span class="pi pi-chevron-left text-sm"></span> <span class="hidden sm:inline">Prev</span>
           </button>
 

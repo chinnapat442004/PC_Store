@@ -52,21 +52,17 @@ const router = createRouter({
       path: '/',
       component: () => import('@/layouts/CustomerLayout.vue'), meta: { requiresAuth: true, role: 'customer' },
       children: [
-        { path: '', name: 'home', component: HomeView },
-        { path: 'shop', name: 'shop', component: ShopView },
-        { path: 'cart', name: 'cart', component: CartView },
+        { path: '', name: 'home', component: HomeView, meta: { requiresAuth: false } },
+        { path: 'shop', name: 'shop', component: ShopView, meta: { requiresAuth: false } },
+        { path: 'cart', name: 'cart', component: CartView, meta: { requiresAuth: false } },
         { path: 'checkout', name: 'checkout', component: CheckoutView },
-        { path: 'dashbord', name: 'dashbord', component: DashboardView },
+        { path: 'dashbord', name: 'dashbord', component: DashboardView, meta: { requiresAuth: false } },
         { path: 'product/:id', name: 'product', component: ProductView },
         { path: 'order-success', name: 'order-success', component: OrderSuccessView },
         { path: 'orders', name: 'orders', component: OrderView },
         { path: 'payment-confirmation/:orderId', name: 'payment-confirmation', component: PaymentConfirmation },
         { path: 'order-succes/:orderId', name: 'order-succes', component: OrderSuccessView },
         { path: 'order-detail/:orderId', name: 'order-detail', component: OrderDetailView },
-
-
-
-
 
       ],
     },
@@ -117,14 +113,14 @@ router.beforeEach((to, from, next) => {
   const isAuth = to.meta.requiresAuth
   const requiredRoles = to.meta.role
 
-  // if (isAuth && !authStore.token) {
-  //   return next({ name: 'login' })
-  // }
+  if (isAuth && !authStore.token) {
+    return next({ name: 'login' })
+  }
 
-  // if (authStore.user?.role)
-  //   if (requiredRoles !== authStore.user?.role) {
-  //     return next({ name: '403' })
-  //   }
+  if (authStore.user?.role)
+    if (requiredRoles !== authStore.user?.role) {
+      return next({ name: '403' })
+    }
 
   next()
 
