@@ -91,18 +91,20 @@ export class ProductsService {
     });
 
     const dataWithStock = data.map((product) => {
+      const stocks = product.stocks ?? []
 
-      const stock_quantity =
-        product.stocks?.reduce((sum, s) => sum + s.quantity, 0) || 0;
+      const maxStock = stocks.reduce((max, s) => {
+        return s.quantity > max.quantity ? s : max
+      }, stocks[0])
 
-      const { stocks, ...restProduct } = product;
-
+      const { stocks: _, ...restProduct } = product
 
       return {
         ...restProduct,
-        stock_quantity,
-      };
-    });
+        stock_quantity: maxStock?.quantity ?? 0,
+        stock_branch: maxStock?.branch ?? null,
+      }
+    })
 
     return {
       data: dataWithStock,
@@ -124,14 +126,17 @@ export class ProductsService {
 
     if (!product) return null;
 
-    const stock_quantity =
-      product.stocks?.reduce((sum, s) => sum + s.quantity, 0) || 0;
+    const stocks = product.stocks ?? [];
 
-    const { stocks, ...restProduct } = product;
+    const maxStock = stocks.length
+      ? stocks.reduce((max, s) => (s.quantity > max.quantity ? s : max))
+      : null;
+
+    const { stocks: _, ...restProduct } = product;
 
     return {
       ...restProduct,
-      stock_quantity,
+      stock_quantity: maxStock?.quantity ?? 0,
     };
   }
 

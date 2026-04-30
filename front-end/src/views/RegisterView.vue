@@ -161,18 +161,7 @@ async function onRegister() {
           {{ passwordError }}
         </p>
       </div>
-      <div class="mb-4">
-        <label class="text-white">Confirm Password:</label>
-        <input v-model="confirmPassword" type="password" :class="[
-          'w-full px-4 py-2 mt-2 border rounded-lg',
-          confirmPasswordError
-            ? 'bg-red-50 border border-red-500  placeholder-red-700 '
-            : 'focus:ring-[#202020]',
-        ]" placeholder="Confirm password" />
-        <p v-if="!valind" class="text-red-500 text-sm mt-1">
-          {{ confirmPasswordError }}
-        </p>
-      </div>
+
       <button type="submit" :disabled="submit" class="bg-[#637aad] w-full px-4 py-2 mt-2 rounded-lg text-white">
         <span v-if="submit">Registering...</span>
         <span v-else>Register</span>

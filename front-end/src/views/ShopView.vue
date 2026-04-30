@@ -185,10 +185,15 @@ const searchProduct = async () => {
                     ฿{{ item.price.toLocaleString() }}
                   </div>
 
+
                   <div class="text-[10px] md:text-base font-medium">
                     <span v-if="item.stock_quantity === 0"
                       class="bg-red-50 text-red-500 px-2 py-1 rounded border border-red-200">
                       สินค้าหมด
+                    </span>
+                    <span v-else-if="item.stock_quantity <= 5"
+                      class="bg-yellow-50 text-yellow-500 px-2 py-1 rounded border border-yellow-200">
+                      เหลือ {{ item.stock_quantity }} ชิ้น
                     </span>
                   </div>
                 </div>
@@ -197,7 +202,7 @@ const searchProduct = async () => {
           </div>
         </div>
 
-        <div v-if="totalPages > 1" class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-4 md:mr-3">
+        <div class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-4 md:mr-3">
           <button
             class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             @click="prevPage" :disabled="currentPage === 1">
