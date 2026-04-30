@@ -38,6 +38,7 @@ import { DashboardController } from './dashboard/dashboard.controller';
 import { DashboardService } from './dashboard/dashboard.service';
 import { AdminDashboardService } from './dashboard/admin/admin-dashboard.service';
 import { ManagerDashboardService } from './dashboard/manager/manager-dashboard.service';
+import { StaffDashboardService } from './dashboard/staff/staff-dashboard.service';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -79,6 +80,6 @@ import { ManagerDashboardService } from './dashboard/manager/manager-dashboard.s
   ],
 
   controllers: [AppController, DashboardController],
-  providers: [AppService, DashboardService, AdminDashboardService, ManagerDashboardService],
+  providers: [AppService, DashboardService, AdminDashboardService, ManagerDashboardService, StaffDashboardService],
 })
 export class AppModule { }

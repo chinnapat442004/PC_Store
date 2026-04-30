@@ -669,13 +669,13 @@ export class OrdersService {
       return acc;
     }, {} as Record<string, number>);
 
-    // เติมค่า default = 0 ทุก status
+
     const statusData = activeStatuses.reduce((acc, status) => {
       acc[status] = map[status] || 0;
       return acc;
     }, {} as Record<string, number>);
 
-    // 🔥 งานค้างรวม
+
     const totalPending = Object.values(statusData).reduce(
       (sum, val) => sum + val,
       0,

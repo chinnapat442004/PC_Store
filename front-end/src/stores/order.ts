@@ -19,6 +19,8 @@ export const useOrderStore = defineStore('order', () => {
         shipment_id: 0
     }
 
+
+
     const counts = ref<Record<OrderStatus, number>>({} as Record<OrderStatus, number>)
     const selectedOrder = ref<Order | null>(null)
 
@@ -35,6 +37,7 @@ export const useOrderStore = defineStore('order', () => {
     const total = ref(0)
 
     const status = ref<OrderStatus>()
+
 
 
     async function getOrders(p = page.value, l = limit.value, s = status.value) {

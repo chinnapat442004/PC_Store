@@ -19,6 +19,11 @@ export class DashboardController {
         return this.dashboard.getManagerOverview(req.user.branch_id)
     }
 
+    @Get('staff/overview')
+
+    staffOverview(@Req() req,) {
+        return this.dashboard.getStaffOverview(req.user.branch_id)
+    }
 
 
 }

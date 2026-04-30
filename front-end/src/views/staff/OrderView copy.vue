@@ -25,7 +25,7 @@ const paymentStore = usePaymentStore()
 
 
 const selectedShipment = ref<any>(null)
-const tab = ref<typeof tabs[number]['key']>(orderStore.activeTab as any)
+const tab = ref<typeof tabs[number]['key']>(orderStore.activeTab)
 const search = ref('')
 const orderDialog = ref(false)
 const trackingCodeDialog = ref(false)
@@ -94,7 +94,7 @@ const orderActions: OrderAction[] = [
 onMounted(async () => {
   await fetchOrders()
   await shimpentStore.getShipments()
-  orderStore.activeTab = 'all'
+
 })
 
 

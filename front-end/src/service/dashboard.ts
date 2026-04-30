@@ -9,4 +9,8 @@ function getManagerDashboard() {
     return http.get('/dashboard/manager/overview')
 }
 
-export default { getAdminDashboard, getManagerDashboard }
+function getStaffDashboard() {
+    return http.get('/dashboard/staff/overview')
+}
+
+export default { getAdminDashboard, getManagerDashboard, getStaffDashboard }

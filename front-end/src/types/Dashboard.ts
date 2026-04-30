@@ -83,3 +83,13 @@ export interface ManagerDashboardKPI {
     }
     countStaff: number
 }
+
+export interface StaffDashboardResponse {
+    orders: {
+        total: number
+        success: number
+        cancelled: number
+    }
+    orderStatusSummary: OrderStatusSummary
+    lowStock: LowStock[]
+}
