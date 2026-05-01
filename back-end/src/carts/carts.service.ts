@@ -177,7 +177,8 @@ export class CartsService {
     cart.cartDetails = [];
     cart.subtotal = 0;
     cart.total = 0;
-
+    cart.coupon = null
+    cart.discount_amount = 0
     return this.cartRepository.save(cart);
   }
 

@@ -306,10 +306,17 @@ export class OrdersService {
         });
 
         if (cart) {
+
           await manager.delete(CartDetail, {
             cart: { cart_id: cart.cart_id },
+
           });
+
+          cart.coupon = null
+          cart.discount_amount = 0
+          await manager.save(cart)
         }
+
       }
 
       if (createOrderDto.payment_method === PaymentMethod.PROMPTPAY) {
