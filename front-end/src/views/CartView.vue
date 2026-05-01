@@ -86,6 +86,11 @@ async function remove(cartDetail: CartDetail) {
 const goToCheckout = () => {
   router.push({ name: 'checkout' })
 }
+
+async function clearCart() {
+  await cartStore.clearChart()
+
+}
 </script>
 
 <template>
@@ -163,11 +168,14 @@ const goToCheckout = () => {
           <div>ยอดรวม:</div>
           <div>฿{{ cartStore.cart?.total }}</div>
         </div>
-        <div>
-          <button
-            class="bg-[#82d182] w-full mt-[20px] h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
+        <div class="flex flex-col gap-3 mt-[15px]">
+          <button class="bg-[#82d182] w-full h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
             @click="goToCheckout">
             ดำเนินการต่อ
+          </button>
+
+          <button class="w-full h-[35px] rounded-[10px] font-mediumtext-sm border hover:bg-gray-100" @click="clearCart">
+            ล้างตะกร้า
           </button>
         </div>
       </div>

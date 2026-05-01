@@ -1,6 +1,7 @@
 import type { DiscountType } from "./Coupon";
 import type { OrderDetail } from "./OrderDetail";
 import type { PaymentMethod } from "./Payment";
+import type { Product } from "./Product";
 import type { Shipment } from "./Shipment";
 
 
@@ -16,6 +17,14 @@ export type OrderStatus =
 type CreateOrder = {
     payment_method: PaymentMethod;
     coupon_code?: string
+
+    items?: {
+        product_id: number;
+        quantity: number;
+        product?: Product;
+    }[];
+
+    is_buy_now: boolean;
 }
 
 

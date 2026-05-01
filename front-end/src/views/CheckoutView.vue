@@ -26,10 +26,6 @@
   } from '@headlessui/vue'
 
 
-
-
-
-
   const cartStore = useCartStore()
   const authStore = useAuthStore()
   const addressStore = useAddressStore()
@@ -98,6 +94,59 @@
     return addressStore.addresses?.find(addr => addr.is_default)
   })
 
+
+
+
+  const isBuyNow = computed(() => orderStore.orderForm.is_buy_now)
+
+  const total = computed(() => {
+    if (isBuyNow.value) {
+      return (orderStore.orderForm.items || []).reduce((sum, item) => {
+        return sum + (item.product?.price || 0) * item.quantity
+      }, 0)
+    }
+
+    return cartStore.cart?.total || 0
+  })
+
+
+
+  const orderItems = computed(() => {
+    if (isBuyNow.value) {
+      return (orderStore.orderForm.items || []).map(item => ({
+        product: {
+          product_id: item.product_id,
+          title: item.product?.title,
+          images: item.product?.images || [],
+        },
+        price: item.product?.price || 0,
+        quantity: item.quantity,
+      }))
+    }
+
+    return cartStore.cart?.cartDetails || []
+  })
+
+
+
+
+  const subtotal = computed(() => {
+    if (isBuyNow.value) {
+      return (orderStore.orderForm.items || []).reduce((sum, item) => {
+        return sum + (item.product?.price || 0) * item.quantity
+      }, 0)
+    }
+
+    return cartStore.cart?.subtotal || 0
+  })
+
+  const discount = computed(() => {
+    if (isBuyNow.value) {
+      return 0
+    }
+
+    return cartStore.cart?.discount_amount || 0
+  })
 
   const autoFillAddress = () => {
     const selected = selectedSubDistrict.value
@@ -170,7 +219,7 @@
           addressStore.editedAddress,
         )
       } else {
-        console.log('create')
+
         await addressStore.addAddress()
       }
 
@@ -208,8 +257,8 @@
         return
       }
 
-      if (!cartStore.cart?.cartDetails?.length) {
-        alert('ไม่มีสินค้าในตะกร้า')
+      if (!orderItems.value.length) {
+        alert('ไม่มีสินค้า')
         return
       }
 
@@ -217,9 +266,15 @@
         coupon_code: code
       })
 
+
+
       const order = await orderStore.createOrder()
 
-      await cartStore.clearChart()
+      if (!isBuyNow.value) {
+
+
+        cartStore.getCarts()
+      }
 
       if (order.payment_method === 'promptpay') {
         router.push({
@@ -386,7 +441,7 @@
 
         <div class="bg-white p-6 rounded-lg shadow-md h-fit">
           <div class="max-w-[750px] w-full min-w-[300px] flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-2">
-            <div v-for="detail in cartStore.cart?.cartDetails" :key="detail.cart_detail_id"
+            <div v-for="detail in orderItems" :key="detail.product.product_id"
               class="bg-white border rounded-[10px] flex items-center gap-3 p-3 w-full">
               <img :src="detail.product.images[0]?.image"
                 class="w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] object-cover rounded-md border" />
@@ -456,24 +511,24 @@
 
           <div class="flex justify-between mb-2 text-sm">
             <div>ราคา</div>
-            <div>฿ {{ cartStore.cart?.subtotal }}</div>
+            <div>฿ {{ subtotal }}</div>
           </div>
 
           <div class="flex justify-between mb-2 text-sm text-green-600">
             <div>ส่วนลด</div>
-            <div>-฿{{ cartStore.cart?.discount_amount }}</div>
+            <div>-฿{{ discount }}</div>
           </div>
 
           <hr class="my-3" />
 
           <div class="flex justify-between font-bold text-lg mb-4">
             <div>ยอดรวม</div>
-            <div>฿{{ cartStore.cart?.total }}</div>
+            <div>฿{{ total }}</div>
           </div>
 
           <button
             class="bg-[#82d182] w-full mt-[20px] h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
-            v-if="cartStore.cart" @click="goToOrderSuccess(cartStore.cart.coupon?.code)">
+            v-if="orderItems.length" @click="goToOrderSuccess(cartStore.cart?.coupon?.code)">
             ยืนยันคำสั่งซื้อ
           </button>
         </div>

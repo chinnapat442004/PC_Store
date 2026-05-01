@@ -84,7 +84,8 @@ export const useCartStore = defineStore('Cart', () => {
   }
 
   async function clearChart() {
-    cartService.clearCart()
+    await cartService.clearCart()
+    await getCarts()
   }
 
   function applyCoupon() {

@@ -8,10 +8,13 @@ import { useAuthStore } from '@/stores/auth'
 import router from '@/router'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import type { Product } from '@/types/Product'
+import { useOrderStore } from '@/stores/order'
 
 const productStore = useProductStore()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const orderStore = useOrderStore()
 const loadingStore = useLoadingStore()
 
 const route = useRoute()
@@ -78,6 +81,24 @@ async function addCart() {
     await cartStore.getCarts()
     addProduct()
   }
+}
+async function buyNow(product: Product) {
+  orderStore.orderForm.items = [
+    {
+      product_id: product.product_id,
+      quantity: number.value,
+      product: product
+
+    }
+  ]
+
+  orderStore.orderForm.is_buy_now = true
+
+
+  router.push({ name: 'checkout' })
+
+
+
 }
 </script>
 
@@ -176,7 +197,7 @@ async function addCart() {
 
             <button
               class="bg-[#637aad] w-full py-2 sm:py-2.5 md:py-1.5 text-white rounded-[8px] hover:bg-[#4a68a8] font-semibold text-[13px] sm:text-[14px] md:text-[15px] transition duration-300 shadow-md hover:shadow-lg flex justify-center items-center gap-2"
-              @click="addProduct" :disabled="productStore.product?.stock_quantity === 0">
+              @click="buyNow(productStore.product)" :disabled="productStore.product?.stock_quantity === 0">
               <span class="pi pi-credit-card text-[13px] sm:text-[14px]"></span>
               ซื้อเลย
             </button>

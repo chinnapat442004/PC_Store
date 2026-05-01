@@ -3,7 +3,7 @@ import { useAuthStore } from '../stores/auth'
 import { useCartStore } from '../stores/cart'
 import { IonIcon } from '@ionic/vue'
 import { menu, close, person } from 'ionicons/icons'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { onBeforeUnmount, onMounted, ref, computed } from 'vue'
 import { toast } from 'vue3-toastify'
 const page = computed(() => route.name)
@@ -11,12 +11,11 @@ const authStore = useAuthStore()
 const cartStore = useCartStore()
 const route = useRoute()
 
+const router = useRouter()
 
 const isLogin = ref(localStorage.getItem('isLogin') === 'true')
 
-function updateLoginStatus() {
-  isLogin.value = localStorage.getItem('isLogin') === 'true'
-}
+
 
 const isMenuOpen = ref(false)
 const open = ref(false)
@@ -29,9 +28,11 @@ const menus = [
   { name: 'shop', label: 'Shop', path: { name: 'shop' }, activeRoutes: ['shop', 'product'] },
   { name: 'cart', label: 'Cart', path: { name: 'cart' }, activeRoutes: ['cart', 'checkout'] },
 ]
-const isActive = (name: string) => route.name === name
 
 
+function updateLoginStatus() {
+  isLogin.value = localStorage.getItem('isLogin') === 'true'
+}
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
@@ -77,6 +78,16 @@ async function logout() {
       onClose: () => (isToastActive.value = false),
     })
   }
+}
+
+const goToProfile = () => {
+  router.push('/profile')
+  checkMenu.value = false
+}
+
+const goToOrders = () => {
+  router.push('/orders')
+  checkMenu.value = false
 }
 </script>
 
@@ -140,14 +151,14 @@ async function logout() {
 
         <div v-if="checkMenu && isLogin"
           class="bg-white absolute w-[170px] h-[150px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 md:right-auto right-0">
-          <router-link to="/profile"
+          <button @click="goToProfile"
             class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px]">
             บัญชีของฉัน
-          </router-link>
-          <router-link to="/orders"
+          </button>
+          <button @click="goToOrders"
             class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px]">
             คำสั่งซื้อ
-          </router-link>
+          </button>
           <button @click="logout"
             class="w-full py-2 text-center text-[14px] font-semibold text-[#333] hover:bg-[#f1f1f1] rounded-[8px]">
             ออกจากระบบ

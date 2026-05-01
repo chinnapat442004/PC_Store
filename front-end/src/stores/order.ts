@@ -11,7 +11,7 @@ export const useOrderStore = defineStore('order', () => {
     const orders = ref<Order[]>([])
     const initialCreateOrder: CreateOrder = {
         payment_method: 'promptpay',
-
+        is_buy_now: false
     }
 
     const initialtrackingForm: UpdateTracking = {
@@ -25,18 +25,14 @@ export const useOrderStore = defineStore('order', () => {
     const counts = ref<Record<OrderStatus, number>>({} as Record<OrderStatus, number>)
     const selectedOrder = ref<Order | null>(null)
 
-
-
-
     const orderForm = ref<CreateOrder>(structuredClone(initialCreateOrder))
-    const trackingForm = ref<UpdateTracking>(structuredClone(initialtrackingForm))
 
+    const trackingForm = ref<UpdateTracking>(structuredClone(initialtrackingForm))
 
     const page = ref(1)
     const limit = ref(10)
     const lastPage = ref(1)
     const total = ref(0)
-
     const status = ref<OrderStatus>()
 
 
@@ -44,7 +40,6 @@ export const useOrderStore = defineStore('order', () => {
         loadingStore.doLoad()
         try {
             if (s) {
-
                 const res = await orderService.getOrders(p, l, s)
                 orders.value = res.data.data
                 counts.value = res.data.counts || {}
@@ -58,9 +53,7 @@ export const useOrderStore = defineStore('order', () => {
                 counts.value = res.data.counts || {}
                 total.value = res.data.total
                 lastPage.value = res.data.lastPage
-
             }
-
         } finally {
             loadingStore.finishLoad()
         }
@@ -89,6 +82,7 @@ export const useOrderStore = defineStore('order', () => {
 
     function clearOrder() {
         orderForm.value = { ...initialCreateOrder }
+
     }
 
     function clearTrackingForm() {
@@ -147,6 +141,8 @@ export const useOrderStore = defineStore('order', () => {
             loadingStore.finishLoad()
         }
     }
+
+
     return {
         setOrder,
         createOrder,
