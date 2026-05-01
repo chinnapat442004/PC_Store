@@ -51,7 +51,7 @@ export class OrdersController {
 
   ) {
 
-    return this.ordersService.findAll(+page, +limit, status, req.user.branch_id);
+    return this.ordersService.findAll(+page, +limit, status, req.user.user_id);
   }
 
 

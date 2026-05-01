@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -36,7 +36,7 @@ export class UserService {
     const user = new User();
     user.email = createUserDto.email;
     user.enabled = true;
-    user.image = createUserDto.image;
+
     user.name = createUserDto.name;
     user.password = createUserDto.password;
     user.branch = await this.branchRepository.findOne({
@@ -50,6 +50,33 @@ export class UserService {
     } else {
       throw new ConflictException('You are not allowed to create users');
     }
+
+    return await this.userRepository.save(user);
+  }
+
+  async registerCustomer(createUserDto: CreateUserDto): Promise<User> {
+    const existingUser = await this.userRepository.findOne({
+      where: { email: createUserDto.email },
+    });
+
+
+    if (existingUser) {
+      this.logger.error(
+        `User creation failed: email "${createUserDto.email}" is already in use.`,
+      );
+      throw new ConflictException('Email is already taken');
+    }
+
+    if (createUserDto.password !== createUserDto.confirm_password) {
+      throw new BadRequestException('Passwords do not match');
+    }
+    const user = new User();
+    user.email = createUserDto.email;
+    user.password = createUserDto.password;
+    user.name = createUserDto.name;
+
+    user.role = Role.CUSTOMER;
+    user.enabled = true;
 
     return await this.userRepository.save(user);
   }
@@ -73,7 +100,7 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { user_id } });
     user.email = updateUserDto.email;
     user.enabled = updateUserDto.enabled;
-    user.image = updateUserDto.image;
+
     user.name = updateUserDto.name;
     user.password = updateUserDto.password;
     user.role = updateUserDto.role;

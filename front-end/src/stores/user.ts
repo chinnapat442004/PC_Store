@@ -9,20 +9,24 @@ export const useUserStore = defineStore('user', () => {
   const users = ref<User[]>([])
   const editedUser = ref<User | null>(null)
 
+
   const page = ref(1)
   const limit = ref(10)
   const lastPage = ref(1)
   const total = ref(0)
   const search = ref('')
 
-  const createUser = ref<CreateUser>({
+
+
+
+  const initialCreateUser: CreateUser = {
     email: '',
     password: '',
     name: '',
-    image: '',
-    role: 'customer', branch_id: 0
+    branch_id: 0
+  }
 
-  })
+  const createUser = ref<CreateUser>(structuredClone(initialCreateUser))
 
   async function getUser(user_id: number) {
     const res = await userService.getUser(user_id)
@@ -52,6 +56,10 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+
+
+
+
   async function updateUser(user: UpdateUser) {
     if (!user.user_id) return
     const res = await userService.updateUser(user.user_id, user)
@@ -69,8 +77,6 @@ export const useUserStore = defineStore('user', () => {
       email: '',
       password: '',
       name: '',
-      image: '',
-      role: 'customer',
       branch_id: 0
     }
   }
@@ -90,5 +96,6 @@ export const useUserStore = defineStore('user', () => {
     clearUser,
     clearCreateUser,
     updateUser,
+
   }
 })

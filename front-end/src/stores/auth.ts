@@ -1,12 +1,25 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import authService from '../service/auth'
-import type { User } from '@/types/User'
+import type { CreateUser, User } from '@/types/User'
 import router from '@/router'
 import { useCartStore } from './cart'
 
 
 export const useAuthStore = defineStore('auth', () => {
+
+
+
+  const initialCreateUser: CreateUser = {
+    email: '',
+    password: '',
+    name: '',
+    branch_id: 0
+  }
+
+  const registerUser = ref<CreateUser>(structuredClone(initialCreateUser))
+
+
   const email = ref<string>('')
   const password = ref<string>('')
   const user = ref<User | null>()
@@ -58,5 +71,19 @@ export const useAuthStore = defineStore('auth', () => {
   } else {
     console.log('ยังไม่ได้ login')
   }
-  return { token, email, password, user, login, clearUser, getCurrentUser }
+
+  async function register(user: CreateUser) {
+
+    try {
+      const res = await authService.register(user)
+
+      registerUser.value = (structuredClone(initialCreateUser))
+
+      return res
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  return { token, email, password, user, registerUser, login, clearUser, getCurrentUser, register }
 })

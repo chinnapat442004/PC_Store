@@ -35,12 +35,7 @@ const mode = ref<'create' | 'edit'>('create')
 const openEdit = (user: User) => {
   mode.value = 'edit'
   userStore.editedUser = { ...user }
-  if (authStore.user?.role === 'admin') {
-    userStore.createUser.role = 'manager'
-  }
-  if (authStore.user?.role === 'manager') {
-    userStore.createUser.role = 'staff'
-  }
+
   showDialog.value = true
 }
 
@@ -67,12 +62,7 @@ const closeDialog = () => {
 const openCreateDialog = () => {
   mode.value = 'create'
   userStore.clearCreateUser()
-  if (authStore.user?.role === 'admin') {
-    userStore.createUser.role = 'manager'
-  }
-  if (authStore.user?.role === 'manager') {
-    userStore.createUser.role = 'staff'
-  }
+
   showDialog.value = true
 }
 
@@ -229,10 +219,6 @@ const clearSearch = async () => {
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
-      <div class="mb-3">
-        <label>Role</label>
-        <input v-model="formUser.role" class="border w-full px-3 py-2 rounded bg-gray-200" disabled />
-      </div>
       <div v-if="mode === 'create'" class="mb-3">
         <label>Branch</label>
 

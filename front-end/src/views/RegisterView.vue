@@ -4,15 +4,14 @@ import axios from 'axios'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
+
 import { useAuthStore } from '@/stores/auth'
 
-const userStore = useUserStore()
+
 const authStore = useAuthStore()
 const router = useRouter()
 const submit = ref(false)
 const isToastActive = ref(false)
-const confirmPassword = ref(null)
 
 const usernameError = ref('')
 const emailError = ref('')
@@ -20,12 +19,14 @@ const passwordError = ref('')
 const confirmPasswordError = ref('')
 const valind = ref(true)
 
+
+
 watch(
   [
-    () => userStore.createUser.name,
-    () => userStore.createUser.email,
-    () => userStore.createUser.password,
-    () => confirmPassword,
+    () => authStore.registerUser.name,
+    () => authStore.registerUser.email,
+    () => authStore.registerUser.password,
+    () => authStore.registerUser.confirm_password,
   ],
   ([newName, newEmail, newPassword, newCofirmPassword]) => {
     if (
@@ -64,40 +65,56 @@ const isValidEmail = (email: string | null) => {
 }
 
 const checkNull = () => {
-  if (userStore.createUser.name === null) {
+  let isValid = true
+  if (!authStore.registerUser.name) {
     usernameError.value = 'กรุณากรอก username'
+    isValid = false
   }
-  if (userStore.createUser.email === null) {
+  if (!authStore.registerUser.email) {
     emailError.value = 'กรุณากรอก email'
+    isValid = false
   }
-  if (userStore.createUser.password === null) {
+  if (!authStore.registerUser.password) {
     passwordError.value = 'กรุณากรอก password'
+    isValid = false
   }
-  if (confirmPassword.value === null) {
+  if (!authStore.registerUser.confirm_password) {
     confirmPasswordError.value = 'กรุณากรอก ยืนยัน password'
+    isValid = false
   }
-  valind.value = false
+  valind.value = isValid
+  return isValid
 }
 
 async function onRegister() {
   submit.value = true
   try {
+    if (!checkNull()) return
 
-    userStore.createUser.role = 'customer'
-    if (userStore.createUser.password === confirmPassword.value) {
-      isValidEmail(userStore.createUser.email)
+    if (authStore.registerUser.password !== authStore.registerUser.confirm_password) {
+      confirmPasswordError.value = 'รหัสผ่านไม่ตรงกัน'
+      valind.value = false
+      return
     }
-    checkNull()
-    console.log('dd', userStore.createUser)
-    await userStore.addUser(userStore.createUser)
-    if (userStore.createUser) return
 
-    authStore.email = userStore.createUser.email
-    authStore.password = userStore.createUser.password
+    if (!isValidEmail(authStore.registerUser.email)) {
+      emailError.value = 'รูปแบบอีเมลไม่ถูกต้อง'
+      valind.value = false
+      return
+    }
+
+
+    const email = authStore.registerUser.email
+    const password = authStore.registerUser.password
+
+    const res = await authStore.register(authStore.registerUser)
+    if (!res) return
+
+    authStore.email = email
+    authStore.password = password
 
     await authStore.login()
-    userStore.clearUser()
-    confirmPassword.value = null
+
     success()
   } catch (e: unknown) {
     console.log(e)
@@ -126,7 +143,7 @@ async function onRegister() {
     <form @submit.prevent="onRegister" class="w-[350px]">
       <div class="mb-4">
         <label class="text-white">Username:</label>
-        <input v-model="userStore.createUser.name" type="text" :class="[
+        <input v-model="authStore.registerUser.name" type="text" :class="[
           'w-full px-4 py-2 mt-2 border rounded-lg',
           usernameError
             ? 'bg-red-50 border border-red-500  placeholder-red-700 '
@@ -139,7 +156,7 @@ async function onRegister() {
 
       <div class="mb-4">
         <label class="text-white">Email:</label>
-        <input v-model="userStore.createUser.email" type="text" :class="[
+        <input v-model="authStore.registerUser.email" type="text" :class="[
           'w-full px-4 py-2 mt-2 border rounded-lg',
           emailError
             ? 'bg-red-50 border border-red-500  placeholder-red-700 '
@@ -151,7 +168,7 @@ async function onRegister() {
       </div>
       <div class="mb-4">
         <label class="text-white">Password:</label>
-        <input v-model="userStore.createUser.password" type="password" :class="[
+        <input v-model="authStore.registerUser.password" type="password" :class="[
           'w-full px-4 py-2 mt-2 border rounded-lg',
           passwordError
             ? 'bg-red-50 border border-red-500  placeholder-red-700 '
@@ -159,6 +176,18 @@ async function onRegister() {
         ]" placeholder="Enter your password" />
         <p v-if="!valind" class="text-red-500 text-sm mt-1">
           {{ passwordError }}
+        </p>
+      </div>
+      <div class="mb-4">
+        <label class="text-white">Confirm Password:</label>
+        <input v-model="authStore.registerUser.confirm_password" type="password" :class="[
+          'w-full px-4 py-2 mt-2 border rounded-lg',
+          confirmPasswordError
+            ? 'bg-red-50 border border-red-500  placeholder-red-700 '
+            : 'focus:ring-[#202020]',
+        ]" placeholder="Confirm password" />
+        <p v-if="!valind" class="text-red-500 text-sm mt-1">
+          {{ confirmPasswordError }}
         </p>
       </div>
 

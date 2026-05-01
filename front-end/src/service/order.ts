@@ -29,7 +29,7 @@ function updateOrder(id: number, status: UpdateOrder) {
 
 
 function updateTracking(id: number, taracking: UpdateTracking) {
-    console.log("ทดสอบ", taracking)
+
 
     return http.patch(`/orders/${id}/tracking`, taracking)
 }
