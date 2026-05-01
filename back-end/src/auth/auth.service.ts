@@ -13,6 +13,7 @@ export class AuthService {
   async signIn(email: string, pass: string) {
     const user = await this.usersService.findOneByEmail(email)
 
+
     if (!user) {
       throw new UnauthorizedException('User not found')
     }
@@ -29,6 +30,8 @@ export class AuthService {
     }
 
     const access_token = await this.jwtService.signAsync(payload)
+
+    delete user.password;
 
     return { access_token, user }
   }

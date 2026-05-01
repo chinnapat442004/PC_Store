@@ -39,7 +39,7 @@ export class OrdersController {
 
   ) {
 
-    return this.ordersService.findAll(+page, +limit, status, req.user.branch_id);
+    return this.ordersService.findOrdersByBranch(+page, +limit, status, req.user.branch_id);
   }
 
   @Get('customer')
@@ -51,7 +51,7 @@ export class OrdersController {
 
   ) {
 
-    return this.ordersService.findAll(+page, +limit, status, req.user.user_id);
+    return this.ordersService.findOrdersByCustomer(+page, +limit, status, req.user.user_id);
   }
 
 
@@ -59,8 +59,14 @@ export class OrdersController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Req() req,) {
 
-    return this.ordersService.findOne(id, req.user.branch_id);
+    return this.ordersService.findOneByBranch(id, req.user.branch_id);
   }
+
+  @Get(':id/customer')
+  findOneByCustomer(@Param('id', ParseIntPipe) id: number, @Req() req,) {
+    return this.ordersService.findOneByCustomer(id, req.user.branch_id);
+  }
+
 
 
   @Patch(':id/status')

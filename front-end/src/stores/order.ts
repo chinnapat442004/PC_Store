@@ -4,7 +4,6 @@ import orderService from '@/service/order'
 import { ref } from 'vue'
 import { useLoadingStore } from './loading'
 
-
 export const useOrderStore = defineStore('order', () => {
     const loadingStore = useLoadingStore()
 
@@ -21,7 +20,6 @@ export const useOrderStore = defineStore('order', () => {
 
     const activeTab = ref<string>('all')
 
-
     const counts = ref<Record<OrderStatus, number>>({} as Record<OrderStatus, number>)
     const selectedOrder = ref<Order | null>(null)
 
@@ -36,36 +34,47 @@ export const useOrderStore = defineStore('order', () => {
     const status = ref<OrderStatus>()
 
 
+    const handleOrderResponse = (res: any) => {
+        orders.value = res.data.data
+        counts.value = res.data.counts || {}
+        total.value = res.data.total
+        lastPage.value = res.data.lastPage
+    }
+
     async function getOrders(p = page.value, l = limit.value, s = status.value) {
         loadingStore.doLoad()
         try {
-            if (s) {
-                const res = await orderService.getOrders(p, l, s)
-                orders.value = res.data.data
-                counts.value = res.data.counts || {}
-                total.value = res.data.total
-                lastPage.value = res.data.lastPage
-
-            } else {
-
-                const res = await orderService.getOrders(p, l)
-                orders.value = res.data.data
-                counts.value = res.data.counts || {}
-                total.value = res.data.total
-                lastPage.value = res.data.lastPage
-            }
+            const res = s ? await orderService.getOrders(p, l, s) : await orderService.getOrders(p, l)
+            handleOrderResponse(res)
         } finally {
             loadingStore.finishLoad()
         }
+    }
 
+    async function getOrdersByCustomer(p = page.value, l = limit.value, s = status.value) {
+        loadingStore.doLoad()
+        try {
+            const res = s ? await orderService.getOrdersByCustomer(p, l, s) : await orderService.getOrdersByCustomer(p, l)
+            handleOrderResponse(res)
+        } finally {
+            loadingStore.finishLoad()
+        }
+    }
+
+    async function getOrderByCustomer(orderId: number) {
+        loadingStore.doLoad()
+        try {
+            const res = await orderService.getOrderByCustomer(orderId)
+            selectedOrder.value = res.data
+        } finally {
+            loadingStore.finishLoad()
+        }
     }
 
     async function getOrderById(orderId: number) {
         loadingStore.doLoad()
         try {
             const res = await orderService.getOrder(orderId)
-
-
             selectedOrder.value = res.data
         } finally {
             loadingStore.finishLoad()
@@ -73,16 +82,11 @@ export const useOrderStore = defineStore('order', () => {
     }
 
     function setOrder(data: Partial<CreateOrder>) {
-
         orderForm.value = { ...orderForm.value, ...data }
-
-
-
     }
 
     function clearOrder() {
         orderForm.value = { ...initialCreateOrder }
-
     }
 
     function clearTrackingForm() {
@@ -94,9 +98,7 @@ export const useOrderStore = defineStore('order', () => {
 
         try {
             const { data } = await orderService.createOrder(orderForm.value)
-
             clearOrder()
-
             return data
         } catch (err) {
             console.error(err)
@@ -106,10 +108,7 @@ export const useOrderStore = defineStore('order', () => {
         }
     }
 
-
-
     async function updateStatus(orderId: number, updateOrder: UpdateOrder) {
-
         loadingStore.doLoad()
         try {
             await orderService.updateOrder(orderId, updateOrder)
@@ -118,22 +117,16 @@ export const useOrderStore = defineStore('order', () => {
             if (index !== -1) {
                 orders.value[index].order_status = updateOrder.status
             }
-
         } finally {
             loadingStore.finishLoad()
         }
     }
 
-
     async function updateTracking(orderId: number) {
-
         loadingStore.doLoad()
-
 
         try {
             await orderService.updateTracking(orderId, trackingForm.value)
-
-
         } catch (err) {
             console.error(err)
             alert('อัปเดต Tracking ไม่สำเร็จ')
@@ -142,11 +135,10 @@ export const useOrderStore = defineStore('order', () => {
         }
     }
 
-
     return {
         setOrder,
         createOrder,
-        getOrders, getOrderById, updateStatus, updateTracking, clearTrackingForm,
-        orderForm, orders, page, limit, status, lastPage, selectedOrder, counts, total, trackingForm, activeTab
+        getOrders, getOrderById, updateStatus, updateTracking, clearTrackingForm, getOrdersByCustomer, getOrderByCustomer,
+        orderForm, orders, page, limit, status, lastPage, selectedOrder, counts, total, trackingForm, activeTab,
     }
 })

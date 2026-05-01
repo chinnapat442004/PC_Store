@@ -24,12 +24,12 @@ const orderId = Number(route.params.orderId as string)
 onMounted(async () => {
     await authStore.getCurrentUser()
     await addressStore.getAddresses()
-    orderStore.getOrderById(orderId)
+    orderStore.getOrderByCustomer(orderId)
     paymentStore.fetchPaymentQr(orderId)
 })
 
 const fetchOrders = async () => {
-    await orderStore.getOrders(
+    await orderStore.getOrdersByCustomer(
         orderStore.page,
         orderStore.limit,
         selectedTab?.status

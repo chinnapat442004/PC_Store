@@ -330,7 +330,7 @@ export class OrdersService {
     });
   }
 
-  async findAll(page: number, limit: number, order_status?: OrderStatus | OrderStatus[], branch_id?: number) {
+  async findOrdersByBranch(page: number, limit: number, order_status?: OrderStatus | OrderStatus[], branch_id?: number) {
     const skip = (page - 1) * limit;
 
     let where = {}
@@ -366,6 +366,61 @@ export class OrdersService {
       .createQueryBuilder('order')
       .select('order.order_status', 'status')
       .addSelect('COUNT(*)', 'count')
+      .where('order.branch_id = :branch_id', { branch_id })
+      .groupBy('order.order_status')
+      .getRawMany()
+
+    const counts = rawCounts.reduce((acc, item) => {
+      acc[item.status] = Number(item.count)
+      return acc
+    }, {} as Record<OrderStatus, number>)
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit), counts,
+    };
+  }
+
+
+
+  async findOrdersByCustomer(page: number, limit: number, order_status?: OrderStatus | OrderStatus[], user_id?: number) {
+    const skip = (page - 1) * limit;
+
+    let where = {}
+
+    if (order_status || user_id) {
+      where = {
+        ...(order_status && (Array.isArray(order_status)
+          ? { order_status: In(order_status) }
+          : { order_status })),
+
+        ...(user_id && {
+          user: {
+            user_id: user_id,
+          },
+        }),
+      }
+    }
+    const [data, total] = await this.orderRepository.findAndCount({
+      where,
+      relations: {
+        details: true,
+        shipment: true
+      },
+      order: {
+        created_at: 'DESC',
+      },
+      skip,
+      take: limit,
+    });
+
+    const rawCounts = await this.orderRepository
+      .createQueryBuilder('order')
+      .select('order.order_status', 'status')
+      .addSelect('COUNT(*)', 'count')
+      .where('order.user_id = :user_id', { user_id })
       .groupBy('order.order_status')
       .getRawMany()
 
@@ -383,7 +438,8 @@ export class OrdersService {
     };
   }
 
-  async findOne(order_id: number, branch_id?: number) {
+
+  async findOneByBranch(order_id: number, branch_id?: number) {
     const order = await this.orderRepository.findOne({
       where: {
         order_id,
@@ -407,6 +463,32 @@ export class OrdersService {
 
     return order
   }
+
+  async findOneByCustomer(order_id: number, user_id?: number) {
+    const order = await this.orderRepository.findOne({
+      where: {
+        order_id,
+        ...(user_id && {
+          user: {
+            user_id,
+          },
+        }),
+      },
+      relations: {
+        details: true,
+        shipment: true,
+        orderHistory: true,
+        branch: true,
+      },
+    })
+
+    if (!order) {
+      throw new NotFoundException('Order not found')
+    }
+
+    return order
+  }
+
 
   async updateStatus(
     order_id: number,

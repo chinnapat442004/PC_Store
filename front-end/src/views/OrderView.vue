@@ -46,7 +46,7 @@ watch(tab, async () => {
 
 const fetchOrders = async () => {
   const selectedTab = tabs.find(t => t.key === tab.value)
-  await orderStore.getOrders(
+  await orderStore.getOrdersByCustomer(
     orderStore.page,
     orderStore.limit,
     selectedTab?.status
@@ -57,14 +57,14 @@ const fetchOrders = async () => {
 const nextPage = async () => {
   if (orderStore.page < orderStore.lastPage) {
     orderStore.page++
-    await orderStore.getOrders()
+    await orderStore.getOrdersByCustomer()
   }
 }
 
 const prevPage = async () => {
   if (orderStore.page > 1) {
     orderStore.page--
-    await orderStore.getOrders()
+    await orderStore.getOrdersByCustomer()
   }
 }
 
