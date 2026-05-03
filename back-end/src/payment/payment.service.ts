@@ -19,18 +19,17 @@ export class PaymentService {
     @InjectRepository(Order)
     private readonly orderRepo: Repository<Order>,
     private readonly configService: StorePaymentConfigService,
-  ) { }
+  ) {}
 
   create(createPaymentDto: CreatePaymentDto) {
     const newPayment = this.paymentRepo.create(createPaymentDto);
     return this.paymentRepo.save(newPayment);
   }
 
-
   findAll() {
     return this.paymentRepo.find({
       relations: ['order'],
-      order: { created_at: 'DESC' }
+      order: { created_at: 'DESC' },
     });
   }
 
@@ -51,12 +50,10 @@ export class PaymentService {
     return payment;
   }
 
-
   async getPaymentInfo(orderId: number) {
-
     const payment = await this.paymentRepo.findOne({
       where: {
-        order: { order_id: orderId }
+        order: { order_id: orderId },
       },
       relations: ['order'],
     });
@@ -72,10 +69,7 @@ export class PaymentService {
     if (order.payment_method === PaymentMethod.PROMPTPAY) {
       const amount = Number(order.total_amount);
 
-      const payload = generatePayload(
-        config.promptpay_number,
-        { amount }
-      );
+      const payload = generatePayload(config.promptpay_number, { amount });
 
       const qr = await qrcode.toDataURL(payload);
 
@@ -106,20 +100,14 @@ export class PaymentService {
       throw new NotFoundException('Payment not found');
     }
 
-
     payment.slip_image = slipImage;
 
-
-
     if (payment.order) {
-
       payment.order.order_status = await OrderStatus.WAITING_VERIFY;
     }
 
-
     await this.orderRepo.save(payment.order);
     await this.paymentRepo.save(payment);
-
 
     return {
       message: 'Slip uploaded successfully',

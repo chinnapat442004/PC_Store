@@ -11,23 +11,20 @@ import { ManagerDashboardService } from './manager/manager-dashboard.service';
 import { StockModule } from 'src/stock/stock.module';
 import { StaffDashboardService } from './staff/staff-dashboard.service';
 
-
 @Module({
   imports: [
     OrdersModule,
     UsersModule,
     CouponModule,
     ProductsModule,
-    StockModule
-
+    StockModule,
   ],
   controllers: [DashboardController],
   providers: [
     DashboardService,
     AdminDashboardService,
     ManagerDashboardService,
-    StaffDashboardService
-
+    StaffDashboardService,
   ],
 })
-export class DashboardModule { }
+export class DashboardModule {}

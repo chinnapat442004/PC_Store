@@ -1,6 +1,12 @@
 import { Branch } from 'src/branches/entities/branch.entity';
 import { Product } from 'src/products/entities/product.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity('stock')
 export class Stock {

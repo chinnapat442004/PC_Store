@@ -9,4 +9,4 @@ import { Shipment } from './entities/shipment.entity';
   controllers: [ShipmentController],
   providers: [ShipmentService],
 })
-export class ShipmentModule { }
+export class ShipmentModule {}

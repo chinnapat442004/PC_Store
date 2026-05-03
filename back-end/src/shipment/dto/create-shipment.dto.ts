@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreateShipmentDto {
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 }

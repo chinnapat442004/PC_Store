@@ -5,10 +5,9 @@ import { StorePaymentConfigController } from './store-payment-config.controller'
 import { StorePaymentConfig } from './entities/store-payment-config.entity';
 
 @Module({
-
   imports: [TypeOrmModule.forFeature([StorePaymentConfig])],
   controllers: [StorePaymentConfigController],
   providers: [StorePaymentConfigService],
   exports: [StorePaymentConfigService],
 })
-export class StorePaymentConfigModule { }
+export class StorePaymentConfigModule {}

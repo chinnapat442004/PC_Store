@@ -6,15 +6,13 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { OrderStatus, PaymentMethod } from "../emums/order-status.enum";
-import { OrderDetail } from "./order-detail";
-import { User } from "src/users/entities/user.entity";
-import { Branch } from "src/branches/entities/branch.entity";
-import { OrderStatusHistory } from "./order-status-history.entity";
-import { Shipment } from "src/shipment/entities/shipment.entity";
-
-
+} from 'typeorm';
+import { OrderStatus, PaymentMethod } from '../emums/order-status.enum';
+import { OrderDetail } from './order-detail';
+import { User } from 'src/users/entities/user.entity';
+import { Branch } from 'src/branches/entities/branch.entity';
+import { OrderStatusHistory } from './order-status-history.entity';
+import { Shipment } from 'src/shipment/entities/shipment.entity';
 
 @Entity('orders')
 export class Order {
@@ -30,16 +28,11 @@ export class Order {
   @Column({ type: 'enum', enum: PaymentMethod, nullable: true })
   payment_method: PaymentMethod;
 
-
   @Column('numeric', { precision: 10, scale: 2, default: 0 })
   subtotal: number;
 
-
-
-
   @Column('numeric', { precision: 10, scale: 2 })
   total_amount: number;
-
 
   @Column({ nullable: true })
   coupon_code: string;
@@ -53,7 +46,6 @@ export class Order {
   @Column('numeric', { precision: 10, scale: 2, default: 0 })
   discount_amount: number;
 
-
   @Column({
     type: 'enum',
     enum: OrderStatus,
@@ -64,7 +56,6 @@ export class Order {
   @ManyToOne(() => User, (user) => user.orders)
   @JoinColumn({ name: 'user_id' })
   user: User;
-
 
   @Column({ nullable: true })
   fullname: string;

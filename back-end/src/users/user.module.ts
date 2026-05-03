@@ -11,4 +11,4 @@ import { Branch } from 'src/branches/entities/branch.entity';
   providers: [UserService],
   exports: [UserService],
 })
-export class UsersModule { }
+export class UsersModule {}

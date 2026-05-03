@@ -19,7 +19,7 @@ export class ProductsService {
     private branchRepository: Repository<Branch>,
     @InjectRepository(Stock)
     private stockRepository: Repository<Stock>,
-  ) { }
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     const product = new Product();
@@ -31,7 +31,7 @@ export class ProductsService {
     if (createProductDto.categoryId) {
       product.category = {
         category_id: createProductDto.categoryId,
-      } as any
+      } as any;
     }
 
     const savedProduct = await this.productRepository.save(product);
@@ -46,19 +46,17 @@ export class ProductsService {
 
       await this.imageRepository.save(images);
 
-      const branches = await this.branchRepository.find()
+      const branches = await this.branchRepository.find();
 
       const stocks = branches.map((branch) =>
         this.stockRepository.create({
           product_id: savedProduct.product_id,
           branch_id: branch.branch_id,
           quantity: 0,
-        })
-
-      )
+        }),
+      );
       await this.stockRepository.save(stocks);
     }
-
 
     return savedProduct;
   }
@@ -67,10 +65,7 @@ export class ProductsService {
     const skip = (page - 1) * limit;
 
     const where = search
-      ? [
-        { title: Like(`%${search}%`) },
-        { description: Like(`%${search}%`) },
-      ]
+      ? [{ title: Like(`%${search}%`) }, { description: Like(`%${search}%`) }]
       : {};
 
     const [data, total] = await this.productRepository.findAndCount({
@@ -91,20 +86,20 @@ export class ProductsService {
     });
 
     const dataWithStock = data.map((product) => {
-      const stocks = product.stocks ?? []
+      const stocks = product.stocks ?? [];
 
       const maxStock = stocks.reduce((max, s) => {
-        return s.quantity > max.quantity ? s : max
-      }, stocks[0])
+        return s.quantity > max.quantity ? s : max;
+      }, stocks[0]);
 
-      const { stocks: _, ...restProduct } = product
+      const { stocks: _, ...restProduct } = product;
 
       return {
         ...restProduct,
         stock_quantity: maxStock?.quantity ?? 0,
         stock_branch: maxStock?.branch ?? null,
-      }
-    })
+      };
+    });
 
     return {
       data: dataWithStock,
@@ -157,7 +152,7 @@ export class ProductsService {
     if (updateProductDto.categoryId) {
       product.category = {
         category_id: updateProductDto.categoryId,
-      } as any
+      } as any;
     }
     await this.productRepository.save(product);
 

@@ -1,6 +1,13 @@
 import { Branch } from 'src/branches/entities/branch.entity';
 import { Product } from 'src/products/entities/product.entity';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity('stock_movement')
 export class StockMovement {
@@ -30,9 +37,9 @@ export class StockMovement {
 
   @ManyToOne(() => Product)
   @JoinColumn({ name: 'product_id' })
-  product: Product
+  product: Product;
 
   @ManyToOne(() => Branch)
   @JoinColumn({ name: 'branch_id' })
-  branch: Branch
+  branch: Branch;
 }

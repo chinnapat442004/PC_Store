@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, In, EntityManager, } from 'typeorm';
+import { Repository, DataSource, In, EntityManager } from 'typeorm';
 
 import { Order } from './entities/order.entity';
 import { OrderStatusHistory } from './entities/order-status-history.entity';
@@ -24,8 +24,6 @@ import { Coupon } from 'src/coupon/entities/coupon.entity';
 import { Cart } from 'src/carts/entities/cart.entity';
 import { CartDetail } from 'src/carts/entities/cart_detail';
 
-
-
 @Injectable()
 export class OrdersService {
   constructor(
@@ -33,32 +31,23 @@ export class OrdersService {
 
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
-
-
-  ) { }
-
+  ) {}
 
   //หาสาขาที่ใกล้ที่สุด
-  private getDistance(
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number,
-  ) {
+  private getDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
     const dLng = ((lng2 - lng1) * Math.PI) / 180;
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
-
 
   private async findBranchWithStock(
     branches: Branch[],
@@ -72,10 +61,10 @@ export class OrdersService {
         branch: b,
         distance: this.getDistance(lat, lng, b.lat, b.lng),
       }))
-      .sort((a, b) => a.distance - b.distance)
+      .sort((a, b) => a.distance - b.distance);
 
     for (const item of sortedBranches) {
-      let allStockEnough = true
+      let allStockEnough = true;
 
       for (const product of productItems) {
         const stock = await manager.findOne(Stock, {
@@ -83,25 +72,24 @@ export class OrdersService {
             product_id: product.product_id,
             branch_id: item.branch.branch_id,
           },
-        })
+        });
 
         if (!stock || stock.quantity < product.quantity) {
-          allStockEnough = false
-          break
+          allStockEnough = false;
+          break;
         }
       }
 
       if (allStockEnough) {
-        return item.branch
+        return item.branch;
       }
     }
 
-    return null
+    return null;
   }
 
   async create(createOrderDto: CreateOrderDto, user_id: number) {
     return this.dataSource.transaction(async (manager) => {
-
       let items: { product_id: number; quantity: number }[] = [];
 
       if (createOrderDto.is_buy_now) {
@@ -116,12 +104,11 @@ export class OrdersService {
             'cartDetails',
             'cartDetails.product',
             'cartDetails.product.images',
-          ]
+          ],
         });
         if (!cart || !cart.cartDetails.length) {
           throw new BadRequestException('No order details');
         }
-
 
         items = cart.cartDetails.map((d) => ({
           product_id: d.product.product_id,
@@ -145,8 +132,7 @@ export class OrdersService {
         throw new BadRequestException('Address has no location');
 
       const branches = await manager.find(Branch);
-      if (!branches.length)
-        throw new BadRequestException('No branches found');
+      if (!branches.length) throw new BadRequestException('No branches found');
 
       const productIds = items.map((i) => i.product_id);
 
@@ -159,9 +145,7 @@ export class OrdersService {
         throw new NotFoundException('Some products not found');
       }
 
-      const productMap = new Map(
-        productsData.map((p) => [p.product_id, p])
-      );
+      const productMap = new Map(productsData.map((p) => [p.product_id, p]));
 
       const productItems = items.map((i) => ({
         product_id: i.product_id,
@@ -221,7 +205,9 @@ export class OrdersService {
 
         const now = new Date();
         if (now < coupon.start_date || now > coupon.end_date) {
-          throw new BadRequestException('โค้ดส่วนลดนี้หมดอายุแล้วหรือไม่สามารถใช้ได้ในขณะนี้');
+          throw new BadRequestException(
+            'โค้ดส่วนลดนี้หมดอายุแล้วหรือไม่สามารถใช้ได้ในขณะนี้',
+          );
         }
 
         if (coupon.usage_limit && coupon.used_count >= coupon.usage_limit) {
@@ -306,17 +292,14 @@ export class OrdersService {
         });
 
         if (cart) {
-
           await manager.delete(CartDetail, {
             cart: { cart_id: cart.cart_id },
-
           });
 
-          cart.coupon = null
-          cart.discount_amount = 0
-          await manager.save(cart)
+          cart.coupon = null;
+          cart.discount_amount = 0;
+          await manager.save(cart);
         }
-
       }
 
       if (createOrderDto.payment_method === PaymentMethod.PROMPTPAY) {
@@ -330,29 +313,35 @@ export class OrdersService {
     });
   }
 
-  async findOrdersByBranch(page: number, limit: number, order_status?: OrderStatus | OrderStatus[], branch_id?: number) {
+  async findOrdersByBranch(
+    page: number,
+    limit: number,
+    order_status?: OrderStatus | OrderStatus[],
+    branch_id?: number,
+  ) {
     const skip = (page - 1) * limit;
 
-    let where = {}
+    let where = {};
 
     if (order_status || branch_id) {
       where = {
-        ...(order_status && (Array.isArray(order_status)
-          ? { order_status: In(order_status) }
-          : { order_status })),
+        ...(order_status &&
+          (Array.isArray(order_status)
+            ? { order_status: In(order_status) }
+            : { order_status })),
 
         ...(branch_id && {
           branch: {
             branch_id: branch_id,
           },
         }),
-      }
+      };
     }
     const [data, total] = await this.orderRepository.findAndCount({
       where,
       relations: {
         details: true,
-        shipment: true
+        shipment: true,
       },
       order: {
         created_at: 'DESC',
@@ -361,53 +350,60 @@ export class OrdersService {
       take: limit,
     });
 
-
     const rawCounts = await this.orderRepository
       .createQueryBuilder('order')
       .select('order.order_status', 'status')
       .addSelect('COUNT(*)', 'count')
       .where('order.branch_id = :branch_id', { branch_id })
       .groupBy('order.order_status')
-      .getRawMany()
+      .getRawMany();
 
-    const counts = rawCounts.reduce((acc, item) => {
-      acc[item.status] = Number(item.count)
-      return acc
-    }, {} as Record<OrderStatus, number>)
+    const counts = rawCounts.reduce(
+      (acc, item) => {
+        acc[item.status] = Number(item.count);
+        return acc;
+      },
+      {} as Record<OrderStatus, number>,
+    );
 
     return {
       data,
       total,
       page,
-      lastPage: Math.ceil(total / limit), counts,
+      lastPage: Math.ceil(total / limit),
+      counts,
     };
   }
 
-
-
-  async findOrdersByCustomer(page: number, limit: number, order_status?: OrderStatus | OrderStatus[], user_id?: number) {
+  async findOrdersByCustomer(
+    page: number,
+    limit: number,
+    order_status?: OrderStatus | OrderStatus[],
+    user_id?: number,
+  ) {
     const skip = (page - 1) * limit;
 
-    let where = {}
+    let where = {};
 
     if (order_status || user_id) {
       where = {
-        ...(order_status && (Array.isArray(order_status)
-          ? { order_status: In(order_status) }
-          : { order_status })),
+        ...(order_status &&
+          (Array.isArray(order_status)
+            ? { order_status: In(order_status) }
+            : { order_status })),
 
         ...(user_id && {
           user: {
             user_id: user_id,
           },
         }),
-      }
+      };
     }
     const [data, total] = await this.orderRepository.findAndCount({
       where,
       relations: {
         details: true,
-        shipment: true
+        shipment: true,
       },
       order: {
         created_at: 'DESC',
@@ -422,22 +418,24 @@ export class OrdersService {
       .addSelect('COUNT(*)', 'count')
       .where('order.user_id = :user_id', { user_id })
       .groupBy('order.order_status')
-      .getRawMany()
+      .getRawMany();
 
-
-    const counts = rawCounts.reduce((acc, item) => {
-      acc[item.status] = Number(item.count)
-      return acc
-    }, {} as Record<OrderStatus, number>)
+    const counts = rawCounts.reduce(
+      (acc, item) => {
+        acc[item.status] = Number(item.count);
+        return acc;
+      },
+      {} as Record<OrderStatus, number>,
+    );
 
     return {
       data,
       total,
       page,
-      lastPage: Math.ceil(total / limit), counts,
+      lastPage: Math.ceil(total / limit),
+      counts,
     };
   }
-
 
   async findOneByBranch(order_id: number, branch_id?: number) {
     const order = await this.orderRepository.findOne({
@@ -455,13 +453,13 @@ export class OrdersService {
         orderHistory: true,
         branch: true,
       },
-    })
+    });
 
     if (!order) {
-      throw new NotFoundException('Order not found')
+      throw new NotFoundException('Order not found');
     }
 
-    return order
+    return order;
   }
 
   async findOneByCustomer(order_id: number, user_id?: number) {
@@ -480,15 +478,14 @@ export class OrdersService {
         orderHistory: true,
         branch: true,
       },
-    })
+    });
 
     if (!order) {
-      throw new NotFoundException('Order not found')
+      throw new NotFoundException('Order not found');
     }
 
-    return order
+    return order;
   }
-
 
   async updateStatus(
     order_id: number,
@@ -510,13 +507,10 @@ export class OrdersService {
         throw new BadRequestException('Status is already this value');
       }
 
-
       this.validateTransition(currentStatus, updateDto.status);
-
 
       order.order_status = updateDto.status;
       await manager.save(order);
-
 
       const history = new OrderStatusHistory();
       history.order_id = order_id;
@@ -529,47 +523,40 @@ export class OrdersService {
     });
   }
 
-
-
   async updateTracking(
     order_id: number,
     updateDto: UpdateTrackingDto,
     userId: number,
   ) {
-
-
     return this.dataSource.transaction(async (manager) => {
-
-
       const order = await manager.findOne(Order, {
-        where: { order_id }, relations: { shipment: true },
+        where: { order_id },
+        relations: { shipment: true },
       });
 
       if (!order) {
         throw new NotFoundException('Order not found');
       }
 
-
       if (order.order_status !== OrderStatus.PICKING) {
         throw new BadRequestException('Order is not in picking state');
       }
-
 
       if (!updateDto.tracking_number || !updateDto.shipment_id) {
         throw new BadRequestException('Tracking info required');
       }
 
       order.order_status = OrderStatus.SHIPPED;
-      order.tracking_number = updateDto.tracking_number
+      order.tracking_number = updateDto.tracking_number;
       const shipment = await manager.findOne(Shipment, {
         where: { shipment_id: updateDto.shipment_id },
-      })
+      });
 
       if (!shipment) {
-        throw new NotFoundException('Shipment not found')
+        throw new NotFoundException('Shipment not found');
       }
 
-      order.shipment = shipment
+      order.shipment = shipment;
       await manager.save(order);
 
       const history = new OrderStatusHistory();
@@ -595,14 +582,9 @@ export class OrdersService {
     };
 
     if (!flow[current]?.includes(next)) {
-      throw new BadRequestException(
-        `Invalid transition: ${current} → ${next}`,
-      );
+      throw new BadRequestException(`Invalid transition: ${current} → ${next}`);
     }
   }
-
-
-
 
   // รายได้ของ วันนี้"(order ที่สำเร็จ)
   async getTodayRevenue(branchId?: number) {
@@ -619,17 +601,14 @@ export class OrdersService {
         end,
       });
 
-
     if (branchId) {
-
-      qb.andWhere('orders.branch = :branchId', { branchId })
+      qb.andWhere('orders.branch = :branchId', { branchId });
     }
 
     const result = await qb.getRawOne();
 
     return Number(result.revenue || 0);
   }
-
 
   // รายได้ของ เดือนปัจจุบัน ( order ที่สำเร็จ)
   async getMonthlyRevenue(branchId?: number) {
@@ -646,19 +625,16 @@ export class OrdersService {
         end,
       });
     if (branchId) {
-      qb.andWhere('orders.branch = :branchId', { branchId })
+      qb.andWhere('orders.branch = :branchId', { branchId });
     }
 
-    const result = await qb.getRawOne()
+    const result = await qb.getRawOne();
     return Number(result.revenue || 0);
   }
 
-
   // นับจำนวนออเดอร์ทั้งหมด / สำเร็จ / ยกเลิก
   async getTotalOrders(branchId?: number) {
-    const where = branchId
-      ? { branch: { branch_id: branchId } }
-      : {};
+    const where = branchId ? { branch: { branch_id: branchId } } : {};
 
     const total = await this.orderRepository.count({
       where,
@@ -681,27 +657,24 @@ export class OrdersService {
     return { total, success, cancelled };
   }
 
-
-  // รายได้ย้อนหลัง 7 วัน 
+  // รายได้ย้อนหลัง 7 วัน
   async getSalesLast7Days(branchId?: number) {
-    const qb = this.orderRepository.createQueryBuilder('o')
-      .select("DATE(o.created_at)", "date")
-      .addSelect("SUM(o.total_amount)", "revenue")
-      .where("o.order_status = :status", { status: OrderStatus.DONE })
+    const qb = this.orderRepository
+      .createQueryBuilder('o')
+      .select('DATE(o.created_at)', 'date')
+      .addSelect('SUM(o.total_amount)', 'revenue')
+      .where('o.order_status = :status', { status: OrderStatus.DONE })
       .andWhere("o.created_at >= NOW() - INTERVAL '7 days'")
-      .groupBy("DATE(o.created_at)")
-      .orderBy("date", "ASC")
-
-
+      .groupBy('DATE(o.created_at)')
+      .orderBy('date', 'ASC');
 
     if (branchId) {
-      qb.andWhere('o.branch= :branchId', { branchId })
+      qb.andWhere('o.branch= :branchId', { branchId });
     }
     const result = qb.getRawMany();
 
-    return result
+    return result;
   }
-
 
   async getSalesByCategory(branchId?: number) {
     const query = this.orderRepository
@@ -760,7 +733,6 @@ export class OrdersService {
       .getRawMany();
   }
 
-
   async getPendingOrdersDashboard(branchId: number) {
     const activeStatuses = [
       OrderStatus.PENDING,
@@ -781,17 +753,21 @@ export class OrdersService {
       .groupBy('o.order_status')
       .getRawMany();
 
-    const map = result.reduce((acc, item) => {
-      acc[item.status] = Number(item.total);
-      return acc;
-    }, {} as Record<string, number>);
+    const map = result.reduce(
+      (acc, item) => {
+        acc[item.status] = Number(item.total);
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-
-    const statusData = activeStatuses.reduce((acc, status) => {
-      acc[status] = map[status] || 0;
-      return acc;
-    }, {} as Record<string, number>);
-
+    const statusData = activeStatuses.reduce(
+      (acc, status) => {
+        acc[status] = map[status] || 0;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const totalPending = Object.values(statusData).reduce(
       (sum, val) => sum + val,
@@ -803,6 +779,4 @@ export class OrdersService {
       totalPending,
     };
   }
-
 }
-

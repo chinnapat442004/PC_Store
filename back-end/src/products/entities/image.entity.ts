@@ -9,13 +9,15 @@ import { Product } from './product.entity';
 
 @Entity()
 export class Image {
-@PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
   image_id: number;
 
   @Column()
   image: string;
 
-  @ManyToOne(() => Product, (product) => product.images,{ onDelete: 'CASCADE',})
+  @ManyToOne(() => Product, (product) => product.images, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'product_id' })
   product: Product;
 }

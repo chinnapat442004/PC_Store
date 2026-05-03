@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Param, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+} from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
@@ -6,8 +14,7 @@ import cloudinary from 'config/cloudinary.config';
 
 @Controller('payment')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) { }
-
+  constructor(private readonly paymentService: PaymentService) {}
 
   @Post(':paymentId/slip')
   @UseInterceptors(
@@ -41,8 +48,6 @@ export class PaymentController {
     return this.paymentService.uploadSlip(paymentId, uploadedSlip);
   }
 
-
-
   @Get()
   findAll() {
     return this.paymentService.findAll();
@@ -57,10 +62,4 @@ export class PaymentController {
   findOne(@Param('id') id: string) {
     return this.paymentService.findByOrderId(+id);
   }
-
-
-
-
-
-
 }

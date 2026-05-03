@@ -20,14 +20,11 @@ import { UpdateTrackingDto } from './dto/update-tracking.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) { }
-
+  constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  create(@Body() dto: CreateOrderDto, @Req() req,) {
-
-
-    return this.ordersService.create(dto, req.user.user_id)
+  create(@Body() dto: CreateOrderDto, @Req() req) {
+    return this.ordersService.create(dto, req.user.user_id);
   }
 
   @Get()
@@ -36,10 +33,13 @@ export class OrdersController {
     @Query('page') page = '1',
     @Query('limit') limit = '10',
     @Query('status') status?: OrderStatus,
-
   ) {
-
-    return this.ordersService.findOrdersByBranch(+page, +limit, status, req.user.branch_id);
+    return this.ordersService.findOrdersByBranch(
+      +page,
+      +limit,
+      status,
+      req.user.branch_id,
+    );
   }
 
   @Get('customer')
@@ -48,26 +48,24 @@ export class OrdersController {
     @Query('page') page = '1',
     @Query('limit') limit = '10',
     @Query('status') status?: OrderStatus,
-
   ) {
-
-    return this.ordersService.findOrdersByCustomer(+page, +limit, status, req.user.user_id);
+    return this.ordersService.findOrdersByCustomer(
+      +page,
+      +limit,
+      status,
+      req.user.user_id,
+    );
   }
 
-
-
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number, @Req() req,) {
-
+  findOne(@Param('id', ParseIntPipe) id: number, @Req() req) {
     return this.ordersService.findOneByBranch(id, req.user.branch_id);
   }
 
   @Get(':id/customer')
-  findOneByCustomer(@Param('id', ParseIntPipe) id: number, @Req() req,) {
+  findOneByCustomer(@Param('id', ParseIntPipe) id: number, @Req() req) {
     return this.ordersService.findOneByCustomer(id, req.user.branch_id);
   }
-
-
 
   @Patch(':id/status')
   updateStatus(
@@ -86,7 +84,6 @@ export class OrdersController {
     @Body() dto: UpdateTrackingDto,
     @Req() req,
   ) {
-
     const userId = req.user.user_id || 0;
 
     return this.ordersService.updateTracking(id, dto, userId);

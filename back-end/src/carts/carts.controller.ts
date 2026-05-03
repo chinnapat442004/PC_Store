@@ -15,11 +15,15 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 import { ApplyCouponDto } from './dto/apply-coupon.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
-
 @UseGuards(JwtAuthGuard)
 @Controller('cart')
 export class CartsController {
-  constructor(private readonly cartsService: CartsService) { }
+  constructor(private readonly cartsService: CartsService) {}
+
+  @Get()
+  findMyCart(@Req() req) {
+    return this.cartsService.findOne(req.user.user_id);
+  }
 
   @Post()
   create(@Req() req, @Body() createCartDto: CreateCartDto) {
@@ -27,30 +31,18 @@ export class CartsController {
   }
 
   @Post('apply-coupon')
-  applyCoupon(
-    @Req() req,
-    @Body() body: ApplyCouponDto,
-  ) {
-
-
-
+  applyCoupon(@Req() req, @Body() body: ApplyCouponDto) {
     return this.cartsService.applyCoupon(req.user.user_id, body.code);
-  }
-
-  @Get()
-  findMyCart(@Req() req) {
-
-    return this.cartsService.findOne(req.user.user_id);
-  }
-
-  @Patch()
-  addCartDetail(@Req() req, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartsService.addCartDetail(req.user.user_id, updateCartDto);
   }
 
   @Patch('update')
   update(@Req() req, @Body() updateCartDto: UpdateCartDto) {
     return this.cartsService.update(req.user.user_id, updateCartDto);
+  }
+
+  @Patch()
+  addCartDetail(@Req() req, @Body() updateCartDto: UpdateCartDto) {
+    return this.cartsService.addCartDetail(req.user.user_id, updateCartDto);
   }
 
   @Delete('detail/:id')
@@ -64,7 +56,7 @@ export class CartsController {
   }
 
   @Delete('remove-coupon')
-  async removeCoupon(@Req() req) {
+  removeCoupon(@Req() req) {
     return this.cartsService.removeCoupon(req.user.user_id);
   }
 }

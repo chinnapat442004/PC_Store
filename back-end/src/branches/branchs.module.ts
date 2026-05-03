@@ -11,4 +11,4 @@ import { Product } from 'src/products/entities/product.entity';
   controllers: [BranchsController],
   providers: [BranchsService],
 })
-export class BranchsModule { }
+export class BranchsModule {}

@@ -1,1 +1,1 @@
-export class CreateStorePaymentConfigDto { }
+export class CreateStorePaymentConfigDto {}

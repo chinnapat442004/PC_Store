@@ -15,13 +15,13 @@ export class BranchsService {
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     @InjectRepository(Stock) private stockRepository: Repository<Stock>,
-  ) { }
+  ) {}
 
   async create(createBranchDto: CreateBranchDto) {
-    const branch = this.branchRepository.create(createBranchDto)
-    const savedBranch = await this.branchRepository.save(branch)
+    const branch = this.branchRepository.create(createBranchDto);
+    const savedBranch = await this.branchRepository.save(branch);
 
-    const products = await this.productRepository.find()
+    const products = await this.productRepository.find();
 
     const stocks = products.map((product) =>
       this.stockRepository.create({
@@ -29,11 +29,11 @@ export class BranchsService {
         branch_id: savedBranch.branch_id,
         quantity: 0,
       }),
-    )
+    );
 
-    await this.stockRepository.save(stocks)
+    await this.stockRepository.save(stocks);
 
-    return savedBranch
+    return savedBranch;
   }
 
   async findAll(page: number, limit: number, search?: string) {
@@ -41,10 +41,10 @@ export class BranchsService {
 
     const where = search
       ? [
-        { branch_name: Like(`%${search}%`) },
-        // { address: Like(`%${search}%`) },
-        // { status: Like(`%${search}%`) },
-      ]
+          { branch_name: Like(`%${search}%`) },
+          // { address: Like(`%${search}%`) },
+          // { status: Like(`%${search}%`) },
+        ]
       : {};
 
     const [data, total] = await this.branchRepository.findAndCount({

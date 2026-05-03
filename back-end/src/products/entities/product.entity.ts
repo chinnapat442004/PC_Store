@@ -31,13 +31,11 @@ export class Product {
   @Column()
   sold: number;
 
-
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
-
 
   @ManyToOne(() => Category, (categery) => categery.products)
   @JoinColumn({ name: 'category_id' })
@@ -51,7 +49,6 @@ export class Product {
     onDelete: 'CASCADE',
   })
   images: Image[];
-
 
   @OneToMany(() => Stock, (stock) => stock.product)
   stocks: Stock[];

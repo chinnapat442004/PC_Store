@@ -9,4 +9,4 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   controllers: [CouponController],
   providers: [CouponService],
 })
-export class CouponModule { }
+export class CouponModule {}

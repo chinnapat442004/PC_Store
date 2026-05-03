@@ -31,6 +31,7 @@ function getOrderByCustomer(id: number) {
 }
 
 function createOrder(order: CreateOrder) {
+    console.log(order)
 
     return http.post('/orders', order)
 }

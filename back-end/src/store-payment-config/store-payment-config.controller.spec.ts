@@ -11,7 +11,9 @@ describe('StorePaymentConfigController', () => {
       providers: [StorePaymentConfigService],
     }).compile();
 
-    controller = module.get<StorePaymentConfigController>(StorePaymentConfigController);
+    controller = module.get<StorePaymentConfigController>(
+      StorePaymentConfigController,
+    );
   });
 
   it('should be defined', () => {

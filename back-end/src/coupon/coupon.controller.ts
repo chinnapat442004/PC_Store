@@ -1,12 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { CouponService } from './coupon.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 
-
 @Controller('coupon')
 export class CouponController {
-  constructor(private readonly couponService: CouponService) { }
+  constructor(private readonly couponService: CouponService) {}
 
   @Post()
   create(@Body() createCouponDto: CreateCouponDto) {
@@ -17,10 +25,9 @@ export class CouponController {
   findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
-    @Query('search') search?: string,) {
-    return this.couponService.findAll(+page,
-      +limit,
-      search,);
+    @Query('search') search?: string,
+  ) {
+    return this.couponService.findAll(+page, +limit, search);
   }
 
   @Get(':id')
@@ -34,12 +41,8 @@ export class CouponController {
   }
 
   @Patch(':id/toggle')
-  toggleCoupon(
-    @Param('id') id: number,
-
-  ) {
-    console.log(id)
+  toggleCoupon(@Param('id') id: number) {
+    console.log(id);
     return this.couponService.toggleActive(+id);
   }
-
 }

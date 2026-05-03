@@ -8,7 +8,7 @@ import { CartDetail } from './entities/cart_detail';
 import { Coupon } from 'src/coupon/entities/coupon.entity';
 import { BadRequestException } from '@nestjs/common';
 import { User } from 'src/users/entities/user.entity';
-
+import { Product } from 'src/products/entities/product.entity';
 
 @Injectable()
 export class CartsService {
@@ -21,7 +21,9 @@ export class CartsService {
     private couponRepository: Repository<Coupon>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+    @InjectRepository(Product)
+    private productRepository: Repository<Product>,
+  ) {}
 
   async create(user_id: number, createCartDto: CreateCartDto) {
     let cart = await this.cartRepository.findOne({
@@ -41,10 +43,16 @@ export class CartsService {
       cart = await this.cartRepository.save(cart);
     }
 
+    const product = await this.productRepository.findOne({
+      where: { product_id: createCartDto.productId },
+    });
+
+    if (!product) throw new BadRequestException('Product not found');
+
     const cartDetail = this.cartDetailRepository.create({
-      product: createCartDto.product,
+      product: product,
       quantity: createCartDto.quantity,
-      price: createCartDto.product.price * createCartDto.quantity,
+      price: product.price * createCartDto.quantity,
       cart,
     });
 
@@ -64,8 +72,14 @@ export class CartsService {
 
     if (!cart) throw new Error('Cart not found');
 
+    const product = await this.productRepository.findOne({
+      where: { product_id: updateCartDto.productId },
+    });
+
+    if (!product) throw new BadRequestException('Product not found');
+
     const existingDetail = cart.cartDetails.find(
-      (d) => d.product.product_id === updateCartDto.product.product_id,
+      (d) => d.product.product_id === product.product_id,
     );
 
     if (existingDetail) {
@@ -77,9 +91,9 @@ export class CartsService {
     } else {
       const newDetail = this.cartDetailRepository.create({
         cart,
-        product: updateCartDto.product,
+        product: product,
         quantity: updateCartDto.quantity,
-        price: updateCartDto.quantity * updateCartDto.product.price,
+        price: updateCartDto.quantity * product.price,
       });
 
       await this.cartDetailRepository.save(newDetail);
@@ -101,7 +115,7 @@ export class CartsService {
     if (!cart) throw new Error('Cart not found');
 
     const detail = cart.cartDetails.find(
-      (d) => d.product.product_id === updateCartDto.product.product_id,
+      (d) => d.product.product_id === updateCartDto.productId,
     );
 
     if (detail) {
@@ -115,7 +129,6 @@ export class CartsService {
 
     return this.cartRepository.save(cart);
   }
-
 
   async findAll() {
     const carts = await this.cartRepository.find({
@@ -140,7 +153,8 @@ export class CartsService {
       relations: {
         cartDetails: {
           product: { images: true },
-        }, coupon: true,
+        },
+        coupon: true,
         user: true,
       },
     });
@@ -183,15 +197,12 @@ export class CartsService {
     cart.cartDetails = [];
     cart.subtotal = 0;
     cart.total = 0;
-    cart.coupon = null
-    cart.discount_amount = 0
+    cart.coupon = null;
+    cart.discount_amount = 0;
     return this.cartRepository.save(cart);
   }
 
-
-
   private calculateDiscount(subtotal: number, coupon: Coupon): number {
-
     if (subtotal < coupon.min_order) {
       throw new Error('ยอดสั่งซื้อไม่ถึงขั้นต่ำ');
     }
@@ -213,10 +224,9 @@ export class CartsService {
     return Number(discount.toFixed(2));
   }
 
-
   async applyCoupon(user_id: number, code: string) {
     const cart = await this.cartRepository.findOne({
-      where: { user: { user_id } }
+      where: { user: { user_id } },
     });
 
     if (!cart) throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
@@ -241,7 +251,6 @@ export class CartsService {
       throw new BadRequestException('ยอดสั่งซื้อไม่ถึงขั้นต่ำ');
     }
 
-
     const discount = this.calculateDiscount(cart.subtotal, coupon);
 
     cart.discount_amount = discount;
@@ -250,7 +259,6 @@ export class CartsService {
 
     return this.cartRepository.save(cart);
   }
-
 
   async removeCoupon(user_id: number) {
     const cart = await this.cartRepository.findOne({
@@ -262,13 +270,8 @@ export class CartsService {
     cart.discount_amount = 0;
     cart.total = cart.subtotal;
 
-    cart.coupon = null
+    cart.coupon = null;
 
     return this.cartRepository.save(cart);
   }
-
-
-
-
-
 }

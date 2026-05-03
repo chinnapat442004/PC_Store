@@ -2,15 +2,13 @@ import { Controller, Get, Post, Body, Query, Req } from '@nestjs/common';
 import { StockService } from './stock.service';
 import { UpdateStockDto } from './dto/update-stock.dto';
 
-
-import { UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
-
 @Controller('stock')
 export class StockController {
-  constructor(private readonly stockService: StockService) { }
+  constructor(private readonly stockService: StockService) {}
 
   @Get()
   getStock(
@@ -19,24 +17,22 @@ export class StockController {
     @Query('limit') limit: string = '10',
     @Query('search') search: string,
   ) {
-
-
-    return this.stockService.getStock(req.user.branch_id, +page,
+    return this.stockService.getStock(
+      req.user.branch_id,
+      +page,
       +limit,
-      search,)
+      search,
+    );
   }
 
   @Post('update')
-  updateStock(
-    @Req() req,
-    @Body() dto: UpdateStockDto
-  ) {
-    const branch_id = req.user.branch_id
+  updateStock(@Req() req, @Body() dto: UpdateStockDto) {
+    const branch_id = req.user.branch_id;
 
     return this.stockService.updateStock({
       ...dto,
       branch_id,
-    })
+    });
   }
   @Get('movement')
   getMovement(
@@ -46,10 +42,10 @@ export class StockController {
     @Query('search') search: string,
   ) {
     return this.stockService.getMovement(
-
       req.user.branch_id,
       +page,
-      +limit, search
-    )
+      +limit,
+      search,
+    );
   }
 }

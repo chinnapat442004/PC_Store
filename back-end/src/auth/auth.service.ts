@@ -10,7 +10,7 @@ export class AuthService {
   constructor(
     private usersService: UserService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async signIn(email: string, pass: string) {
     const user = await this.usersService.findOneByEmail(email);
@@ -44,6 +44,4 @@ export class AuthService {
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     return this.usersService.resetPassword(forgotPasswordDto);
   }
-
-
 }

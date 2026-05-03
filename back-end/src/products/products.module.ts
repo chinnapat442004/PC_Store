@@ -12,4 +12,4 @@ import { Branch } from 'src/branches/entities/branch.entity';
   controllers: [ProductsController],
   providers: [ProductsService],
 })
-export class ProductsModule { }
+export class ProductsModule {}

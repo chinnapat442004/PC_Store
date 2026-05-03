@@ -62,7 +62,12 @@ import { StaffDashboardService } from './dashboard/staff/staff-dashboard.service
         Cart,
         CartDetail,
         Image,
-        Stock, Address, Shipment, Payment, StorePaymentConfig, Coupon
+        Stock,
+        Address,
+        Shipment,
+        Payment,
+        StorePaymentConfig,
+        Coupon,
       ],
     }),
 
@@ -75,11 +80,21 @@ import { StaffDashboardService } from './dashboard/staff/staff-dashboard.service
     CartsModule,
     StockModule,
     AddressModule,
-    ShipmentModule, ShipmentModule, PaymentModule, StorePaymentConfigModule, CouponModule, DashboardModule
-
+    ShipmentModule,
+    ShipmentModule,
+    PaymentModule,
+    StorePaymentConfigModule,
+    CouponModule,
+    DashboardModule,
   ],
 
   controllers: [AppController, DashboardController],
-  providers: [AppService, DashboardService, AdminDashboardService, ManagerDashboardService, StaffDashboardService],
+  providers: [
+    AppService,
+    DashboardService,
+    AdminDashboardService,
+    ManagerDashboardService,
+    StaffDashboardService,
+  ],
 })
-export class AppModule { }
+export class AppModule {}

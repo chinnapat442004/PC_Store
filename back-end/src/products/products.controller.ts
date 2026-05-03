@@ -17,7 +17,6 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import cloudinary from 'config/cloudinary.config';
 
-
 @Controller('product')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -34,18 +33,19 @@ export class ProductsController {
   ) {
     if (images && images.length > 0) {
       const uploadedImages = await Promise.all(
-        images.map((image) =>
-          new Promise<string>((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-              { folder: 'products' },
-              (error, result) => {
-                if (error) return reject(error);
-                resolve(result.secure_url);
-              },
-            );
+        images.map(
+          (image) =>
+            new Promise<string>((resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream(
+                { folder: 'products' },
+                (error, result) => {
+                  if (error) return reject(error);
+                  resolve(result.secure_url);
+                },
+              );
 
-            stream.end(image.buffer);
-          }),
+              stream.end(image.buffer);
+            }),
         ),
       );
 
@@ -68,18 +68,19 @@ export class ProductsController {
   ) {
     if (images && images.length > 0) {
       const uploadedImages = await Promise.all(
-        images.map((image) =>
-          new Promise<string>((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-              { folder: 'products' },
-              (error, result) => {
-                if (error) return reject(error);
-                resolve(result.secure_url);
-              },
-            );
+        images.map(
+          (image) =>
+            new Promise<string>((resolve, reject) => {
+              const stream = cloudinary.uploader.upload_stream(
+                { folder: 'products' },
+                (error, result) => {
+                  if (error) return reject(error);
+                  resolve(result.secure_url);
+                },
+              );
 
-            stream.end(image.buffer);
-          }),
+              stream.end(image.buffer);
+            }),
         ),
       );
 

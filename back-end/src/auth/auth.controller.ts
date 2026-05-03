@@ -11,14 +11,13 @@ import { UserService } from 'src/users/user.service';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly usersService: UserService
-  ) { }
-
+    private readonly usersService: UserService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@Req() req) {
-    return this.usersService.findOne(req.user.user_id)
+    return this.usersService.findOne(req.user.user_id);
   }
   @UseGuards(AuthGuard('local'))
   @UseGuards(LocalAuthGuard)

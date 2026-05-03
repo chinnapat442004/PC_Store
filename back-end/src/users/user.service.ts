@@ -28,9 +28,7 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Branch)
     private branchRepository: Repository<Branch>,
-  ) { }
-
-
+  ) {}
 
   async createUser(
     createUserDto: CreateUserDto,
@@ -207,18 +205,18 @@ export class UserService {
   }
 
   async changePassword(user_id: number, updatePasswordDto: UpdatePasswordDto) {
-    const user = await this.userRepository.findOne({ where: { user_id } })
+    const user = await this.userRepository.findOne({ where: { user_id } });
 
     if (!user) {
-      throw new NotFoundException('ไม่พบผู้ใช้งาน')
+      throw new NotFoundException('ไม่พบผู้ใช้งาน');
     }
 
     if (user.password !== updatePasswordDto.current_password) {
-      throw new UnauthorizedException('รหัสผ่านปัจจุบันไม่ถูกต้อง')
+      throw new UnauthorizedException('รหัสผ่านปัจจุบันไม่ถูกต้อง');
     }
 
     if (updatePasswordDto.new_password !== updatePasswordDto.confirm_password) {
-      throw new BadRequestException('รหัสผ่านใหม่ไม่ตรงกัน')
+      throw new BadRequestException('รหัสผ่านใหม่ไม่ตรงกัน');
     }
 
     const updatedUser = await this.userRepository.save(user);

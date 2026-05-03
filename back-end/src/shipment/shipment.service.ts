@@ -8,19 +8,15 @@ export class ShipmentService {
   constructor(
     @InjectRepository(Shipment)
     private shipmentRepository: Repository<Shipment>,
-  ) { }
-
+  ) {}
 
   async create(data: Partial<Shipment>) {
     const shipment = this.shipmentRepository.create(data);
     return await this.shipmentRepository.save(shipment);
   }
 
-
   async findAll(search?: string) {
-    const where = search
-      ? { name: Like(`%${search}%`) }
-      : {};
+    const where = search ? { name: Like(`%${search}%`) } : {};
 
     return await this.shipmentRepository.find({
       where,
@@ -42,7 +38,6 @@ export class ShipmentService {
     return shipment;
   }
 
-
   async update(id: number, data: Partial<Shipment>) {
     const shipment = await this.findOne(id);
 
@@ -50,7 +45,6 @@ export class ShipmentService {
 
     return await this.shipmentRepository.save(shipment);
   }
-
 
   async remove(id: number) {
     const shipment = await this.findOne(id);
