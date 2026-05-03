@@ -1,7 +1,6 @@
 import type { Branch } from "./Branch"
 import type { UserRole } from "./Menu"
 
-
 export type User = {
   user_id: number
   email: string
@@ -9,18 +8,17 @@ export type User = {
   role: UserRole
   enabled: boolean
   address?: string
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
   branch: Branch
-
 }
 
 export type CreateUser = {
   email: string
   password: string
+  confirm_password?: string
   name: string
   branch_id: number
-  confirm_password?: string
 }
 
 export type UpdateUser = {
@@ -30,4 +28,26 @@ export type UpdateUser = {
   role?: UserRole
   enabled?: boolean
   address?: string
+  password?: string
+
+}
+
+
+
+
+
+export type UpdateProfile = {
+  name?: string
+}
+
+export type UpdatePassword = {
+  current_password: string
+  new_password: string
+  confirm_password: string
+}
+
+export type ForgotPassword = {
+  email: string
+  new_password: string
+  confirm_password: string
 }

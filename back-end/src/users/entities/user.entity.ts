@@ -17,7 +17,6 @@ import { Address } from 'src/address/entities/address.entity';
 import { OrderStatus } from 'src/orders/emums/order-status.enum';
 import { OrderStatusHistory } from 'src/orders/entities/order-status-history.entity';
 
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -60,8 +59,4 @@ export class User {
 
   @OneToMany(() => OrderStatusHistory, (status) => status.user)
   orderStatus: OrderStatus[];
-
-
-
-
 }

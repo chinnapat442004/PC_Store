@@ -63,7 +63,7 @@ const router = createRouter({
         { path: 'payment-confirmation/:orderId', name: 'payment-confirmation', component: PaymentConfirmation },
         { path: 'order-succes/:orderId', name: 'order-succes', component: OrderSuccessView },
         { path: 'order-detail/:orderId', name: 'order-detail', component: OrderDetailView },
-
+        { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue') },
       ],
     },
 
@@ -118,7 +118,9 @@ router.beforeEach((to, from, next) => {
   }
 
   if (authStore.user?.role)
+
     if (requiredRoles !== authStore.user?.role) {
+
       return next({ name: '403' })
     }
 

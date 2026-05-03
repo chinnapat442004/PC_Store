@@ -13,13 +13,18 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+
 import { Role } from './enums/role.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   async findAll(
@@ -57,10 +62,7 @@ export class UserController {
   }
 
   @Post()
-  async create(
-    @Req() req: any,
-    @Body() createUserDto: CreateUserDto,
-  ) {
+  async create(@Req() req: any, @Body() createUserDto: CreateUserDto) {
     const currentUser = req.user;
 
     if (![Role.ADMIN, Role.MANAGER].includes(currentUser.role)) {
@@ -69,18 +71,30 @@ export class UserController {
 
     createUserDto.branch_id = currentUser.branch_id;
 
-
     return this.userService.createUser(createUserDto, currentUser);
   }
 
+  @Patch('me/profile')
+  updateProfile(@Req() req: any, @Body() updateProfileDto: UpdateProfileDto) {
+    return this.userService.updateProfile(req.user.user_id, updateProfileDto);
+  }
 
-
+  @Patch('me/password')
+  updatePassword(
+    @Req() req: any,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    return this.userService.changePassword(req.user.user_id, updatePasswordDto);
+  }
 
   @Patch(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN, Role.MANAGER)
   update(
+    @Req() req: any,
     @Body() updateUserDto: UpdateUserDto,
     @Param('id') id: string,
   ) {
-    return this.userService.update(+id, updateUserDto);
+    return this.userService.updateUser(+id, req.user, updateUserDto);
   }
 }

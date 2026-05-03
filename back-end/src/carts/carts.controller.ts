@@ -39,7 +39,7 @@ export class CartsController {
 
   @Get()
   findMyCart(@Req() req) {
-    console.log(req.user)
+
     return this.cartsService.findOne(req.user.user_id);
   }
 

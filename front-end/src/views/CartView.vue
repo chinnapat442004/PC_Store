@@ -4,7 +4,7 @@ import { useCartStore } from '../stores/cart'
 import type { CartDetail } from '../types/CartDetail'
 import { trash } from 'ionicons/icons'
 import { IonIcon } from '@ionic/vue'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useLoadingStore } from '@/stores/loading'
@@ -88,7 +88,7 @@ const goToCheckout = () => {
 }
 
 async function clearCart() {
-  await cartStore.clearChart()
+  await cartStore.clearCart()
 
 }
 </script>
@@ -149,38 +149,38 @@ async function clearCart() {
     </div>
 
     <div class="bg-white max-w-[750px] w-full   md:w-[400px] rounded-[10px] p-[20px] h-[275px]">
-      <div>
 
-        <div class="text-lg font-semibold mb-4">
-          สรุปยอด
-        </div>
 
-        <div class="flex justify-between text-sm mb-2">
-          <div>ราคา:</div>
-          <div>฿{{ cartStore.cart?.subtotal }}</div>
-        </div>
-        <div class="flex justify-between text-sm mb-2">
-          <div>ส่วนลด:</div>
-          <div>฿{{ cartStore.cart?.discount_amount }}</div>
-        </div>
-        <hr class="my-3" />
-        <div class="flex justify-between text-lg font-bold ">
-          <div>ยอดรวม:</div>
-          <div>฿{{ cartStore.cart?.total }}</div>
-        </div>
-        <div class="flex flex-col gap-3 mt-[15px]">
-          <button class="bg-[#82d182] w-full h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
-            @click="goToCheckout">
-            ดำเนินการต่อ
-          </button>
-
-          <button class="w-full h-[35px] rounded-[10px] font-mediumtext-sm border hover:bg-gray-100" @click="clearCart">
-            ล้างตะกร้า
-          </button>
-        </div>
+      <div class="text-lg font-semibold mb-4">
+        สรุปยอด
       </div>
 
+      <div class="flex justify-between text-sm mb-2">
+        <div>ราคา:</div>
+        <div>฿{{ cartStore.cart?.subtotal }}</div>
+      </div>
+      <div class="flex justify-between text-sm mb-2">
+        <div>ส่วนลด:</div>
+        <div>฿{{ cartStore.cart?.discount_amount }}</div>
+      </div>
+      <hr class="my-3" />
+      <div class="flex justify-between text-lg font-bold ">
+        <div>ยอดรวม:</div>
+        <div>฿{{ cartStore.cart?.total }}</div>
+      </div>
+      <div class="flex flex-col gap-3 mt-[15px]">
+        <button class="bg-[#82d182] w-full h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
+          @click="goToCheckout">
+          ดำเนินการต่อ
+        </button>
+
+        <button class="w-full h-[35px] rounded-[10px] font-mediumtext-sm border hover:bg-gray-100" @click="clearCart">
+          ล้างตะกร้า
+        </button>
+      </div>
     </div>
+
+
   </div>
 
 

@@ -43,10 +43,10 @@ const openEdit = (user: User) => {
 
 const saveUser = async () => {
   if (mode.value === 'create') {
-    await userStore.addUser(userStore.createUser)
+    await userStore.createUser(userStore.createUserForm)
     userStore.clearCreateUser()
   } else if (mode.value === 'edit' && userStore.editedUser) {
-    await userStore.updateUser(userStore.editedUser)
+    await userStore.updateUserByAdmin(userStore.editedUser)
     userStore.clearUser()
   }
 
@@ -187,63 +187,70 @@ const clearSearch = async () => {
         {{ mode === 'create' ? 'Create User' : 'Edit User' }}
       </h2>
 
-      <!-- Name -->
       <div v-if="mode === 'create'" class="mb-3">
-        <label>User Name</label>
-        <input v-model="userStore.createUser.name" type="text" placeholder="Enter user name"
+        <label class="text-sm font-medium">User Name</label>
+        <input v-model="userStore.createUserForm.name" type="text" placeholder="Enter user name"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
-      <!-- Name -->
       <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>User Name</label>
+        <label class="text-sm font-medium">User Name</label>
         <input v-model="userStore.editedUser.name" type="text" placeholder="Enter user name"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
-      <!-- Email  -->
       <div v-if="mode === 'create'" class="mb-3">
-        <label>Email</label>
-        <input v-model="userStore.createUser.email" type="email" placeholder="Enter email"
+        <label class="text-sm font-medium">Email</label>
+        <input v-model="userStore.createUserForm.email" type="email" placeholder="Enter email"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
       <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>Email</label>
+        <label class="text-sm font-medium">Email</label>
         <input v-model="userStore.editedUser.email" type="email" placeholder="Enter email"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
+
       <div v-if="mode === 'create'" class="mb-3">
-        <label>Password</label>
-        <input v-model="userStore.createUser.password" type="password" placeholder="Enter password"
+        <label class="text-sm font-medium">Password</label>
+        <input v-model="userStore.createUserForm.password" type="password" placeholder="Enter password"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
+      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-4">
+        <label class="text-sm font-medium text-gray-700">New Password</label>
+        <div class="mt-1 border rounded-lg p-3 bg-gray-50">
+          <input v-model="userStore.editedUser.password" type="password"
+            placeholder="Leave blank to keep current password" class="w-full px-3 py-2 rounded bg-white border" />
+          <p class="text-xs text-gray-500 mt-1">
+            หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้
+          </p>
+        </div>
+      </div>
+
       <div v-if="mode === 'create'" class="mb-3">
-        <label>Branch</label>
-
-        <select v-model="userStore.createUser.branch_id" class="border w-full px-3 py-2 rounded bg-gray-50">
+        <label class="text-sm font-medium">Branch</label>
+        <select v-model="userStore.createUserForm.branch_id" class="border w-full px-3 py-2 rounded bg-gray-50">
           <option value="" disabled>Select branch</option>
-
           <option v-for="b in branchStore.branches" :key="b.branch_id" :value="b.branch_id">
             {{ b.branch_name }}
           </option>
         </select>
       </div>
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>Branch</label>
 
+      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
+        <label class="text-sm font-medium">Branch</label>
         <select v-model="userStore.editedUser.branch.branch_id" class="border w-full px-3 py-2 rounded bg-gray-50">
           <option value="" disabled>Select branch</option>
-
           <option v-for="b in branchStore.branches" :key="b.branch_id" :value="b.branch_id">
             {{ b.branch_name }}
           </option>
         </select>
       </div>
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>Enabled</label>
-        <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded">
+
+      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-4">
+        <label class="text-sm font-medium">Status</label>
+        <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded bg-gray-50">
           <option :value="true">Enabled</option>
           <option :value="false">Disabled</option>
         </select>
@@ -257,12 +264,9 @@ const clearSearch = async () => {
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
           Save
         </button>
-
-
       </div>
     </div>
   </div>
-
   <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการที่จะบันทึกข้อมูลนี้" @confirm="saveUser()"
     @cancel="showConfirm = false" />
 

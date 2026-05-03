@@ -1,23 +1,34 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import userService from '../service/user'
+import authService from '@/service/auth'
 
-import type { User, CreateUser, UpdateUser } from '@/types/User'
+import type {
+  User,
+  CreateUser,
+  UpdateUser,
+  UpdateProfile,
+  UpdatePassword,
+  ForgotPassword,
+
+} from '@/types/User'
+
 import { useLoadingStore } from './loading'
+
 export const useUserStore = defineStore('user', () => {
   const loadingStore = useLoadingStore()
-  const users = ref<User[]>([])
-  const editedUser = ref<User | null>(null)
 
+  const users = ref<User[]>([])
+
+  // แยก profile กับ admin
+  const editedProfile = ref<User | null>(null)
+  const editedUser = ref<User & { password?: string } | null>(null)
 
   const page = ref(1)
   const limit = ref(10)
   const lastPage = ref(1)
   const total = ref(0)
   const search = ref('')
-
-
-
 
   const initialCreateUser: CreateUser = {
     email: '',
@@ -26,11 +37,29 @@ export const useUserStore = defineStore('user', () => {
     branch_id: 0
   }
 
-  const createUser = ref<CreateUser>(structuredClone(initialCreateUser))
+  const initialUpdatePassword: UpdatePassword = {
+    current_password: '',
+    new_password: '',
+    confirm_password: ''
+  }
+
+  const createUserForm = ref<CreateUser>(structuredClone(initialCreateUser))
+
+  const updatePasswordForm = ref<UpdatePassword>(
+    structuredClone(initialUpdatePassword)
+  )
 
   async function getUser(user_id: number) {
     const res = await userService.getUser(user_id)
-    editedUser.value = res.data
+
+    // customer profile
+    editedProfile.value = res.data
+
+    // admin edit (มี password)
+    editedUser.value = {
+      ...res.data,
+      password: ''
+    }
   }
 
   async function getUsers(p = page.value, l = limit.value, s = search.value) {
@@ -41,61 +70,110 @@ export const useUserStore = defineStore('user', () => {
     page.value = res.data.page
     lastPage.value = res.data.lastPage
     total.value = res.data.total
+
     loadingStore.finishLoad()
   }
 
-  async function addUser(user: CreateUser) {
+  async function createUser(user: CreateUser) {
     try {
-      const res = await userService.addUser(user)
-
+      const res = await userService.createUser(user)
       clearCreateUser()
-
       return res
     } catch (error) {
       console.error(error)
     }
   }
 
-
-
-
-
-  async function updateUser(user: UpdateUser) {
+  async function updateUserByAdmin(user: UpdateUser) {
     if (!user.user_id) return
-    const res = await userService.updateUser(user.user_id, user)
 
-    clearCreateUser()
+    const payload: UpdateUser = {
+      user_id: user.user_id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      enabled: user.enabled,
+      address: user.address,
+    }
+
+
+    if (user.password) {
+      payload.password = user.password
+    }
+
+    const res = await userService.updateUserByAdmin(user.user_id, payload)
+
+    clearUser()
     return res
+  }
+
+  async function updateMyProfile(payload: UpdateProfile) {
+    try {
+      const res = await userService.updateMyProfile(payload)
+      return res
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async function changeMyPassword(payload: UpdatePassword) {
+    try {
+      const res = await userService.changeMyPassword(payload)
+      clearUpdatePassword()
+      return res
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async function forgotPassword(payload: ForgotPassword) {
+    try {
+      const res = await authService.forgotPassword(payload)
+      return res
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const clearUser = () => {
     editedUser.value = null
   }
 
+  const clearProfile = () => {
+    editedProfile.value = null
+  }
+
   const clearCreateUser = () => {
-    createUser.value = {
-      email: '',
-      password: '',
-      name: '',
-      branch_id: 0
-    }
+    createUserForm.value = structuredClone(initialCreateUser)
+  }
+
+  const clearUpdatePassword = () => {
+    updatePasswordForm.value = structuredClone(initialUpdatePassword)
   }
 
   return {
     users,
     editedUser,
+    editedProfile,
     page,
     limit,
     lastPage,
     total,
     search,
+    createUserForm,
+    updatePasswordForm,
+
     createUser,
     getUser,
     getUsers,
-    addUser,
-    clearUser,
-    clearCreateUser,
-    updateUser,
+    updateUserByAdmin,
+    updateMyProfile,
+    changeMyPassword,
+    forgotPassword,
 
+    clearUser,
+    clearProfile,
+    clearCreateUser,
+    clearUpdatePassword,
   }
 })

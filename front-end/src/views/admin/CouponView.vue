@@ -2,7 +2,7 @@
 
 import { onMounted, ref } from 'vue'
 import ConfirmComponent from '@/components/dialogs/ConfirmComponent.vue'
-import type { Category } from '@/types/Category'
+
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useCouponStore } from '@/stores/coupon'

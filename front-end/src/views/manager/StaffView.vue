@@ -44,10 +44,10 @@ const openEdit = (user: User) => {
 
 const saveUser = async () => {
   if (mode.value === 'create') {
-    await userStore.addUser(userStore.createUser)
+    await userStore.createUser(userStore.createUserForm)
     userStore.clearCreateUser()
   } else if (mode.value === 'edit' && userStore.editedUser) {
-    await userStore.updateUser(userStore.editedUser)
+    await userStore.updateUserByAdmin(userStore.editedUser)
     userStore.clearUser()
   }
   await userStore.getUsers()
@@ -191,7 +191,7 @@ const clearSearch = async () => {
       <!-- Name -->
       <div v-if="mode === 'create'" class="mb-3">
         <label>User Name</label>
-        <input v-model="userStore.createUser.name" type="text" placeholder="Enter user name"
+        <input v-model="userStore.createUserForm.name" type="text" placeholder="Enter user name"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
@@ -205,7 +205,7 @@ const clearSearch = async () => {
       <!-- Email  -->
       <div v-if="mode === 'create'" class="mb-3">
         <label>Email</label>
-        <input v-model="userStore.createUser.email" type="email" placeholder="Enter email"
+        <input v-model="userStore.createUserForm.email" type="email" placeholder="Enter email"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
@@ -216,7 +216,7 @@ const clearSearch = async () => {
       </div>
       <div v-if="mode === 'create'" class="mb-3">
         <label>Password</label>
-        <input v-model="userStore.createUser.password" type="password" placeholder="Enter password"
+        <input v-model="userStore.createUserForm.password" type="password" placeholder="Enter password"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 

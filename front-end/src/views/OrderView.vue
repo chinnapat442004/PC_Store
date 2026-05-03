@@ -273,5 +273,5 @@ const goToOrderDetail = (orderId: number) => {
       </div>
     </div>
   </div>
-
+  <LoadingComponent v-model="loadingStore.loading" />
 </template>

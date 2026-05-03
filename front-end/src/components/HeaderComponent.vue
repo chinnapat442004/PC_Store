@@ -4,23 +4,18 @@ import { useCartStore } from '../stores/cart'
 import { IonIcon } from '@ionic/vue'
 import { menu, close, person } from 'ionicons/icons'
 import { useRoute, useRouter } from 'vue-router'
-import { onBeforeUnmount, onMounted, ref, computed } from 'vue'
+import { onBeforeUnmount, onMounted, ref, computed, watch } from 'vue'
 import { toast } from 'vue3-toastify'
-const page = computed(() => route.name)
+
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const route = useRoute()
-
 const router = useRouter()
-
 const isLogin = ref(localStorage.getItem('isLogin') === 'true')
-
-
-
 const isMenuOpen = ref(false)
 const open = ref(false)
 const checkMenu = ref(false)
-const user = ref()
+
 const isToastActive = ref(false)
 
 const menus = [
@@ -28,6 +23,7 @@ const menus = [
   { name: 'shop', label: 'Shop', path: { name: 'shop' }, activeRoutes: ['shop', 'product'] },
   { name: 'cart', label: 'Cart', path: { name: 'cart' }, activeRoutes: ['cart', 'checkout'] },
 ]
+
 
 
 function updateLoginStatus() {
@@ -52,8 +48,6 @@ const checkScreenSize = () => {
 onMounted(async () => {
   checkScreenSize()
   await authStore.getCurrentUser()
-  const storedUser = localStorage.getItem('user')
-  user.value = storedUser ? JSON.parse(storedUser) : null
   window.addEventListener('resize', checkScreenSize)
   cartStore.getCarts()
 })
@@ -63,12 +57,25 @@ onBeforeUnmount(() => {
 })
 
 
+const userInitials = computed(() => {
+  if (!authStore.user?.name) return ''
+
+  const words = authStore.user?.name.trim().split(' ')
+
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase()
+  }
+
+  return (words[0][0] + words[1][0]).toUpperCase()
+})
+
 
 
 async function logout() {
   await authStore.clearUser()
   updateLoginStatus()
-  await cartStore.getCarts()
+
+  window.location.reload()
   checkMenu.value = false
 
   if (!isToastActive.value) {
@@ -81,7 +88,7 @@ async function logout() {
 }
 
 const goToProfile = () => {
-  router.push('/profile')
+  router.push({ name: 'profile' })
   checkMenu.value = false
 }
 
@@ -100,7 +107,7 @@ const goToOrders = () => {
       </div>
 
       <div class="flex items-center md:gap-10">
-        <div class="text-[30px] text-white">LOGO</div>
+        <div class="text-[30px] text-white">LOGO </div>
 
         <div class="md:static absolute left-0 top-[65px] w-full bg-[#202020]"
           :class="{ 'hidden md:block': !isMenuOpen }">
@@ -126,16 +133,19 @@ const goToOrders = () => {
       </div>
 
       <div class="flex gap-4 items-center justify-center">
-        <div>
-          <button @click="checkMenu = !checkMenu"
-            class="w-[40px] h-[40px] text-white hover:text-[#333] hover:bg-[#979dac] duration-300 rounded-full flex items-center justify-center border-2">
-            <IonIcon v-if="!isLogin" :icon="person" class="text-3xl" />
+        <button @click="checkMenu = !checkMenu" class="w-[40px] h-[40px] rounded-full border-2 flex items-center justify-center
+           hover:text-[#333] hover:bg-[#979dac] duration-300 overflow-hidden">
 
-            <img v-if="isLogin"
-              :src="`http://localhost:3000/images/users/${user?.image}` || 'https://cdn-icons-png.flaticon.com/512/3682/3682281.png'"
-              class="w-full h-full object-cover rounded-full" />
-          </button>
-        </div>
+
+          <IonIcon v-if="!isLogin" :icon="person" class="text-2xl text-white" />
+
+
+          <span v-else
+            class="w-full h-full flex items-center justify-center bg-[#637aad] hover:bg-[#4a68a8] text-white font-semibold">
+            {{ userInitials }}
+          </span>
+
+        </button>
 
         <div v-if="checkMenu && !isLogin"
           class="bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 md:right-auto right-0">

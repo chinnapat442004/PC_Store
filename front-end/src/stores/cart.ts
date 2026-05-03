@@ -83,7 +83,7 @@ export const useCartStore = defineStore('Cart', () => {
     return cartService.remove(cartDetail.cart_detail_id)
   }
 
-  async function clearChart() {
+  async function clearCart() {
     await cartService.clearCart()
     await getCarts()
   }
@@ -99,6 +99,6 @@ export const useCartStore = defineStore('Cart', () => {
 
   }
 
-  return { getCarts, addCartDetail, clearChart, update, remove, applyCoupon, removeCoupon, cart, editedCart, editedCartDetail, cartDetailCount, editedCode }
+  return { getCarts, addCartDetail, clearCart, update, remove, applyCoupon, removeCoupon, cart, editedCart, editedCartDetail, cartDetailCount, editedCode }
 })
 

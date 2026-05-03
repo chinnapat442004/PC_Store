@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import couponService from '@/service/coupon'
-import { ref } from "vue";
+import { ref, toRaw } from "vue";
 import { DiscountType, type Coupon, type CouponPayload } from "@/types/Coupon";
 import { useLoadingStore } from "./loading";
 export const useCouponStore = defineStore('coupon', () => {
@@ -50,7 +50,7 @@ export const useCouponStore = defineStore('coupon', () => {
     }
 
     function setEditCoupon(coupon: Coupon) {
-        editedCoupon.value = structuredClone(coupon)
+        editedCoupon.value = structuredClone(toRaw(coupon))
     }
 
     function cerateCoupon() {

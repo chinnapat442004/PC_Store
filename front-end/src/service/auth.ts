@@ -1,8 +1,10 @@
-import type { CreateUser } from '@/types/User'
+import type { CreateUser, ForgotPassword } from '@/types/User'
 import http from './http'
 
 
-
+function getCurrentUserr() {
+  return http.get('/auth/me')
+}
 
 function login(email: string | null, password: string | null) {
   try {
@@ -21,4 +23,9 @@ async function register(user: CreateUser) {
 
 }
 
-export default { login, register, }
+
+async function forgotPassword(user: ForgotPassword) {
+  return http.post('/auth/forgot-password', user)
+}
+
+export default { login, register, forgotPassword, getCurrentUserr }
