@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { CartDetail } from './entities/cart_detail';
 import { Coupon } from 'src/coupon/entities/coupon.entity';
 import { BadRequestException } from '@nestjs/common';
+import { User } from 'src/users/entities/user.entity';
+
 
 @Injectable()
 export class CartsService {
@@ -17,17 +19,21 @@ export class CartsService {
     private cartDetailRepository: Repository<CartDetail>,
     @InjectRepository(Coupon)
     private couponRepository: Repository<Coupon>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) { }
 
-  async create(createCartDto: CreateCartDto) {
+  async create(user_id: number, createCartDto: CreateCartDto) {
     let cart = await this.cartRepository.findOne({
-      where: { user: { user_id: createCartDto.user.user_id } },
+      where: { user: { user_id: user_id } },
       relations: ['cartDetails', 'cartDetails.product'],
     });
 
     if (!cart) {
       cart = this.cartRepository.create({
-        user: createCartDto.user,
+        user: await this.userRepository.findOne({
+          where: { user_id },
+        }),
         subtotal: 0,
         total: 0,
         cartDetails: [],

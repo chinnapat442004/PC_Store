@@ -11,7 +11,7 @@ const authStore = useAuthStore()
 const cartStore = useCartStore()
 const route = useRoute()
 const router = useRouter()
-const isLogin = ref(localStorage.getItem('isLogin') === 'true')
+const isLogin = ref(!!localStorage.getItem('access_token'))
 const isMenuOpen = ref(false)
 const open = ref(false)
 const checkMenu = ref(false)
@@ -26,8 +26,15 @@ const menus = [
 
 
 
-function updateLoginStatus() {
-  isLogin.value = localStorage.getItem('isLogin') === 'true'
+function checkAuthStatus() {
+  const token = localStorage.getItem('access_token')
+
+  if (!token) {
+    isLogin.value = false
+    return
+  }
+
+  isLogin.value = true
 }
 
 function toggleMenu() {
@@ -73,7 +80,7 @@ const userInitials = computed(() => {
 
 async function logout() {
   await authStore.clearUser()
-  updateLoginStatus()
+  checkAuthStatus()
 
   window.location.reload()
   checkMenu.value = false
@@ -146,6 +153,8 @@ const goToOrders = () => {
           </span>
 
         </button>
+
+
 
         <div v-if="checkMenu && !isLogin"
           class="bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 md:right-auto right-0">

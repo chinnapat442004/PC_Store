@@ -22,8 +22,8 @@ export class CartsController {
   constructor(private readonly cartsService: CartsService) { }
 
   @Post()
-  create(@Body() createCartDto: CreateCartDto) {
-    return this.cartsService.create(createCartDto);
+  create(@Req() req, @Body() createCartDto: CreateCartDto) {
+    return this.cartsService.create(req.user.user_id, createCartDto);
   }
 
   @Post('apply-coupon')

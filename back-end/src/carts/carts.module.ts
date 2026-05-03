@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CartDetail } from './entities/cart_detail';
 import { Cart } from './entities/cart.entity';
 import { Coupon } from 'src/coupon/entities/coupon.entity';
+import { User } from 'discord.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cart, CartDetail, Coupon])],
+  imports: [TypeOrmModule.forFeature([Cart, CartDetail, Coupon, User])],
   controllers: [CartsController],
   providers: [CartsService],
 })
