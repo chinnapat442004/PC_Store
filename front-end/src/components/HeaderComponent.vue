@@ -54,9 +54,8 @@ const checkScreenSize = () => {
 
 onMounted(async () => {
   checkScreenSize()
-  await authStore.getCurrentUser()
   window.addEventListener('resize', checkScreenSize)
-  cartStore.getCarts()
+  // cartStore.getCarts() // ย้ายไปจัดการที่ App.vue
 })
 
 onBeforeUnmount(() => {

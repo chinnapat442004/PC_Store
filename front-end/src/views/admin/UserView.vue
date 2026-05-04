@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import ConfirmComponent from '@/components/dialogs/ConfirmComponent.vue'
 import type { User } from '@/types/User'
 import { useAuthStore } from '@/stores/auth'
@@ -20,9 +20,8 @@ const branchStore = useBranchStore()
 
 onMounted(async () => {
   await userStore.getUsers()
-  await authStore.getCurrentUser()
-  await branchStore.getBranches()
 })
+
 
 const formUser = computed(() => {
   return mode.value === 'create' ? userStore.createUser : userStore.editedUser
@@ -55,8 +54,9 @@ const closeDialog = () => {
   showDialog.value = false
 }
 
-const openCreateDialog = () => {
+const openCreateDialog = async () => {
   mode.value = 'create'
+  await branchStore.getBranches()
   userStore.clearCreateUser()
   showDialog.value = true
 }

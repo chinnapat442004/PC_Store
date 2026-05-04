@@ -9,11 +9,11 @@ const authStore = useAuthStore()
 onMounted(async () => {
   if (authStore.token) {
     await authStore.getCurrentUser()
+    // โหลดตะกร้าเฉพาะลูกค้าเท่านั้น
+    if (authStore.user?.role === 'customer') {
+      await cartStore.getCarts()
+    }
   }
-
-
-  cartStore.getCarts()
-
 })
 </script>
 

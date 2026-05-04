@@ -14,8 +14,6 @@ export const useCartStore = defineStore('Cart', () => {
 
   const authStore = useAuthStore()
 
-  authStore.getCurrentUser()
-
   const initialCart: Cart = {
     subtotal: 0,
     discount_amount: 0,

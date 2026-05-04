@@ -24,9 +24,6 @@ function updateLoginStatus() {
   isLogin.value = localStorage.getItem('isLogin') === 'true'
 }
 
-onMounted(() => {
-  authStore.getCurrentUser()
-})
 
 
 const isStaffOrManager = computed(() =>
