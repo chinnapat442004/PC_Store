@@ -67,6 +67,14 @@ async function logout() {
         </div>
 
       </div>
+      <div v-else-if="authStore.user?.role === 'admin'"
+        class="px-3 pb-3 border-b border-gray-700 text-white text-center">
+
+        <div class="text-base font-semibold">
+          Admin
+        </div>
+
+      </div>
 
       <li v-for="menu in menus" :key="menu.name">
         <router-link :to="menu.path"

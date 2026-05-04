@@ -265,15 +265,15 @@ const lowStock = [
                         <table class="w-full text-left text-black">
                               <thead class="text-sm">
                                     <tr>
-                                          <th class="px-4 py-2">สินค้า</th>
-                                          <th class="px-4 py-2">จำนวน</th>
+                                          <th class=" py-2">สินค้า</th>
+                                          <th class=" py-2">จำนวน</th>
                                     </tr>
                               </thead>
 
                               <tbody class="divide-y text-gray-700">
                                     <tr v-for="product in dashboardStore.managerDashboard?.topProducts"
                                           :key="product.productId">
-                                          <td class="px-4 py-2">{{ product.name }}</td>
+                                          <td class=" py-2">{{ product.name }}</td>
                                           <td class="px-4 py-2">{{ product.sold }}</td>
                                     </tr>
                               </tbody>

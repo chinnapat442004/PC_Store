@@ -21,15 +21,12 @@ onMounted(async () => {
   await branchStore.getBranches()
 })
 
-
-
 const openEdit = (branch: Branch) => {
   mode.value = 'edit'
   branchStore.editedBranch = { ...branch }
   console.log(branchStore.editedBranch)
   showDialog.value = true
 }
-
 
 const saveBranch = async () => {
   if (mode.value === 'create') {
@@ -103,13 +100,11 @@ const clearSearch = async () => {
 </script>
 
 <template>
-
-
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-white">Branch Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="Search branch..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input type="text" placeholder="ค้นหาสาขา..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
         @click="searchBranch()">
@@ -119,15 +114,15 @@ const clearSearch = async () => {
         @click="clearSearch()">
         <span class="pi pi-times text-lg"></span>
       </button>
-      <button class="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+      <button
+        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8]  text-white  px-4 py-2 rounded-md transition"
         @click="openCreateDialog()">
         <span class="pi pi-plus text-lg"></span>
-        <span>Create</span>
+        <span>เพิ่มสาขา</span>
       </button>
     </div>
   </div>
 
-  <!-- Table -->
   <div class="bg-white rounded-lg overflow-hidden">
     <table class="w-full text-left text-black">
       <thead class="bg-[#383838] text-gray-300 text-sm">
@@ -166,71 +161,69 @@ const clearSearch = async () => {
       </tbody>
     </table>
 
-    <!-- Pagination -->
     <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
-        <span class="pi pi-chevron-left text-sm"></span> Prev
+        <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ branchStore.page }} of {{ branchStore.lastPage }}</span>
+        {{ branchStore.page }} จาก {{ branchStore.lastPage }}</span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
-        Next <span class="pi pi-chevron-right text-sm"></span>
+        ถัดไป <span class="pi pi-chevron-right text-sm"></span>
       </button>
     </div>
   </div>
 
-
-
-  <!-- Dialog -->
   <div v-if="showDialog" class="overlay">
     <div class="dialog">
       <div class="text-lg font-semibold mb-4">
         <h2 class="text-lg font-semibold mb-4">
-          {{ mode === 'create' ? 'Create Branch' : 'Edit Branch' }}
+          {{ mode === 'create' ? 'เพิ่มสาขา' : 'แก้ไขสาขา' }}
         </h2>
       </div>
 
       <div class="mb-3">
-        <label class="block mb-1">Branch Name</label>
+        <label class="block mb-1">ชื่อสาขา</label>
         <input v-model="branchStore.editedBranch.branch_name" type="text"
-          class="border w-full px-3 py-2 rounded bg-gray-50" placeholder="Enter branch name" />
+          class="border w-full px-3 py-2 rounded bg-gray-50" placeholder="กรอกชื่อสาขา" />
       </div>
 
       <div class="mb-3">
-        <label class="block mb-1">Address</label>
+        <label class="block mb-1">ที่อยู่</label>
         <input v-model="branchStore.editedBranch.address" type="text" class="border w-full px-3 py-2 rounded bg-gray-50"
-          placeholder="Enter address" />
+          placeholder="กรอกที่อยู่" />
       </div>
+
       <MapPicker @update:location="setLocation" :lat="branchStore.editedBranch.lat"
         :lng="branchStore.editedBranch.lng" />
 
       <div class="mb-4">
-        <label class="block mb-1">Status</label>
+        <label class="block mb-1">สถานะ</label>
         <select v-model="branchStore.editedBranch.status" class="border w-full px-3 py-2 rounded bg-gray-50">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="active">เปิดใช้งาน</option>
+          <option value="inactive">ปิดใช้งาน</option>
         </select>
       </div>
 
       <div class="flex justify-center gap-4">
         <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">
-          Close
+          ยกเลิก
         </button>
 
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
-          Save
+          บันทึก
         </button>
       </div>
     </div>
   </div>
 
-  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการที่จะบันทึกข้อมูลนี้" @confirm="saveBranch()"
-    @cancel="showConfirm = false" />
+  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
+    @confirm="saveBranch()" @cancel="showConfirm = false" />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการที่จะลบข้อมูลนี้ใช่หรือไม่"
+  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้ใช่หรือไม่"
     @confirm="removeItem(branchStore.editedBranch)" @cancel="closeDialogDelete()" />
+
   <LoadingComponent v-model="loadingStore.loading" />
 </template>
 

@@ -12,7 +12,6 @@ const tab = ref<'order' | 'history'>('order')
 const search = ref('')
 const showDialog = ref(false)
 
-
 const formatDate = (date: string | Date) => {
   const d = new Date(date)
 
@@ -24,28 +23,22 @@ const formatDate = (date: string | Date) => {
   )}:${String(d.getMinutes()).padStart(2, '0')}`
 }
 
-
-
 onMounted(async () => {
   await orderStore.getOrders()
 })
-
 
 watch(tab, async () => {
   orderStore.page = 1
   await orderStore.getOrders()
 })
 
-
 const searchData = async () => {
-  // orderStore.search = search.value
   orderStore.page = 1
   await orderStore.getOrders()
 }
 
 const clearSearch = async () => {
   search.value = ''
-  // orderStore.search = ''
   orderStore.page = 1
   await orderStore.getOrders()
 }
@@ -64,18 +57,14 @@ const prevPage = async () => {
   }
 }
 
-
 const openOrderDetail = (id: number) => {
   orderStore.getOrderById(id)
   showDialog.value = true
-
 }
 
 const closeDialog = () => {
   showDialog.value = false
 }
-
-
 </script>
 
 <template>
@@ -84,7 +73,7 @@ const closeDialog = () => {
     <h1 class="text-3xl font-bold text-white">Order Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="Search..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input type="text" placeholder="ค้นหา..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="searchData()">
         <span class="pi pi-search"></span>
@@ -93,12 +82,9 @@ const closeDialog = () => {
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="clearSearch()">
         <span class="pi pi-times"></span>
       </button>
-
-
     </div>
   </div>
 
-  <!-- Table -->
   <div v-if="tab === 'order'" class="bg-white rounded-lg overflow-hidden">
     <table class="w-full text-left  text-black">
       <thead class="bg-[#383838] text-gray-300 text-sm">
@@ -116,7 +102,7 @@ const closeDialog = () => {
       <tbody class="divide-y">
 
         <tr v-if="orderStore.orders.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
+          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
         <tr v-for="order in orderStore.orders" :key="order.address_detail">
 
@@ -125,25 +111,18 @@ const closeDialog = () => {
           <td class="px-6 py-2">{{ order.payment_method }}</td>
           <td class="px-6 py-2">{{ order.total_amount }}</td>
 
-
           <td class="px-6 py-2">
             <span class="px-2 py-2 rounded-full text-xs font-semibold" :class="OrderStatusColor[order.order_status]">
               {{ OrderStatusLabel[order.order_status] }}
             </span>
-
           </td>
 
           <td class="px-6 py-1">
             {{ formatDate(order.updated_at) }}
-
           </td>
-
-
 
           <td class="px-6 py-1 align-middle">
             <div class="flex justify-center items-center space-x-2">
-
-
               <button @click=" openOrderDetail(order.order_id)">
                 <span class="pi pi-eye"></span>
               </button>
@@ -153,65 +132,48 @@ const closeDialog = () => {
       </tbody>
     </table>
 
-    <!-- Pagination -->
     <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
-        <span class="pi pi-chevron-left text-sm"></span> Prev
+        <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ orderStore.page }} of {{ orderStore.lastPage }}</span>
+        {{ orderStore.page }} / {{ orderStore.lastPage }}</span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
-        Next <span class="pi pi-chevron-right text-sm"></span>
+        ถัดไป <span class="pi pi-chevron-right text-sm"></span>
       </button>
     </div>
   </div>
-
-
 
   <div v-else class="bg-white rounded-lg overflow-hidden">
     <table class="w-full text-left  text-black ">
       <thead class="bg-[#383838] text-gray-300 text-sm">
         <tr>
-
-          <th class="px-6 py-3 ">Name</th>
+          <th class="px-6 py-3 ">ชื่อ</th>
           <th class="px-6 py-3"> จำนวน</th>
-          <th class="px-6 py-3 ">type</th>
-          <th class="px-6 py-3 ">note</th>
-          <th class="px-6 py-3 ">ref</th>
-          <th class="px-6 py-3 ">created_at</th>
-
+          <th class="px-6 py-3 ">ประเภท</th>
+          <th class="px-6 py-3 ">หมายเหตุ</th>
+          <th class="px-6 py-3 ">อ้างอิง</th>
+          <th class="px-6 py-3 ">วันที่สร้าง</th>
         </tr>
       </thead>
-
-
     </table>
 
-    <!-- Pagination -->
     <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
-        <span class="pi pi-chevron-left text-sm"></span> Prev
+        <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ orderStore.page }} of {{ orderStore.lastPage }}</span>
+        {{ orderStore.page }} จาก {{ orderStore.lastPage }}</span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
-        Next <span class="pi pi-chevron-right text-sm"></span>
+        ถัดไป <span class="pi pi-chevron-right text-sm"></span>
       </button>
     </div>
   </div>
 
-
-
-
-
-
-
-
-
-  <!-- Dialog -->
   <div v-if="showDialog" class="overlay">
     <div class="dialog">
       <div class="flex justify-between">
@@ -222,27 +184,26 @@ const closeDialog = () => {
           <span class="pi pi-times"></span>
         </button>
       </div>
+
       <label class="block mb-1">ข้อมูลลูกค้า</label>
-      <div class="mb-3 p-2   bg-gray-100">
+      <div class="mb-3 p-2 bg-gray-100">
         <div> {{ orderStore.selectedOrder?.fullname }}</div>
         <div>{{ orderStore.selectedOrder?.phone }}</div>
         <div>{{ orderStore.selectedOrder?.address_detail }} {{ orderStore.selectedOrder?.sub_district }} {{
           orderStore.selectedOrder?.district }} {{ orderStore.selectedOrder?.province }} {{
             orderStore.selectedOrder?.zipcode }}</div>
-
       </div>
 
-      <label class="block mb-1 ">รายการสินค้า
-      </label>
+      <label class="block mb-1 ">รายการสินค้า</label>
       <div class=" max-h-[250px] overflow-y-auto">
-        <div class="mb-3 p-2   bg-gray-100" v-for="detail in orderStore.selectedOrder?.details"
+        <div class="mb-3 p-2 bg-gray-100" v-for="detail in orderStore.selectedOrder?.details"
           :key="detail.order_detail_id">
           <div class="flex-1 flex flex-col justify-between gap-1">
             <div class="flex justify-between items-start gap-2">
               <div class="text-sm sm:text-base line-clamp-2">
                 {{ detail.product_title }}
               </div>
-              <div class="text-red-500  text-sm sm:text-base whitespace-nowrap">
+              <div class="text-red-500 text-sm sm:text-base whitespace-nowrap">
                 ฿{{ detail.price }}
               </div>
             </div>
@@ -253,23 +214,15 @@ const closeDialog = () => {
               </div>
             </div>
           </div>
-
-
-
         </div>
       </div>
 
       <div class="mb-3 flex justify-between">
-        <label class="block mb-1"> ยอดรวม</label>
+        <label class="block mb-1">ยอดรวม</label>
         <div>{{ orderStore.selectedOrder?.total_amount }}</div>
-
       </div>
-
-
     </div>
   </div>
-
-
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

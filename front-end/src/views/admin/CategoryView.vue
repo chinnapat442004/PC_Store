@@ -57,7 +57,6 @@ const removeItem = async (category: Category) => {
 }
 
 const searchCategory = async () => {
-
   await categoryStore.getCategories()
 }
 
@@ -79,13 +78,11 @@ const clearSearch = async () => {
 
 <template>
 
-
-
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-white">Category Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="Search category..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input type="text" placeholder="ค้นหาหมวดหมู่..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md">
         <span class="pi pi-search"></span>
@@ -98,12 +95,11 @@ const clearSearch = async () => {
       <button class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md"
         @click="openCreateDialog">
         <span class="pi pi-plus"></span>
-        Create
+        เพิ่มหมวดหมู่
       </button>
     </div>
   </div>
 
-  <!-- Table -->
   <div class="bg-white rounded-lg overflow-hidden">
     <table class="w-full text-left text-black">
       <thead class="bg-[#383838] text-gray-300 text-sm">
@@ -117,7 +113,7 @@ const clearSearch = async () => {
 
         <tr v-if="categoryStore.categories.length === 0">
           <td colspan="2" class="text-center py-6 text-gray-500">
-            No data found
+            ไม่พบข้อมูล
           </td>
         </tr>
 
@@ -139,36 +135,34 @@ const clearSearch = async () => {
     </table>
   </div>
 
-
-  <!-- Dialog -->
   <div v-if="showDialog" class="overlay">
     <div class="dialog">
       <h2 class="text-lg font-semibold mb-4">
-        {{ mode === 'create' ? 'Create Category' : 'Edit Category' }}
+        {{ mode === 'create' ? 'เพิ่มหมวดหมู่' : 'แก้ไขหมวดหมู่' }}
       </h2>
 
       <div class="mb-3">
-        <label class="block mb-1">Category Name</label>
-        <input v-model="categoryStore.editedCategory.name" type="text"
+        <label class="block mb-1">ชื่อหมวดหมู่</label>
+        <input v-model="categoryStore.editedCategory.name" type="text" placeholder="กรอกชื่อหมวดหมู่"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
       <div class="flex justify-center gap-4">
         <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">
-          Close
+          ยกเลิก
         </button>
 
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
-          Save
+          บันทึก
         </button>
       </div>
     </div>
   </div>
 
-  <ConfirmComponent :show="showConfirm" type="save" message="บันทึกข้อมูลนี้หรือไม่" @confirm="saveCategory"
-    @cancel="showConfirm = false" />
+  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
+    @confirm="saveCategory" @cancel="showConfirm = false" />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="ต้องการลบข้อมูลนี้หรือไม่"
+  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้ใช่หรือไม่"
     @confirm="removeItem(categoryStore.editedCategory)" @cancel="closeDialogDelete" />
 
   <LoadingComponent v-model="loadingStore.loading" />

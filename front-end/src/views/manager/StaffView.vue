@@ -8,9 +8,6 @@ import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { computed } from 'vue'
 
-
-
-
 const loadingStore = useLoadingStore()
 const userStore = useUserStore()
 const authStore = useAuthStore()
@@ -24,23 +21,17 @@ const mode = ref<'create' | 'edit'>('create')
 onMounted(async () => {
   await userStore.getUsers()
   await authStore.getCurrentUser()
-
 })
-
 
 const formUser = computed(() => {
   return mode.value === 'create' ? userStore.createUser : userStore.editedUser
 })
 
-
 const openEdit = (user: User) => {
   mode.value = 'edit'
   userStore.editedUser = { ...user }
-
-
   showDialog.value = true
 }
-
 
 const saveUser = async () => {
   if (mode.value === 'create') {
@@ -51,10 +42,10 @@ const saveUser = async () => {
     userStore.clearUser()
   }
   await userStore.getUsers()
-
   showDialog.value = false
   showConfirm.value = false
 }
+
 const closeDialog = () => {
   userStore.clearUser()
   showDialog.value = false
@@ -63,7 +54,6 @@ const closeDialog = () => {
 const openCreateDialog = () => {
   mode.value = 'create'
   userStore.clearCreateUser()
-
   showDialog.value = true
 }
 
@@ -86,8 +76,6 @@ const searchUser = async () => {
   await userStore.getUsers()
 }
 
-
-
 const closeDialogDelete = async () => {
   deleteConfirm.value = false
   userStore.clearUser()
@@ -102,31 +90,29 @@ const clearSearch = async () => {
 </script>
 
 <template>
-
-
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-white">Staff Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="Search User..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input type="text" placeholder="ค้นหาผู้ใช้..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
         @click="searchUser()">
         <span class="pi pi-search text-lg"></span>
       </button>
+
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
         @click="clearSearch()">
         <span class="pi pi-times text-lg"></span>
       </button>
-      <button
-        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8]  text-white px-4 py-2 rounded-md  transition"
+
+      <button class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
         @click="openCreateDialog()">
         <span class="pi pi-plus text-lg"></span>
-        <span>Create</span>
+        <span>สร้าง</span>
       </button>
     </div>
   </div>
-
 
   <div class="bg-white rounded-lg overflow-hidden">
     <table class="w-full text-left text-black">
@@ -135,7 +121,7 @@ const clearSearch = async () => {
           <th class="px-6 py-3">ชื่อผู้ใช้</th>
           <th class="px-6 py-3">อีเมล</th>
           <th class="px-6 py-3">บทบาท</th>
-          <th class="px-6 py-3">สถานะการใช้งาน</th>
+          <th class="px-6 py-3">สถานะ</th>
           <th class="px-6 py-3">สาขา</th>
           <th class="px-6 py-3 text-center">จัดการ</th>
         </tr>
@@ -143,7 +129,7 @@ const clearSearch = async () => {
 
       <tbody class="divide-y">
         <tr v-if="userStore.users.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
+          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
 
         <tr v-else v-for="user in userStore.users" :key="user.user_id">
@@ -152,8 +138,6 @@ const clearSearch = async () => {
           <td class="px-6 py-1">{{ user.role }}</td>
           <td class="px-6 py-1">{{ user.enabled }}</td>
           <td v-if="user.branch" class="px-6 py-1">{{ user.branch.branch_name }}</td>
-
-
 
           <td class="px-6 py-3 flex justify-center space-x-2">
             <button class="edit-btn" @click="openEdit(user)">
@@ -164,92 +148,83 @@ const clearSearch = async () => {
       </tbody>
     </table>
 
-    <!-- Pagination -->
     <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
-        <span class="pi pi-chevron-left text-sm"></span> Prev
+        <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ userStore.page }} of {{ userStore.lastPage }}</span>
+        {{ userStore.page }} / {{ userStore.lastPage }}
+      </span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
-        Next <span class="pi pi-chevron-right text-sm"></span>
+        ถัดไป <span class="pi pi-chevron-right text-sm"></span>
       </button>
     </div>
   </div>
 
-
-
-  <!-- Dialog -->
   <div v-if="showDialog && formUser" class="overlay">
     <div class="dialog">
       <h2 class="text-lg font-semibold mb-4">
-        {{ mode === 'create' ? 'Create User' : 'Edit User' }}
+        {{ mode === 'create' ? 'สร้างผู้ใช้' : 'แก้ไขผู้ใช้' }}
       </h2>
 
-      <!-- Name -->
       <div v-if="mode === 'create'" class="mb-3">
-        <label>User Name</label>
-        <input v-model="userStore.createUserForm.name" type="text" placeholder="Enter user name"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
-
-      <!-- Name -->
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>User Name</label>
-        <input v-model="userStore.editedUser.name" type="text" placeholder="Enter user name"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
-
-      <!-- Email  -->
-      <div v-if="mode === 'create'" class="mb-3">
-        <label>Email</label>
-        <input v-model="userStore.createUserForm.email" type="email" placeholder="Enter email"
+        <label>ชื่อผู้ใช้</label>
+        <input v-model="userStore.createUserForm.name" type="text" placeholder="กรอกชื่อผู้ใช้"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
       <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>Email</label>
-        <input v-model="userStore.editedUser.email" type="email" placeholder="Enter email"
+        <label>ชื่อผู้ใช้</label>
+        <input v-model="userStore.editedUser.name" type="text" placeholder="กรอกชื่อผู้ใช้"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
+
       <div v-if="mode === 'create'" class="mb-3">
-        <label>Password</label>
-        <input v-model="userStore.createUserForm.password" type="password" placeholder="Enter password"
+        <label>อีเมล</label>
+        <input v-model="userStore.createUserForm.email" type="email" placeholder="กรอกอีเมล"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
-
-
-
 
       <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>Enabled</label>
+        <label>อีเมล</label>
+        <input v-model="userStore.editedUser.email" type="email" placeholder="กรอกอีเมล"
+          class="border w-full px-3 py-2 rounded bg-gray-50" />
+      </div>
+
+      <div v-if="mode === 'create'" class="mb-3">
+        <label>รหัสผ่าน</label>
+        <input v-model="userStore.createUserForm.password" type="password" placeholder="กรอกรหัสผ่าน"
+          class="border w-full px-3 py-2 rounded bg-gray-50" />
+      </div>
+
+      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
+        <label>สถานะ</label>
         <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded">
-          <option :value="true">Enabled</option>
-          <option :value="false">Disabled</option>
+          <option :value="true">เปิดใช้งาน</option>
+          <option :value="false">ปิดใช้งาน</option>
         </select>
       </div>
 
       <div class="flex justify-center gap-4">
         <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">
-          Close
+          ปิด
         </button>
 
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
-          Save
+          บันทึก
         </button>
-
-
       </div>
     </div>
   </div>
 
-  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการที่จะบันทึกข้อมูลนี้" @confirm="saveUser()"
+  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้หรือไม่" @confirm="saveUser()"
     @cancel="showConfirm = false" />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการที่จะลบข้อมูลนี้ใช่หรือไม่"
+  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้หรือไม่"
     @cancel="closeDialogDelete()" />
+
   <LoadingComponent v-model="loadingStore.loading" />
 </template>
 

@@ -106,7 +106,7 @@ const updateStock = async () => {
     <h1 class="text-3xl font-bold text-white">Stock Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="Search..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input type="text" placeholder="ค้นหา..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="searchData()">
         <span class="pi pi-search"></span>
@@ -198,14 +198,14 @@ const updateStock = async () => {
     <!-- Pagination -->
     <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
-        <span class="pi pi-chevron-left text-sm"></span> Prev
+        <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ stockStore.page }} of {{ stockStore.lastPage }}</span>
+        {{ stockStore.page }} / {{ stockStore.lastPage }}</span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
-        Next <span class="pi pi-chevron-right text-sm"></span>
+        ถัดไป <span class="pi pi-chevron-right text-sm"></span>
       </button>
     </div>
   </div>

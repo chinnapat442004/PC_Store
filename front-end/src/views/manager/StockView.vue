@@ -4,6 +4,7 @@ import { useStockStore } from '@/stores/stock'
 import { useLoadingStore } from '@/stores/loading'
 import type { StockItem } from '@/types/Stock'
 import { formatThaiDateTime } from '@/utils/formatDate'
+
 const stockStore = useStockStore()
 const loadingStore = useLoadingStore()
 
@@ -14,21 +15,14 @@ const selectedStock = ref<StockItem | null>(null)
 const quantity = ref(0)
 const note = ref('')
 
-
-
-
-
-
 onMounted(async () => {
   await fetchData()
 })
-
 
 watch(tab, async () => {
   stockStore.page = 1
   await fetchData()
 })
-
 
 const formatQty = (qty: number, type: string) => {
   if (type === 'IN') return `+${qty}`
@@ -57,7 +51,6 @@ const clearSearch = async () => {
   await fetchData()
 }
 
-
 const nextPage = async () => {
   if (stockStore.page < stockStore.lastPage) {
     stockStore.page++
@@ -71,7 +64,6 @@ const prevPage = async () => {
     await fetchData()
   }
 }
-
 
 const openEdit = (stock: StockItem) => {
   selectedStock.value = stock
@@ -99,16 +91,14 @@ const updateStock = async () => {
   })
   showDialog.value = false
 }
-
 </script>
 
 <template>
-
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-white">Stock Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="Search..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input type="text" placeholder="ค้นหาสินค้า..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="searchData()">
         <span class="pi pi-search"></span>
@@ -117,13 +107,10 @@ const updateStock = async () => {
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="clearSearch()">
         <span class="pi pi-times"></span>
       </button>
-
-
     </div>
   </div>
 
-  <div class="inline-flex bg-gray-100  mb-4 rounded-xl">
-
+  <div class="inline-flex bg-gray-100 mb-4 rounded-xl">
     <button @click="tab = 'stock'" class="px-4 py-2 text-sm rounded-lg transition" :class="tab === 'stock'
       ? 'bg-white shadow text-black'
       : 'text-gray-500'">
@@ -135,31 +122,27 @@ const updateStock = async () => {
       : 'text-gray-500'">
       ประวัติ
     </button>
-
   </div>
 
-
-
-  <!-- Table -->
   <div v-if="tab === 'stock'" class="bg-white rounded-lg overflow-hidden">
-    <table class="w-full text-left  text-black">
+    <table class="w-full text-left text-black">
       <thead class="bg-[#383838] text-gray-300 text-sm">
         <tr>
-          <th class="px-6 py-3 "> Image</th>
-          <th class="px-6 py-3 ">Name</th>
-          <th class="px-6 py-3"> Price</th>
-          <th class="px-6 py-3 ">Quantity</th>
-          <th class="px-6 py-3 ">Status</th>
-          <th class="px-6 py-3 ">อัพเดทล่าสุด</th>
-          <th class="px-6 py-3 ">Update</th>
+          <th class="px-6 py-3">รูปภาพ</th>
+          <th class="px-6 py-3">ชื่อสินค้า</th>
+          <th class="px-6 py-3">ราคา</th>
+          <th class="px-6 py-3">จำนวน</th>
+          <th class="px-6 py-3">สถานะ</th>
+          <th class="px-6 py-3">อัพเดทล่าสุด</th>
+          <th class="px-6 py-3">จัดการ</th>
         </tr>
       </thead>
 
       <tbody class="divide-y">
-
         <tr v-if="stockStore.stocks.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
+          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
+
         <tr v-for="stock in stockStore.stocks" :key="stock.id">
           <td class="text-center align-middle">
             <img :src="stock.image" alt="" class="h-32 w-32 object-cover rounded" />
@@ -177,20 +160,14 @@ const updateStock = async () => {
             }">
               {{ stock.status_label }}
             </span>
-
           </td>
 
           <td class="px-6 py-1">
             {{ formatThaiDateTime(stock.updated_at) }}
-
           </td>
-
-
 
           <td class="px-6 py-1 align-middle">
             <div class="flex justify-center items-center space-x-2">
-
-
               <button class="delete-btn" @click="openEdit(stock)">
                 <span class="pi pi-sync"></span>
               </button>
@@ -200,132 +177,115 @@ const updateStock = async () => {
       </tbody>
     </table>
 
-    <!-- Pagination -->
     <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
-        <span class="pi pi-chevron-left text-sm"></span> Prev
+        <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ stockStore.page }} of {{ stockStore.lastPage }}</span>
+        {{ stockStore.page }} / {{ stockStore.lastPage }}
+      </span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
-        Next <span class="pi pi-chevron-right text-sm"></span>
+        ถัดไป <span class="pi pi-chevron-right text-sm"></span>
       </button>
     </div>
   </div>
 
-
-
   <div v-else class="bg-white rounded-lg overflow-hidden">
-    <table class="w-full text-left  text-black ">
+    <table class="w-full text-left text-black">
       <thead class="bg-[#383838] text-gray-300 text-sm">
         <tr>
-          <th class="px-6 py-3 ">Name</th>
-          <th class="px-6 py-3"> จำนวน</th>
-          <th class="px-6 py-3 ">type</th>
-          <th class="px-6 py-3 ">note</th>
-          <th class="px-6 py-3 ">ref</th>
-          <th class="px-6 py-3 ">created_at</th>
-
+          <th class="px-6 py-3">ชื่อสินค้า</th>
+          <th class="px-6 py-3">จำนวน</th>
+          <th class="px-6 py-3">ประเภท</th>
+          <th class="px-6 py-3">หมายเหตุ</th>
+          <th class="px-6 py-3">อ้างอิง</th>
+          <th class="px-6 py-3">วันที่</th>
         </tr>
       </thead>
 
       <tbody class="divide-y">
-
         <tr v-if="stockStore.movements.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
+          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
+
         <tr v-for="movement in stockStore.movements" :key="movement.id">
           <td class="px-6 py-3">{{ movement.product_title }}</td>
+
           <td class="px-6 py-3" :class="{
             'text-green-700': movement.type === 'IN',
             'text-red-700': movement.type === 'OUT',
-          }">{{ formatQty(movement.change_qty, movement.type) }}</td>
+          }">
+            {{ formatQty(movement.change_qty, movement.type) }}
+          </td>
 
           <td class="px-6 py-3">
             <span class="px-2 py-1 rounded-full text-xs font-semibold" :class="{
               'bg-green-100 text-green-700': movement.type === 'IN',
-
               'bg-red-100 text-red-700': movement.type === 'OUT',
             }">
               {{ movement.type }}
             </span>
           </td>
 
-          <td class="px-6 py-3">{{ movement.note }}
-
-          </td>
-
-          <td class="px-6 py-3"> {{ movement.ref ? movement.ref : '-' }}</td>
-
+          <td class="px-6 py-3">{{ movement.note }}</td>
+          <td class="px-6 py-3">{{ movement.ref ? movement.ref : '-' }}</td>
           <td class="px-6 py-3">{{ formatThaiDateTime(movement.created_at) }}</td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Pagination -->
     <div class="flex justify-end items-center gap-4 py-4 border-t mr-3">
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="prevPage()">
-        <span class="pi pi-chevron-left text-sm"></span> Prev
+        <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ stockStore.page }} of {{ stockStore.lastPage }}</span>
+        {{ stockStore.page }} / {{ stockStore.lastPage }}
+      </span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
-        Next <span class="pi pi-chevron-right text-sm"></span>
+        ถัดไป <span class="pi pi-chevron-right text-sm"></span>
       </button>
     </div>
   </div>
 
-
-
-
-
-
-
-
-
-  <!-- Dialog -->
   <div v-if="showDialog" class="overlay">
     <div class="dialog">
       <h2 class="text-lg font-semibold mb-4">
-        Update Stock
+        อัปเดตสต็อก
       </h2>
 
-
       <div class="mb-3">
-        <label class="block mb-1">Product</label>
+        <label class="block mb-1">สินค้า</label>
         <input :value="selectedStock?.product_title || ''" disabled
           class="border w-full px-3 py-2 rounded bg-gray-100" />
       </div>
 
-
       <div class="mb-3">
-        <label class="block mb-1">Quantity</label>
-        <input v-model.number="quantity" type="number" min="0" class="border w-full px-3 py-2 rounded bg-gray-50" />
+        <label class="block mb-1">จำนวน</label>
+        <input v-model.number="quantity" type="number" min="0" class="border w-full px-3 py-2 rounded bg-gray-50"
+          placeholder="กรอกจำนวนสินค้า" />
       </div>
 
       <div class="mb-3">
-        <label class="block mb-1">Note</label>
-        <textarea v-model="note" rows="3" placeholder="เพิ่มหมายเหตุ เช่น ปรับ stock / สินค้าชำรุด"
+        <label class="block mb-1">หมายเหตุ</label>
+        <textarea v-model="note" rows="3" placeholder="เพิ่มหมายเหตุ เช่น ปรับสต็อก / สินค้าชำรุด"
           class="border w-full px-3 py-2 rounded bg-gray-50" />
       </div>
 
       <div class="flex justify-center gap-4">
         <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">
-          Cancel
+          ปิด
         </button>
 
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="updateStock">
-          Save
+          บันทึก
         </button>
       </div>
     </div>
   </div>
-
-
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>
