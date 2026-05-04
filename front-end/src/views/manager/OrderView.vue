@@ -102,7 +102,9 @@ const closeDialog = () => {
       <tbody class="divide-y">
 
         <tr v-if="orderStore.orders.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
+          <td colspan="7" class="text-center py-6 text-gray-500">
+            ไม่พบข้อมูล
+          </td>
         </tr>
         <tr v-for="order in orderStore.orders" :key="order.address_detail">
 

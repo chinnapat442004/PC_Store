@@ -4,6 +4,7 @@ import { useStockStore } from '@/stores/stock'
 import { useLoadingStore } from '@/stores/loading'
 import type { StockItem } from '@/types/Stock'
 import { formatThaiDateTime } from '@/utils/formatDate'
+import LoadingComponent from '@/components/LoadingComponent.vue'
 
 const stockStore = useStockStore()
 const loadingStore = useLoadingStore()
@@ -140,7 +141,7 @@ const updateStock = async () => {
 
       <tbody class="divide-y">
         <tr v-if="stockStore.stocks.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
+          <td colspan="7" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
 
         <tr v-for="stock in stockStore.stocks" :key="stock.id">
@@ -207,7 +208,7 @@ const updateStock = async () => {
 
       <tbody class="divide-y">
         <tr v-if="stockStore.movements.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
+          <td colspan="6" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
 
         <tr v-for="movement in stockStore.movements" :key="movement.id">

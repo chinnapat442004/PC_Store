@@ -16,11 +16,13 @@ export const useStockStore = defineStore('stock', () => {
   const search = ref('')
 
   async function getStocks(p = page.value, l = limit.value, s = search.value) {
+    loadingStore.doLoad()
     const res = await stockService.getStocks(p, l, s)
     stocks.value = res.data.data
     page.value = res.data.page
     lastPage.value = res.data.lastPage
     total.value = res.data.total
+    loadingStore.finishLoad()
   }
 
 

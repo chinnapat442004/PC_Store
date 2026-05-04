@@ -2,10 +2,11 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Shipment } from '@/types/Shipment'
 import shipmentService from '@/service/shipment'
+import { useLoadingStore } from './loading'
 
 export const useShipmentStore = defineStore('shipment', () => {
     const shipments = ref<Shipment[]>([])
-
+    const loadingStore = useLoadingStore()
     const initialShipment: Shipment = {
         name: '',
     }
@@ -15,8 +16,10 @@ export const useShipmentStore = defineStore('shipment', () => {
     )
 
     async function getShipments() {
+        loadingStore.doLoad()
         const res = await shipmentService.getShipments()
         shipments.value = res.data
+        loadingStore.finishLoad()
     }
 
     async function createShipment() {

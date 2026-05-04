@@ -2,8 +2,10 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Category } from '../types/Category'
 import categoryService from '@/service/category'
+import { useLoadingStore } from './loading'
 
 export const useCategoryStore = defineStore('category', () => {
+  const loadingStore = useLoadingStore()
   const categories = ref<Category[]>([])
 
   const initialCategory: Category = {
@@ -14,8 +16,10 @@ export const useCategoryStore = defineStore('category', () => {
     structuredClone(initialCategory))
 
   async function getCategories() {
+    loadingStore.doLoad()
     const res = await categoryService.getCategories()
     categories.value = res.data
+    loadingStore.finishLoad()
   }
 
   async function createCategory() {

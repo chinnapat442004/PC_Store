@@ -129,7 +129,9 @@ const clearSearch = async () => {
 
       <tbody class="divide-y">
         <tr v-if="userStore.users.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
+          <td colspan="6" class="text-center py-6 text-gray-500">
+            ไม่พบข้อมูล
+          </td>
         </tr>
 
         <tr v-else v-for="user in userStore.users" :key="user.user_id">

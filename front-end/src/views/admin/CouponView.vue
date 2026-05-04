@@ -130,7 +130,7 @@ async function toggleActive(id: number) {
             <tbody class="divide-y">
                 <tr v-if="couponStore.coupons.length === 0">
                     <td colspan="9" class="text-center py-6 text-gray-500">
-                        ไม่มีข้อมูล
+                        ไม่พบข้อมูล
                     </td>
                 </tr>
 

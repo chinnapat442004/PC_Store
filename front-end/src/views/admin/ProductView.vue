@@ -204,7 +204,9 @@ const removeImage = () => {
       </thead>
       <tbody class="divide-y">
         <tr v-if="productStore.products.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
+          <td colspan="6" class="text-center py-6 text-gray-500">
+            ไม่พบข้อมูล
+          </td>
         </tr>
         <tr v-for="product in productStore.products" :key="product.product_id">
           <td class="text-center align-middle">

@@ -136,7 +136,9 @@ const clearSearch = async () => {
 
       <tbody class="divide-y">
         <tr v-if="branchStore.branches.length === 0">
-          <td colspan="4" class="text-center py-6 text-gray-500">ไม่พบข้อมูลที่ค้นหา</td>
+          <td colspan="9" class="text-center py-6 text-gray-500">
+            ไม่พบข้อมูล
+          </td>
         </tr>
 
         <tr v-else v-for="branch in branchStore.branches" :key="branch.branch_id">
