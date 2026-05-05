@@ -10,6 +10,7 @@ function getUser(id: number) {
 }
 
 function createUser(user: CreateUser) {
+
   return http.post('/users', user)
 }
 

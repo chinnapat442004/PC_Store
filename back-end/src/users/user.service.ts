@@ -28,12 +28,13 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Branch)
     private branchRepository: Repository<Branch>,
-  ) {}
+  ) { }
 
   async createUser(
     createUserDto: CreateUserDto,
     creatorRole: Role,
   ): Promise<User> {
+
     const existingUser = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
@@ -60,6 +61,7 @@ export class UserService {
     } else if (creatorRole === Role.MANAGER) {
       user.role = Role.STAFF;
     } else {
+
       throw new ConflictException('You are not allowed to create users');
     }
 

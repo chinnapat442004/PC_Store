@@ -24,7 +24,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Get()
   async findAll(
@@ -69,9 +69,7 @@ export class UserController {
       throw new ForbiddenException('You are not allowed to create users');
     }
 
-    createUserDto.branch_id = currentUser.branch_id;
-
-    return this.userService.createUser(createUserDto, currentUser);
+    return this.userService.createUser(createUserDto, currentUser.role);
   }
 
   @Patch('me/profile')

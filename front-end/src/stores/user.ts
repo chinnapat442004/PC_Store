@@ -33,6 +33,7 @@ export const useUserStore = defineStore('user', () => {
   const initialCreateUser: CreateUser = {
     email: '',
     password: '',
+    confirm_password: '',
     name: '',
     branch_id: 0
   }
@@ -75,6 +76,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function createUser(user: CreateUser) {
+
     try {
       const res = await userService.createUser(user)
       clearCreateUser()
@@ -91,9 +93,8 @@ export const useUserStore = defineStore('user', () => {
       user_id: user.user_id,
       email: user.email,
       name: user.name,
-      role: user.role,
       enabled: user.enabled,
-      address: user.address,
+
     }
 
 

@@ -2,11 +2,13 @@
 import { useUserStore } from '@/stores/user'
 import { onMounted, ref } from 'vue'
 import ConfirmComponent from '@/components/dialogs/ConfirmComponent.vue'
-import type { User } from '@/types/User'
+import type { CreateUser, User } from '@/types/User'
 import { useAuthStore } from '@/stores/auth'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { computed } from 'vue'
+import { useForm } from 'vee-validate'
+import * as yup from 'yup'
 
 const loadingStore = useLoadingStore()
 const userStore = useUserStore()
@@ -27,20 +29,124 @@ const formUser = computed(() => {
   return mode.value === 'create' ? userStore.createUser : userStore.editedUser
 })
 
+
+
+
+
+
+
+
+
+
+
+// create schema
+const createUserSchema = yup.object({
+  name: yup.string().required('กรุณากรอกชื่อผู้ใช้'),
+  email: yup
+    .string()
+    .required('กรุณากรอกอีเมล')
+    .email('รูปแบบอีเมลไม่ถูกต้อง'),
+  password: yup.string().required('กรุณากรอกรหัสผ่าน'),
+  confirm_password: yup
+    .string()
+    .required('กรุณายืนยันรหัสผ่าน')
+    .oneOf([yup.ref('password')], 'รหัสผ่านไม่ตรงกัน'),
+
+})
+
+// edit schema
+const editUserSchema = yup.object({
+  name: yup.string().required('กรุณากรอกชื่อผู้ใช้'),
+  email: yup
+    .string()
+    .required('กรุณากรอกอีเมล')
+    .email('รูปแบบอีเมลไม่ถูกต้อง'),
+  password: yup.string().nullable().notRequired(),
+})
+
+// create form
+const {
+  errors: createErrors,
+  defineField: defineFieldCreate,
+  setFieldValue: setFieldValueCreate,
+  validate: validateCreate,
+  resetForm: resetFormCreate,
+} = useForm({
+  validationSchema: createUserSchema,
+  validateOnMount: false,
+})
+
+// edit form
+const {
+  errors: editErrors,
+  defineField: defineFieldEdit,
+  setFieldValue: setFieldValueEdit,
+  validate: validateEdit,
+  resetForm: resetFormEdit,
+} = useForm({
+  validationSchema: editUserSchema,
+  validateOnMount: false,
+})
+
+const [nameCreate] = defineFieldCreate('name')
+const [emailCreate] = defineFieldCreate('email')
+const [passwordCreate] = defineFieldCreate('password')
+const [confirmPasswordCreate] = defineFieldCreate('confirm_password')
+
+const [nameEdit] = defineFieldEdit('name')
+const [emailEdit] = defineFieldEdit('email')
+const [passwordEdit] = defineFieldEdit('password')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const openEdit = (user: User) => {
   mode.value = 'edit'
-  userStore.editedUser = { ...user }
+  userStore.editedUser = { ...user, password: '' }
+  resetFormEdit({
+    values: {
+      name: user.name,
+      email: user.email,
+      password: '',
+      //
+    }
+  })
   showDialog.value = true
 }
-
 const saveUser = async () => {
   if (mode.value === 'create') {
-    await userStore.createUser(userStore.createUserForm)
-    userStore.clearCreateUser()
+    const payload = {
+      name: nameCreate.value,
+      email: emailCreate.value,
+      password: passwordCreate.value,
+      confirm_password: confirmPasswordCreate.value,
+
+
+
+    }
+    await userStore.createUser(payload as CreateUser)
   } else if (mode.value === 'edit' && userStore.editedUser) {
-    await userStore.updateUserByAdmin(userStore.editedUser)
-    userStore.clearUser()
+    const payload = {
+      ...userStore.editedUser,
+      name: nameEdit.value,
+      email: emailEdit.value,
+      password: passwordEdit.value,
+       enabled: userStore.editedUser?.enabled
+    }
+    await userStore.updateUserByAdmin(payload)
   }
+
   await userStore.getUsers()
   showDialog.value = false
   showConfirm.value = false
@@ -86,6 +192,18 @@ const clearSearch = async () => {
   userStore.search = ''
   userStore.page = 1
   await userStore.getUsers()
+}
+
+
+const preSave = async () => {
+  if (mode.value === 'create') {
+    const { valid } = await validateCreate()
+    if (!valid) return
+  } else {
+    const { valid } = await validateEdit()
+    if (!valid) return
+  }
+  showConfirm.value = true
 }
 </script>
 
@@ -171,50 +289,82 @@ const clearSearch = async () => {
         {{ mode === 'create' ? 'สร้างผู้ใช้' : 'แก้ไขผู้ใช้' }}
       </h2>
 
-      <div v-if="mode === 'create'" class="mb-3">
-        <label>ชื่อผู้ใช้</label>
-        <input v-model="userStore.createUserForm.name" type="text" placeholder="กรอกชื่อผู้ใช้"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
+      <template v-if="mode === 'create'">
+        <div class="mb-3">
+          <label class="text-sm font-medium">ชื่อผู้ใช้</label>
+          <input v-model="nameCreate" type="text" placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.name }" />
+          <p v-if="createErrors.name" class="text-red-500 text-xs mt-1">{{ createErrors.name }}</p>
+        </div>
 
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>ชื่อผู้ใช้</label>
-        <input v-model="userStore.editedUser.name" type="text" placeholder="กรอกชื่อผู้ใช้"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
+        <div class="mb-3">
+          <label class="text-sm font-medium">อีเมล</label>
+          <input v-model="emailCreate" type="email" placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.email }" />
+          <p v-if="createErrors.email" class="text-red-500 text-xs mt-1">{{ createErrors.email }}</p>
+        </div>
 
-      <div v-if="mode === 'create'" class="mb-3">
-        <label>อีเมล</label>
-        <input v-model="userStore.createUserForm.email" type="email" placeholder="กรอกอีเมล"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
+        <div class="mb-3">
+          <label class="text-sm font-medium">รหัสผ่าน</label>
+          <input v-model="passwordCreate" type="password" placeholder="กรอกรหัสผ่าน"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.password }" />
+          <p v-if="createErrors.password" class="text-red-500 text-xs mt-1">{{ createErrors.password }}</p>
+        </div>
 
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>อีเมล</label>
-        <input v-model="userStore.editedUser.email" type="email" placeholder="กรอกอีเมล"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
+        <div class="mb-3">
+          <label class="text-sm font-medium">ยืนยันรหัสผ่าน</label>
+          <input v-model="confirmPasswordCreate" type="password" placeholder="ยืนยันรหัสผ่าน"
+            class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': createErrors.confirm_password }" />
+          <p v-if="createErrors.confirm_password" class="text-red-500 text-xs mt-1">
+            {{ createErrors.confirm_password }}
+          </p>
+        </div>
 
-      <div v-if="mode === 'create'" class="mb-3">
-        <label>รหัสผ่าน</label>
-        <input v-model="userStore.createUserForm.password" type="password" placeholder="กรอกรหัสผ่าน"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
 
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label>สถานะ</label>
-        <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded">
-          <option :value="true">เปิดใช้งาน</option>
-          <option :value="false">ปิดใช้งาน</option>
-        </select>
-      </div>
+      </template>
+
+      <template v-else-if="mode === 'edit' && userStore.editedUser">
+        <div class="mb-3">
+          <label class="text-sm font-medium">ชื่อผู้ใช้</label>
+          <input v-model="nameEdit" type="text" placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.name }" />
+          <p v-if="editErrors.name" class="text-red-500 text-xs mt-1">{{ editErrors.name }}</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="text-sm font-medium">อีเมล</label>
+          <input v-model="emailEdit" type="email" placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.email }" />
+          <p v-if="editErrors.email" class="text-red-500 text-xs mt-1">{{ editErrors.email }}</p>
+        </div>
+
+        <div class="mb-4">
+          <label class="text-sm font-medium text-gray-700">รหัสผ่านใหม่</label>
+          <div class="mt-1 border rounded-lg p-3 bg-gray-50">
+            <input v-model="passwordEdit" type="password" placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน"
+              class="w-full px-3 py-2 rounded bg-white border" />
+            <p class="text-xs text-gray-500 mt-1">
+              หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้
+            </p>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="text-sm font-medium">สถานะ</label>
+          <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded bg-gray-50">
+            <option :value="true">เปิดใช้งาน</option>
+            <option :value="false">ปิดใช้งาน</option>
+          </select>
+        </div>
+      </template>
 
       <div class="flex justify-center gap-4">
         <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">
           ปิด
         </button>
 
-        <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
+        <button class="bg-green-500 text-white px-4 py-1 rounded" @click="preSave()">
           บันทึก
         </button>
       </div>

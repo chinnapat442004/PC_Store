@@ -2,7 +2,7 @@
 import { useUserStore } from '@/stores/user'
 import { onMounted, ref, watch } from 'vue'
 import ConfirmComponent from '@/components/dialogs/ConfirmComponent.vue'
-import type { User } from '@/types/User'
+import type { CreateUser, User } from '@/types/User'
 import { useAuthStore } from '@/stores/auth'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
@@ -15,12 +15,80 @@ const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
 const deleteConfirm = ref(false)
-const authStore = useAuthStore()
+
 const branchStore = useBranchStore()
+import { useForm } from 'vee-validate'
+import * as yup from 'yup'
 
 onMounted(async () => {
   await userStore.getUsers()
 })
+
+
+
+const authStore = useAuthStore()
+
+// create schema
+const createUserSchema = yup.object({
+  name: yup.string().required('กรุณากรอกชื่อผู้ใช้'),
+  email: yup
+    .string()
+    .required('กรุณากรอกอีเมล')
+    .email('รูปแบบอีเมลไม่ถูกต้อง'),
+  password: yup.string().required('กรุณากรอกรหัสผ่าน'),
+  confirm_password: yup
+    .string()
+    .required('กรุณายืนยันรหัสผ่าน')
+    .oneOf([yup.ref('password')], 'รหัสผ่านไม่ตรงกัน'),
+  branch_id: authStore.user?.role === 'admin'
+    ? yup.number().required('กรุณาเลือกสาขา')
+    : yup.number().nullable().notRequired(),
+})
+
+// edit schema
+const editUserSchema = yup.object({
+  name: yup.string().required('กรุณากรอกชื่อผู้ใช้'),
+  email: yup
+    .string()
+    .required('กรุณากรอกอีเมล')
+    .email('รูปแบบอีเมลไม่ถูกต้อง'),
+  password: yup.string().nullable().notRequired(),
+})
+
+// create form
+const {
+  errors: createErrors,
+  defineField: defineFieldCreate,
+  setFieldValue: setFieldValueCreate,
+  validate: validateCreate,
+  resetForm: resetFormCreate,
+} = useForm({
+  validationSchema: createUserSchema,
+  validateOnMount: false,
+})
+
+// edit form
+const {
+  errors: editErrors,
+  defineField: defineFieldEdit,
+  setFieldValue: setFieldValueEdit,
+  validate: validateEdit,
+  resetForm: resetFormEdit,
+} = useForm({
+  validationSchema: editUserSchema,
+  validateOnMount: false,
+})
+
+const [nameCreate] = defineFieldCreate('name')
+const [emailCreate] = defineFieldCreate('email')
+const [passwordCreate] = defineFieldCreate('password')
+const [branchCreate] = defineFieldCreate('branch_id')
+const [confirmPasswordCreate] = defineFieldCreate('confirm_password')
+
+const [nameEdit] = defineFieldEdit('name')
+const [emailEdit] = defineFieldEdit('email')
+const [passwordEdit] = defineFieldEdit('password')
+
 
 
 const formUser = computed(() => {
@@ -31,24 +99,67 @@ const mode = ref<'create' | 'edit'>('create')
 
 const openEdit = (user: User) => {
   mode.value = 'edit'
-  userStore.editedUser = { ...user }
+  userStore.editedUser = { ...user, password: '' }
+  resetFormEdit({
+    values: {
+      name: user.name,
+      email: user.email,
+      password: '',
+    }
+  })
   showDialog.value = true
 }
 
-const saveUser = async () => {
+const preSave = async () => {
   if (mode.value === 'create') {
-    await userStore.createUser(userStore.createUserForm)
-    userStore.clearCreateUser()
-  } else if (mode.value === 'edit' && userStore.editedUser) {
-    await userStore.updateUserByAdmin(userStore.editedUser)
-    userStore.clearUser()
+    const { valid } = await validateCreate()
+    if (!valid) return
+  } else {
+    const { valid } = await validateEdit()
+    if (!valid) return
   }
-
-  await userStore.getUsers()
-  showDialog.value = false
-  showConfirm.value = false
+  showConfirm.value = true
 }
 
+const saveUser = async () => {
+  try {
+    if (mode.value === 'create') {
+      const payload = {
+        name: nameCreate.value,
+        email: emailCreate.value,
+        password: passwordCreate.value,
+        confirm_password: confirmPasswordCreate.value,
+        branch_id:
+          authStore.user?.role === 'admin'
+            ? branchCreate.value
+            : authStore.user?.branch?.branch_id,
+      }
+
+      await userStore.createUser(payload as CreateUser)
+    } else if (mode.value === 'edit' && userStore.editedUser) {
+      const payload = {
+        ...userStore.editedUser,
+        name: nameEdit.value,
+        email: emailEdit.value,
+        password: passwordEdit.value,
+        enabled: userStore.editedUser?.enabled,
+      }
+
+      await userStore.updateUserByAdmin(payload)
+    }
+
+    await userStore.getUsers()
+    showDialog.value = false
+    showConfirm.value = false
+  } catch (err: any) {
+    const status = err?.response?.status
+
+
+    if (status === 409) {
+      setFieldValueCreate('email', 'อีเมลนี้ถูกใช้งานแล้ว')
+    }
+  }
+}
 const closeDialog = () => {
   userStore.clearUser()
   showDialog.value = false
@@ -57,7 +168,10 @@ const closeDialog = () => {
 const openCreateDialog = async () => {
   mode.value = 'create'
   await branchStore.getBranches()
-  userStore.clearCreateUser()
+  resetFormCreate()
+  if (authStore.user?.role === 'manager' && authStore.user.branch) {
+    setFieldValueCreate('branch_id', authStore.user.branch.branch_id)
+  }
   showDialog.value = true
 }
 
@@ -173,81 +287,98 @@ const clearSearch = async () => {
         {{ mode === 'create' ? 'เพิ่มผู้ใช้' : 'แก้ไขผู้ใช้' }}
       </h2>
 
-      <div v-if="mode === 'create'" class="mb-3">
-        <label class="text-sm font-medium">ชื่อผู้ใช้</label>
-        <input v-model="userStore.createUserForm.name" type="text" placeholder="กรอกชื่อผู้ใช้"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
+      <template v-if="mode === 'create'">
+        <div class="mb-3">
+          <label class="text-sm font-medium">ชื่อผู้ใช้</label>
+          <input v-model="nameCreate" type="text" placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.name }" />
+          <p v-if="createErrors.name" class="text-red-500 text-xs mt-1">{{ createErrors.name }}</p>
+        </div>
 
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label class="text-sm font-medium">ชื่อผู้ใช้</label>
-        <input v-model="userStore.editedUser.name" type="text" placeholder="กรอกชื่อผู้ใช้"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
+        <div class="mb-3">
+          <label class="text-sm font-medium">อีเมล</label>
+          <input v-model="emailCreate" type="email" placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.email }" />
+          <p v-if="createErrors.email" class="text-red-500 text-xs mt-1">{{ createErrors.email }}</p>
+        </div>
 
-      <div v-if="mode === 'create'" class="mb-3">
-        <label class="text-sm font-medium">อีเมล</label>
-        <input v-model="userStore.createUserForm.email" type="email" placeholder="กรอกอีเมล"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
+        <div class="mb-3">
+          <label class="text-sm font-medium">รหัสผ่าน</label>
+          <input v-model="passwordCreate" type="password" placeholder="กรอกรหัสผ่าน"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.password }" />
+          <p v-if="createErrors.password" class="text-red-500 text-xs mt-1">{{ createErrors.password }}</p>
+        </div>
 
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label class="text-sm font-medium">อีเมล</label>
-        <input v-model="userStore.editedUser.email" type="email" placeholder="กรอกอีเมล"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
-
-      <div v-if="mode === 'create'" class="mb-3">
-        <label class="text-sm font-medium">รหัสผ่าน</label>
-        <input v-model="userStore.createUserForm.password" type="password" placeholder="กรอกรหัสผ่าน"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
-      </div>
-
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-4">
-        <label class="text-sm font-medium text-gray-700">รหัสผ่านใหม่</label>
-        <div class="mt-1 border rounded-lg p-3 bg-gray-50">
-          <input v-model="userStore.editedUser.password" type="password"
-            placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน" class="w-full px-3 py-2 rounded bg-white border" />
-          <p class="text-xs text-gray-500 mt-1">
-            หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้
+        <div class="mb-3">
+          <label class="text-sm font-medium">ยืนยันรหัสผ่าน</label>
+          <input v-model="confirmPasswordCreate" type="password" placeholder="ยืนยันรหัสผ่าน"
+            class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': createErrors.confirm_password }" />
+          <p v-if="createErrors.confirm_password" class="text-red-500 text-xs mt-1">
+            {{ createErrors.confirm_password }}
           </p>
         </div>
-      </div>
 
-      <div v-if="mode === 'create'" class="mb-3">
-        <label class="text-sm font-medium">สาขา</label>
-        <select v-model="userStore.createUserForm.branch_id" class="border w-full px-3 py-2 rounded bg-gray-50">
-          <option value="" disabled>เลือกสาขา</option>
-          <option v-for="b in branchStore.branches" :key="b.branch_id" :value="b.branch_id">
-            {{ b.branch_name }}
-          </option>
-        </select>
-      </div>
+        <div v-if="authStore.user?.role === 'admin'" class="mb-3">
+          <label class="text-sm font-medium">สาขา</label>
+          <select v-model="branchCreate" class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': createErrors.branch_id }">
+            <option value="" disabled>เลือกสาขา</option>
+            <option v-for="b in branchStore.branches" :key="b.branch_id" :value="b.branch_id">
+              {{ b.branch_name }}
+            </option>
+          </select>
+          <p v-if="createErrors.branch_id" class="text-red-500 text-xs mt-1">{{ createErrors.branch_id }}</p>
+        </div>
+      </template>
 
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-3">
-        <label class="text-sm font-medium">สาขา</label>
-        <select v-model="userStore.editedUser.branch.branch_id" class="border w-full px-3 py-2 rounded bg-gray-50">
-          <option value="" disabled>เลือกสาขา</option>
-          <option v-for="b in branchStore.branches" :key="b.branch_id" :value="b.branch_id">
-            {{ b.branch_name }}
-          </option>
-        </select>
-      </div>
+      <template v-else-if="mode === 'edit' && userStore.editedUser">
+        <div class="mb-3">
+          <label class="text-sm font-medium">ชื่อผู้ใช้</label>
+          <input v-model="nameEdit" type="text" placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.name }" />
+          <p v-if="editErrors.name" class="text-red-500 text-xs mt-1">{{ editErrors.name }}</p>
+        </div>
 
-      <div v-if="mode === 'edit' && userStore.editedUser" class="mb-4">
-        <label class="text-sm font-medium">สถานะ</label>
-        <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded bg-gray-50">
-          <option :value="true">เปิดใช้งาน</option>
-          <option :value="false">ปิดใช้งาน</option>
-        </select>
-      </div>
+        <div class="mb-3">
+          <label class="text-sm font-medium">อีเมล</label>
+          <input v-model="emailEdit" type="email" placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.email }" />
+          <p v-if="editErrors.email" class="text-red-500 text-xs mt-1">{{ editErrors.email }}</p>
+        </div>
+
+        <div class="mb-4">
+          <label class="text-sm font-medium text-gray-700">รหัสผ่านใหม่</label>
+          <div class="mt-1 border rounded-lg p-3 bg-gray-50">
+            <input v-model="passwordEdit" type="password" placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน"
+              class="w-full px-3 py-2 rounded bg-white border" />
+            <p class="text-xs text-gray-500 mt-1">
+              หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้
+            </p>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="text-sm font-medium">สาขา</label>
+          <input :value="userStore.editedUser.branch?.branch_name" type="text"
+            class="border w-full px-3 py-2 rounded bg-gray-100 cursor-not-allowed" readonly />
+        </div>
+
+        <div class="mb-4">
+          <label class="text-sm font-medium">สถานะ</label>
+          <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded bg-gray-50">
+            <option :value="true">เปิดใช้งาน</option>
+            <option :value="false">ปิดใช้งาน</option>
+          </select>
+        </div>
+      </template>
 
       <div class="flex justify-center gap-4">
-        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">
+        <button class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition" @click="closeDialog()">
           ยกเลิก
         </button>
 
-        <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
+        <button class="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition" @click="preSave()">
           บันทึก
         </button>
       </div>

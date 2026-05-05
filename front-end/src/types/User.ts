@@ -16,7 +16,7 @@ export type User = {
 export type CreateUser = {
   email: string
   password: string
-  confirm_password?: string
+  confirm_password: string
   name: string
   branch_id: number
 }
@@ -25,15 +25,11 @@ export type UpdateUser = {
   user_id?: number
   email?: string
   name?: string
-  role?: UserRole
   enabled?: boolean
-  address?: string
   password?: string
 
+
 }
-
-
-
 
 
 export type UpdateProfile = {
