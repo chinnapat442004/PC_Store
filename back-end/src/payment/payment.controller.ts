@@ -14,7 +14,7 @@ import cloudinary from 'config/cloudinary.config';
 
 @Controller('payment')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(private readonly paymentService: PaymentService) { }
 
   @Post(':paymentId/slip')
   @UseInterceptors(
@@ -32,13 +32,26 @@ export class PaymentController {
 
     const uploadedSlip = await new Promise<string>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: 'payments/slips' },
+        {
+          folder: 'payments/slips', format: 'webp', transformation: [
+            { width: 400, crop: 'limit' } // ถ้าภาพใหญ่กว่า 1200px จะถูกย่อลงมา
+          ]
+        },
         (error, result) => {
           if (error) {
             console.error(error);
             return reject(error);
           }
-          resolve(result.secure_url);
+
+          const optimizedUrl = cloudinary.url(result.public_id, {
+            secure: true, format: 'webp',
+            quality: 'auto',
+            width: 400,
+            crop: 'limit',
+          });
+
+
+          resolve(optimizedUrl);
         },
       );
 
@@ -63,3 +76,5 @@ export class PaymentController {
     return this.paymentService.findByOrderId(+id);
   }
 }
+
+

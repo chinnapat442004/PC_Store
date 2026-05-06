@@ -76,6 +76,8 @@ const openEdit = async (product: Product) => {
 }
 
 const saveProduct = async () => {
+  showDialog.value = false
+  showConfirm.value = false
   try {
     if (mode.value === 'create') {
       await productStore.addProduct()
@@ -85,8 +87,7 @@ const saveProduct = async () => {
 
     await productStore.getProducts()
 
-    showDialog.value = false
-    showConfirm.value = false
+
     productStore.clearProduct()
     previewImage.value = null
     editingId.value = null

@@ -19,7 +19,7 @@ import cloudinary from 'config/cloudinary.config';
 
 @Controller('product')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
   @Post()
   @UseInterceptors(
@@ -37,10 +37,27 @@ export class ProductsController {
           (image) =>
             new Promise<string>((resolve, reject) => {
               const stream = cloudinary.uploader.upload_stream(
-                { folder: 'products' },
+                {
+                  folder: 'products', format: 'webp', //  บังคับแปลงไฟล์ต้นฉบับให้เป็น .webp 
+
+                  transformation: [
+                    { width: 400, crop: 'limit' } // ถ้าภาพใหญ่กว่า 1200px จะถูกย่อลงมา
+                  ]
+                },
                 (error, result) => {
                   if (error) return reject(error);
-                  resolve(result.secure_url);
+
+
+                  // ให้สร้าง URL ใหม่ที่ใส่ Parameter 
+                  const optimizedUrl = cloudinary.url(result.public_id, {
+                    secure: true,
+                    format: 'webp',
+                    quality: 'auto',
+                    width: 400,
+                    crop: 'limit',
+                  });
+
+                  resolve(optimizedUrl);
                 },
               );
 
@@ -67,15 +84,81 @@ export class ProductsController {
     @Param('id') id: string,
   ) {
     if (images && images.length > 0) {
+
+      //1. ดึงข้อมูล Product เดิมขึ้นมาก่อน 
+      const existingProduct = await this.productsService.findOne(+id);
+
+      // 2. ลบรูปเก่าออกจาก Cloudinary
+
+      console.log(existingProduct.images)
+
+      if (existingProduct && existingProduct.images && existingProduct.images.length > 0) {
+        const deleteOldImagesPromises = existingProduct.images.map(async (imageObj: any) => {
+          const imageUrlString = imageObj.image;
+
+          if (imageUrlString) {
+            // 1. แยก String ด้วย '/upload/' เพื่อเอาเฉพาะส่วนหลัง
+            const parts = imageUrlString.split('/upload/');
+            if (parts.length > 1) {
+              const afterUpload = parts[1]; // ได้: "c_limit,q_auto,w_400/v1/products/k4pinzuwkijcal65v1og.webp?..."
+
+              // 2. แยกด้วย '/' แล้วกรองเอาเฉพาะส่วนที่ไม่ใช่ Transformations (พวกที่มีเครื่องหมาย =) 
+              // หรือพวก Version (v1, v2) และเอาตัวสุดท้ายกับรองสุดท้ายมาต่อกัน
+              const pathParts = afterUpload.split('/');
+
+              // ค้นหาจุดเริ่มของ Public ID โดยข้ามพวก v1 หรือ transformation
+              // ปกติ Public ID คือส่วนที่อยู่หลัง 'v数字/' หรือหลัง transformation ตัวสุดท้าย
+              const cleanPathParts = pathParts.filter(part => {
+                return !part.includes(',') && !/^v\d+$/.test(part);
+              });
+
+              // 3. จัดการเรื่องนามสกุลไฟล์และ Query String (เช่น .webp?_a=...)
+              const lastPart = cleanPathParts.pop(); // k4pinzuwkijcal65v1og.webp?_a=...
+              const publicIdWithoutExt = lastPart.split('.')[0].split('?')[0];
+
+
+              const publicId = cleanPathParts.length > 0
+                ? `${cleanPathParts.join('/')}/${publicIdWithoutExt}` : publicIdWithoutExt;
+
+              try {
+
+                const result = await cloudinary.uploader.destroy(publicId);
+
+              } catch (err) {
+                console.error(`Error deleting ${publicId}:`, err);
+              }
+            }
+          }
+        });
+
+        await Promise.all(deleteOldImagesPromises);
+      }
+      // 💡 3. อัปโหลดรูปใหม่เข้า Cloudinary
       const uploadedImages = await Promise.all(
         images.map(
           (image) =>
             new Promise<string>((resolve, reject) => {
               const stream = cloudinary.uploader.upload_stream(
-                { folder: 'products' },
+                {
+                  folder: 'products',
+                  format: 'webp', // บังคับแปลงไฟล์ให้เป็น .webp 
+                  transformation: [
+                    { width: 400, crop: 'limit' }
+                  ]
+                },
                 (error, result) => {
                   if (error) return reject(error);
-                  resolve(result.secure_url);
+
+                  // สร้าง URL ที่ผ่านการ Optimize 
+                  const optimizedUrl = cloudinary.url(result.public_id, {
+                    secure: true,
+                    format: 'webp',
+                    quality: 'auto',
+                    width: 400,
+                    crop: 'limit',
+                  });
+
+                  resolve(optimizedUrl);
                 },
               );
 
@@ -89,7 +172,6 @@ export class ProductsController {
 
     return this.productsService.update(+id, updateProductDto);
   }
-
   @Get()
   findAll(
     @Query('page') page = '1',
