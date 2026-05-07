@@ -37,6 +37,9 @@ export class Product {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @Column({ default: true })
+  is_active: boolean;
+
   @ManyToOne(() => Category, (categery) => categery.products)
   @JoinColumn({ name: 'category_id' })
   category: Category;

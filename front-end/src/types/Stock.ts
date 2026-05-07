@@ -7,6 +7,7 @@ export type StockItem = {
   product_price: number
   image: string
   status_label: string
+  is_active: boolean
 }
 
 

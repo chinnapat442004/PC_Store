@@ -2,8 +2,8 @@
 import type { Shipment } from '@/types/Shipment'
 import http from './http'
 
-function getShipments() {
-    return http.get('/shipments')
+function getShipments(search?: string, onlyActive?: boolean) {
+    return http.get(`/shipments?search=${search || ''}&onlyActive=${onlyActive || false}`)
 }
 
 function createShipment(data: Shipment) {
@@ -14,13 +14,14 @@ function updateShipment(id: number, data: Shipment) {
     return http.put(`/shipments/${id}`, data)
 }
 
-function deleteShipment(id: number) {
-    return http.delete(`/shipments/${id}`)
+
+function toggleShipmentActive(id: number) {
+    return http.patch(`/shipments/${id}/toggle-active`)
 }
 
 export default {
     getShipments,
     createShipment,
     updateShipment,
-    deleteShipment,
+    toggleShipmentActive,
 }

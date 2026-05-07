@@ -26,10 +26,10 @@ watch([() => authStore.email, () => authStore.password], ([newEmail, newPassword
   }
 })
 
-const notify = () => {
+const notify = (msg?: string) => {
   if (!isToastActive.value) {
     isToastActive.value = true
-    toast.error('email หรือ รหัสผ่านไม่ถูกต้อง', {
+    toast.error(msg || 'email หรือ รหัสผ่านไม่ถูกต้อง', {
       position: toast.POSITION.TOP_RIGHT,
       onClose: () => {
         isToastActive.value = false
@@ -74,12 +74,13 @@ async function onSubmit() {
     await authStore.login()
     await authStore.getCurrentUser()
     await cartStore.getCarts()
-  } catch (error) {
+    pass()
+  } catch (error: any) {
     console.log(error)
-    notify()
+    const msg = error.response?.data?.message
+    notify(msg)
     checkValidate()
   } finally {
-    pass()
     submit.value = false
   }
 }

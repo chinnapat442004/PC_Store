@@ -6,7 +6,7 @@ export type User = {
   email: string
   name: string
   role: UserRole
-  enabled: boolean
+  is_active: boolean
   address?: string
   createdAt: Date
   updatedAt: Date
@@ -25,7 +25,6 @@ export type UpdateUser = {
   user_id?: number
   email?: string
   name?: string
-  enabled?: boolean
   password?: string
 
 

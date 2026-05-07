@@ -13,9 +13,11 @@ function editCoupon(id: number, data: CouponPayload) {
     return http.patch(`/coupon/${id}`, data)
 }
 
-function toggleCouponStatus(id: number) {
-    return http.patch(`/coupon/${id}/toggle`)
+
+function toggleActive(id: number) {
+  return http.patch(`/coupon/${id}/toggle-active`)
 }
+
 export default {
-    getCoupons, createCoupon, editCoupon, toggleCouponStatus
+    getCoupons, createCoupon, editCoupon, toggleActive
 }

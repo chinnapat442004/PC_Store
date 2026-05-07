@@ -15,8 +15,12 @@ export class ShipmentService {
     return await this.shipmentRepository.save(shipment);
   }
 
-  async findAll(search?: string) {
-    const where = search ? { name: Like(`%${search}%`) } : {};
+  async findAll(search?: string, onlyActive?: boolean) {
+    let where: any = search ? { name: Like(`%${search}%`) } : {};
+
+    if (onlyActive) {
+      where.is_active = true;
+    }
 
     return await this.shipmentRepository.find({
       where,
@@ -46,9 +50,18 @@ export class ShipmentService {
     return await this.shipmentRepository.save(shipment);
   }
 
-  async remove(id: number) {
-    const shipment = await this.findOne(id);
 
-    return await this.shipmentRepository.remove(shipment);
+  async toggleActive(shipment_id: number) {
+    const shipment = await this.shipmentRepository.findOne({
+      where: { shipment_id },
+    });
+
+    if (!shipment) {
+      throw new NotFoundException('Shipment not found');
+    }
+
+    shipment.is_active = !shipment.is_active;
+
+    return await this.shipmentRepository.save(shipment);
   }
 }

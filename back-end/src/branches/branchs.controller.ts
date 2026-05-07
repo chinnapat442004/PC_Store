@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
   Query,
 } from '@nestjs/common';
@@ -34,8 +33,9 @@ export class BranchsController {
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('search') search: string,
+    @Query('onlyActive') onlyActive?: string,
   ) {
-    return this.branchsService.findAll(+page, +limit, search);
+    return this.branchsService.findAll(+page, +limit, search, onlyActive === 'true');
   }
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -47,8 +47,11 @@ export class BranchsController {
     return this.branchsService.update(+id, updateBranchDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.branchsService.remove(+id);
+
+  @Patch(':id/toggle-active')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin')
+  toggleActive(@Param('id') id: string) {
+    return this.branchsService.toggleActive(+id);
   }
 }

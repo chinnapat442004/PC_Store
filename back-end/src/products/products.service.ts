@@ -61,12 +61,28 @@ export class ProductsService {
     return savedProduct;
   }
 
-  async findAll(page: number, limit: number, search?: string) {
+  async findAll(page: number, limit: number, search?: string, onlyActive?: boolean) {
     const skip = (page - 1) * limit;
 
-    const where = search
+    let where: any = search
       ? [{ title: Like(`%${search}%`) }, { description: Like(`%${search}%`) }]
       : {};
+
+    if (onlyActive) {
+      if (Array.isArray(where)) {
+        where = where.map((w) => ({
+          ...w,
+          is_active: true,
+          category: { is_active: true },
+        }));
+      } else {
+        where = {
+          ...where,
+          is_active: true,
+          category: { is_active: true },
+        };
+      }
+    }
 
     const [data, total] = await this.productRepository.findAndCount({
       where,
@@ -174,7 +190,8 @@ export class ProductsService {
     return product;
   }
 
-  async remove(product_id: number) {
+
+  async toggleActive(product_id: number) {
     const product = await this.productRepository.findOne({
       where: { product_id },
     });
@@ -183,8 +200,8 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
-    await this.productRepository.remove(product);
+    product.is_active = !product.is_active;
 
-    return { message: 'Product deleted successfully' };
+    return await this.productRepository.save(product);
   }
 }

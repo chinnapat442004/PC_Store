@@ -30,11 +30,11 @@ export const useProductStore = defineStore('product', () => {
   const search = ref('')
 
 
-  async function getProducts(p = page.value, l = limit.value, s = search.value) {
+  async function getProducts(p = page.value, l = limit.value, s = search.value, onlyActive = false) {
     loadingStore.doLoad()
     try {
 
-      const res = await productService.getProducts(p, l, s)
+      const res = await productService.getProducts(p, l, s, onlyActive)
       products.value = res.data.data
       page.value = res.data.page
       lastPage.value = res.data.lastPage
@@ -98,17 +98,26 @@ export const useProductStore = defineStore('product', () => {
   }
 
 
-  async function deleteProduct(id: number) {
-    loadingStore.doLoad()
+
+  async function toggleProductActive(product_id: number) {
     try {
-      const res = await productService.deleteProduct(id)
-      await getProducts()
+      const res = await productService.toggleProductActive(product_id)
+
+      products.value = products.value.map((product) => {
+        if (product.product_id === product_id) {
+          return {
+            ...product,
+            is_active: res.data.is_active,
+          }
+        }
+
+        return product
+      })
+
       return res
     } catch (error) {
-      console.error('Delete product error:', error)
+      console.error(error)
       throw error
-    } finally {
-      loadingStore.finishLoad()
     }
   }
 
@@ -121,7 +130,7 @@ export const useProductStore = defineStore('product', () => {
     getProduct,
     addProduct,
     updateProduct,
-    deleteProduct,
+    toggleProductActive,
     clearProduct,
     products,
     product,

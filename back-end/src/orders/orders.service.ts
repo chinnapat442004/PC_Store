@@ -131,18 +131,25 @@ export class OrdersService {
       if (!address.lat || !address.lng)
         throw new BadRequestException('Address has no location');
 
-      const branches = await manager.find(Branch);
-      if (!branches.length) throw new BadRequestException('No branches found');
+      const branches = await manager.find(Branch, { where: { is_active: true } });
+      if (!branches.length) throw new BadRequestException('No active branches found');
 
       const productIds = items.map((i) => i.product_id);
 
       const productsData = await manager.find(Product, {
         where: { product_id: In(productIds) },
-        relations: { images: true },
+        relations: { images: true, category: true },
       });
 
       if (productsData.length !== items.length) {
         throw new NotFoundException('Some products not found');
+      }
+
+      // Check if all products and their categories are active
+      for (const p of productsData) {
+        if (!p.is_active || !p.category.is_active) {
+          throw new BadRequestException(`สินค้า ${p.title} เลิกจำหน่ายแล้ว`);
+        }
       }
 
       const productMap = new Map(productsData.map((p) => [p.product_id, p]));
@@ -161,7 +168,7 @@ export class OrdersService {
       );
 
       if (!nearestBranch) {
-        throw new BadRequestException('สินค้าหมดทุกสาขา');
+        throw new BadRequestException('สินค้าหมดทุกสาขาที่เปิดให้บริการ');
       }
 
       let total = 0;
@@ -201,7 +208,7 @@ export class OrdersService {
           where: { code: createOrderDto.coupon_code },
         });
 
-        if (!coupon) throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
+        if (!coupon || !coupon.is_active) throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
 
         const now = new Date();
         if (now < coupon.start_date || now > coupon.end_date) {

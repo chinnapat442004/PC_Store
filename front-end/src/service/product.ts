@@ -1,8 +1,8 @@
 import type { CreateProductPayload } from '@/types/Product'
 import http from './http'
 
-function getProducts(page: number, limit: number, search: string) {
-  return http.get(`/product?page=${page}&limit=${limit}&search=${search}`)
+function getProducts(page: number, limit: number, search: string, onlyActive?: boolean) {
+  return http.get(`/product?page=${page}&limit=${limit}&search=${search}&onlyActive=${onlyActive || false}`)
 }
 
 function getProduct(id: number) {
@@ -55,8 +55,9 @@ function updateProduct(
   })
 }
 
-function deleteProduct(id: number) {
-  return http.delete(`/product/${id}`)
+
+function toggleProductActive(id: number) {
+  return http.patch(`/product/${id}/toggle-active`)
 }
 
 export default {
@@ -64,5 +65,5 @@ export default {
   getProduct,
   createProduct,
   updateProduct,
-  deleteProduct
+  toggleProductActive
 }

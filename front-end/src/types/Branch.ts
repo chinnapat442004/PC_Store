@@ -5,5 +5,6 @@ type Branch = {
   status: string
   lat?: number
   lng?: number
+  is_active: boolean
 }
 export { type Branch }

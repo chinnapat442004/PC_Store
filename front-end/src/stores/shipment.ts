@@ -15,9 +15,9 @@ export const useShipmentStore = defineStore('shipment', () => {
         JSON.parse(JSON.stringify(initialShipment))
     )
 
-    async function getShipments() {
+    async function getShipments(search?: string, onlyActive = false) {
         loadingStore.doLoad()
-        const res = await shipmentService.getShipments()
+        const res = await shipmentService.getShipments(search, onlyActive)
         shipments.value = res.data
         loadingStore.finishLoad()
     }
@@ -35,9 +35,27 @@ export const useShipmentStore = defineStore('shipment', () => {
         resetForm()
     }
 
-    async function deleteShipment(id: number) {
-        await shipmentService.deleteShipment(id)
-        await getShipments()
+
+    async function toggleShipmentActive(shipment: Shipment) {
+        try {
+            const res = await shipmentService.toggleShipmentActive(shipment.shipment_id!)
+
+            shipments.value = shipments.value.map((s) => {
+                if (s.shipment_id === shipment.shipment_id) {
+                    return {
+                        ...s,
+                        is_active: res.data.is_active,
+                    }
+                }
+
+                return s
+            })
+
+            return res
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
     }
 
     function resetForm() {
@@ -54,7 +72,7 @@ export const useShipmentStore = defineStore('shipment', () => {
         getShipments,
         createShipment,
         updateShipment,
-        deleteShipment,
+        toggleShipmentActive,
         resetForm,
         setEditShipment,
     }

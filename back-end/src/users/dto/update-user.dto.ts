@@ -12,8 +12,8 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
-  enabled?: boolean;
+  @Transform(({ value }) => value === 'true' || value === true)
+  is_active?: boolean;
 
   @IsOptional()
   @IsString()

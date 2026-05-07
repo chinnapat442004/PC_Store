@@ -20,6 +20,10 @@ function updateUserByAdmin(id: number, user: UpdateUser) {
 }
 
 
+function toggleUserActive(id: number) {
+  return http.patch(`/users/${id}/toggle-active`)
+}
+
 function updateMyProfile(user: UpdateProfile) {
   return http.patch('/users/me/profile', user)
 }
@@ -35,5 +39,5 @@ export default {
   createUser,
   updateUserByAdmin,
   updateMyProfile,
-  changeMyPassword,
+  changeMyPassword, toggleUserActive
 }

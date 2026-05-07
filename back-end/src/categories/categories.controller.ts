@@ -5,7 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -13,7 +13,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('category')
 export class CategoriesController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CategoryService) { }
 
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -21,8 +21,8 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  findAll(@Query('onlyActive') onlyActive?: string) {
+    return this.categoryService.findAll(onlyActive === 'true');
   }
 
   @Get(':id')
@@ -38,8 +38,11 @@ export class CategoriesController {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoryService.remove(+id);
+
+  @Patch(':id/toggle-active')
+  toggleActive(@Param('id') id: string) {
+    return this.categoryService.toggleActive(+id);
   }
+
+
 }

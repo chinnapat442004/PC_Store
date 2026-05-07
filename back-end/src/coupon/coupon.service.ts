@@ -16,11 +16,15 @@ export class CouponService {
     return this.couponRepository.save(createCouponDto);
   }
 
-  async findAll(page: number, limit: number, search?: string) {
+  async findAll(page: number, limit: number, search?: string, onlyActive?: boolean) {
     const skip = (page - 1) * limit;
     let where: any = {};
     if (search) {
-      where = [{ code: Like(`%${search}%`) }];
+      where = { code: Like(`%${search}%`) };
+    }
+
+    if (onlyActive) {
+      where.is_active = true;
     }
     const [data, total] = await this.couponRepository.findAndCount({
       where,

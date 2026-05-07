@@ -93,7 +93,7 @@ export const useUserStore = defineStore('user', () => {
       user_id: user.user_id,
       email: user.email,
       name: user.name,
-      enabled: user.enabled,
+
 
     }
 
@@ -152,6 +152,28 @@ export const useUserStore = defineStore('user', () => {
     updatePasswordForm.value = structuredClone(initialUpdatePassword)
   }
 
+  async function toggleUserActive(user_id: number) {
+    try {
+      const res = await userService.toggleUserActive(user_id)
+
+      users.value = users.value.map((user) => {
+        if (user.user_id === user_id) {
+          return {
+            ...user,
+            is_active: res.data.is_active,
+          }
+        }
+
+        return user
+      })
+
+      return res
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  }
+
   return {
     users,
     editedUser,
@@ -175,6 +197,6 @@ export const useUserStore = defineStore('user', () => {
     clearUser,
     clearProfile,
     clearCreateUser,
-    clearUpdatePassword,
+    clearUpdatePassword, toggleUserActive
   }
 })

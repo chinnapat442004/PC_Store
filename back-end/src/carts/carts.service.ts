@@ -74,9 +74,14 @@ export class CartsService {
 
     const product = await this.productRepository.findOne({
       where: { product_id: updateCartDto.productId },
+      relations: ['category'],
     });
 
     if (!product) throw new BadRequestException('Product not found');
+
+    if (!product.is_active || !product.category.is_active) {
+      throw new BadRequestException('สินค้านี้เลิกจำหน่ายแล้ว');
+    }
 
     const existingDetail = cart.cartDetails.find(
       (d) => d.product.product_id === product.product_id,
@@ -152,7 +157,10 @@ export class CartsService {
       where: { user: { user_id } },
       relations: {
         cartDetails: {
-          product: { images: true },
+          product: {
+            images: true,
+            category: true,
+          },
         },
         coupon: true,
         user: true,
@@ -239,7 +247,7 @@ export class CartsService {
 
     const now = new Date();
 
-    if (now < coupon.start_date || now > coupon.end_date) {
+    if (!coupon.is_active || now < coupon.start_date || now > coupon.end_date) {
       throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
     }
 

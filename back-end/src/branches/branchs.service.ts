@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,7 +15,7 @@ export class BranchsService {
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     @InjectRepository(Stock) private stockRepository: Repository<Stock>,
-  ) {}
+  ) { }
 
   async create(createBranchDto: CreateBranchDto) {
     const branch = this.branchRepository.create(createBranchDto);
@@ -36,22 +36,30 @@ export class BranchsService {
     return savedBranch;
   }
 
-  async findAll(page: number, limit: number, search?: string) {
+  async findAll(page: number, limit: number, search?: string, onlyActive?: boolean) {
     const skip = (page - 1) * limit;
 
-    const where = search
+    let where: any = search
       ? [
-          { branch_name: Like(`%${search}%`) },
-          // { address: Like(`%${search}%`) },
-          // { status: Like(`%${search}%`) },
-        ]
+        { branch_name: Like(`%${search}%`) },
+        // { address: Like(`%${search}%`) },
+        // { status: Like(`%${search}%`) },
+      ]
       : {};
+
+    if (onlyActive) {
+      if (Array.isArray(where)) {
+        where = where.map((w) => ({ ...w, is_active: true }));
+      } else {
+        where.is_active = true;
+      }
+    }
 
     const [data, total] = await this.branchRepository.findAndCount({
       where,
       skip: skip,
       take: limit,
-      order: { branch_name: 'ASC' },
+      order: { is_active: 'DESC', branch_name: 'ASC' },
     });
 
     return {
@@ -73,7 +81,18 @@ export class BranchsService {
     return this.findOne(id);
   }
 
-  async remove(id: number) {
-    return await this.branchRepository.delete(id);
+
+  async toggleActive(branch_id: number) {
+    const branch = await this.branchRepository.findOne({
+      where: { branch_id },
+    });
+
+    if (!branch) {
+      throw new NotFoundException('Branch not found');
+    }
+
+    branch.is_active = !branch.is_active;
+
+    return await this.branchRepository.save(branch);
   }
 }

@@ -22,6 +22,9 @@ export class Category {
   @UpdateDateColumn()
   updated_at: Date;
 
+  @Column({ default: true })
+  is_active: boolean;
+
   @OneToMany(() => Product, (products) => products.category)
   products: Product[];
 }

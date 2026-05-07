@@ -24,8 +24,8 @@ const checkbox = ref<number[]>([])
 const sliderKey = ref(0)
 
 onMounted(async () => {
-  await productStore.getProducts(1, 1000)
-  await categoryStore.getCategories()
+  await productStore.getProducts(1, 1000, '', true)
+  await categoryStore.getCategories(true)
 })
 
 
@@ -36,12 +36,16 @@ const filteredProducts = computed(() => {
   )
 })
 
+const activeProducts = computed(() => {
+  return productStore.products.filter(p => p.is_active)
+})
+
 const filteredCategory = computed(() => {
   if (!checkbox.value.length) {
-    return productStore.products
+    return activeProducts.value
   }
 
-  return productStore.products.filter(
+  return activeProducts.value.filter(
     (product) =>
       product.category?.category_id !== undefined &&
       checkbox.value.includes(product.category.category_id),
@@ -138,7 +142,8 @@ const searchProduct = async () => {
           <!-- Categories -->
           <p class="font-semibold text-lg mb-2 pt-2">หมวดหมู่</p>
           <div class="flex flex-wrap lg:flex-col gap-3 lg:gap-1">
-            <div class="p-[5px] flex items-center" v-for="item of categoryStore.categories" :key="item.category_id">
+            <div class="p-[5px] flex items-center" v-for="item of categoryStore.categories.filter(c => c.is_active)"
+              :key="item.category_id">
               <div class="pr-[12px]">
                 <input type="checkbox" :id="`checkbox-${item.category_id}`" class="cursor-pointer scale-150"
                   :value="item.category_id" v-model="checkbox" />
@@ -167,8 +172,8 @@ const searchProduct = async () => {
                 <img
                   class="w-full h-full object-cover pointer-events-none select-none rounded-[5px] transition-all duration-300"
                   :class="{ 'grayscale opacity-60': item.stock_quantity === 0 }"
-                  :src="item.images && item.images.length > 0 ? item.images[0].image : ''" alt="" />
-
+                  :src="item.images && item.images.length > 0 ? item.images[0].image.replace('w_400', 'w_200') : ''"
+                  alt="" loading="lazy" />
 
 
               </div>

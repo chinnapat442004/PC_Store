@@ -8,6 +8,7 @@ import { useCouponStore } from '@/stores/coupon'
 import { formatThaiDate } from '@/utils/formatDate'
 import { formatDiscount } from '@/utils/formatDiscount'
 import type { Coupon } from '@/types/Coupon'
+import ToggleSwitch from '@/components/ToggleSwitch.vue'
 
 const loadingStore = useLoadingStore()
 const couponStore = useCouponStore()
@@ -15,7 +16,6 @@ const couponStore = useCouponStore()
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
-const deleteConfirm = ref(false)
 
 onMounted(async () => {
     await couponStore.getCoupons()
@@ -81,10 +81,6 @@ function getStatusClass(coupon: Coupon) {
     return 'bg-green-100 text-green-600'
 }
 
-async function toggleActive(id: number) {
-    await couponStore.toggleCouponStatus(id)
-    await couponStore.getCoupons()
-}
 </script>
 
 <template>
@@ -124,6 +120,7 @@ async function toggleActive(id: number) {
                     <th class="px-3 py-3">สถานะ</th>
                     <th class="px-3 py-3">เปิดใช้งาน</th>
                     <th class="pl-3 pr-6 py-3 text-center">จัดการ</th>
+
                 </tr>
             </thead>
 
@@ -169,17 +166,8 @@ async function toggleActive(id: number) {
                     </td>
 
                     <td class="px-3 py-3">
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer" :checked="coupon.is_active"
-                                @change="toggleActive(coupon.coupon_id)">
-                            <div
-                                class="w-10 h-5 bg-gray-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#637aad]">
-                            </div>
-                            <span class="ml-2 text-sm font-medium"
-                                :class="coupon.is_active ? 'text-gray-900' : 'text-gray-400'">
-                                {{ coupon.is_active ? 'เปิด' : 'ปิด' }}
-                            </span>
-                        </label>
+                        <ToggleSwitch :modelValue="coupon.is_active"
+                            @update:modelValue="couponStore.toggleCouponActive(coupon.coupon_id).then(() => couponStore.getCoupons())" />
                     </td>
 
                     <td class="pl-3 pr-6 py-3 flex justify-center space-x-3">
@@ -266,10 +254,7 @@ async function toggleActive(id: number) {
                 </div>
             </div>
 
-            <div class="mb-4 flex items-center gap-2">
-                <input type="checkbox" v-model="couponStore.editedCoupon.is_active" />
-                <label>เปิดใช้งาน</label>
-            </div>
+
 
             <div class="flex justify-center gap-4">
                 <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">

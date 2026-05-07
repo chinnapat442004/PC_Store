@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
@@ -10,14 +10,17 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
-  ) {}
+  ) { }
 
   async create(createCategoryDto: CreateCategoryDto) {
     const category = this.categoryRepository.create(createCategoryDto);
     return await this.categoryRepository.save(category);
   }
 
-  async findAll() {
+  async findAll(onlyActive?: boolean) {
+    if (onlyActive) {
+      return await this.categoryRepository.find({ where: { is_active: true } });
+    }
     return await this.categoryRepository.find();
   }
 
@@ -37,11 +40,18 @@ export class CategoryService {
     return await this.categoryRepository.save(category);
   }
 
-  async remove(category_id: number) {
+
+  async toggleActive(category_id: number) {
     const category = await this.categoryRepository.findOne({
       where: { category_id },
     });
 
-    await this.categoryRepository.remove(category);
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    category.is_active = !category.is_active;
+
+    return await this.categoryRepository.save(category);
   }
 }

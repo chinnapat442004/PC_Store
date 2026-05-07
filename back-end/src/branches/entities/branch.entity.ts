@@ -26,6 +26,9 @@ export class Branch {
   })
   status: BranchStatus;
 
+  @Column({ default: true })
+  is_active: boolean;
+
   @Column({ type: 'real' })
   lat: number;
 

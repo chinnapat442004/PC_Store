@@ -6,6 +6,8 @@ import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useShipmentStore } from '@/stores/shipment'
 import type { Shipment } from '@/types/Shipment'
+import StatusBadge from '@/components/StatusBadge.vue'
+import ToggleSwitch from '@/components/ToggleSwitch.vue'
 
 const loadingStore = useLoadingStore()
 const shimpentStore = useShipmentStore()
@@ -13,7 +15,6 @@ const shimpentStore = useShipmentStore()
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
-const deleteConfirm = ref(false)
 
 const mode = ref<'create' | 'edit'>('create')
 
@@ -27,9 +28,6 @@ const openEdit = (item: Shipment) => {
   showDialog.value = true
 }
 
-const openDelete = () => {
-  deleteConfirm.value = true
-}
 
 const closeDialog = () => {
   showDialog.value = false
@@ -78,6 +76,8 @@ const saveShipment = async () => {
       <thead class="bg-[#383838] text-gray-300 text-sm">
         <tr>
           <th class="px-6 py-3">ผู้ให้บริการขนส่ง</th>
+          <th class="px-6 py-3 text-center">สถานะ</th>
+          <th class="px-3 py-3 text-center">เปิดใช้งาน</th>
           <th class="px-6 py-3 text-center">จัดการ</th>
         </tr>
       </thead>
@@ -94,13 +94,17 @@ const saveShipment = async () => {
 
           <td class="px-6 py-2">{{ shipment.name }}</td>
 
-          <td class="px-6 py-3 flex justify-center space-x-2">
-            <button @click="openEdit(shipment)">
-              <span class="pi pi-pencil"></span>
-            </button>
+          <td class="px-6 py-2 text-center">
+            <StatusBadge :modelValue="shipment.is_active" />
+          </td>
 
-            <button @click="openDelete()">
-              <span class="pi pi-trash"></span>
+          <td class="px-6 py-2 text-center">
+            <ToggleSwitch :modelValue="shipment.is_active"
+              @update:modelValue="shimpentStore.toggleShipmentActive(shipment).then(() => shimpentStore.getShipments())" />
+          </td>
+          <td class="px-6 py-3 flex justify-center space-x-2">
+            <button @click="openEdit(shipment)" class="edit-btn">
+              <span class="pi pi-pencil"></span>
             </button>
           </td>
         </tr>
@@ -136,7 +140,6 @@ const saveShipment = async () => {
   <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
     @cancel="showConfirm = false" @confirm="saveShipment()" />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้ใช่หรือไม่" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

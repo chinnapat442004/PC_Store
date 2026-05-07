@@ -9,6 +9,8 @@ import LoadingComponent from '@/components/LoadingComponent.vue'
 import { computed } from 'vue'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
+import StatusBadge from '@/components/StatusBadge.vue'
+import ToggleSwitch from '@/components/ToggleSwitch.vue'
 
 const loadingStore = useLoadingStore()
 const userStore = useUserStore()
@@ -142,7 +144,7 @@ const saveUser = async () => {
       name: nameEdit.value,
       email: emailEdit.value,
       password: passwordEdit.value,
-       enabled: userStore.editedUser?.enabled
+
     }
     await userStore.updateUserByAdmin(payload)
   }
@@ -239,8 +241,9 @@ const preSave = async () => {
           <th class="px-6 py-3">ชื่อผู้ใช้</th>
           <th class="px-6 py-3">อีเมล</th>
           <th class="px-6 py-3">บทบาท</th>
-          <th class="px-6 py-3">สถานะ</th>
           <th class="px-6 py-3">สาขา</th>
+          <th class="px-6 py-3">สถานะการใช้งาน</th>
+          <th class="px-3 py-3">เปิดใช้งาน</th>
           <th class="px-6 py-3 text-center">จัดการ</th>
         </tr>
       </thead>
@@ -256,9 +259,17 @@ const preSave = async () => {
           <td class="px-6 py-1">{{ user.name }}</td>
           <td class="px-6 py-1">{{ user.email }}</td>
           <td class="px-6 py-1">{{ user.role }}</td>
-          <td class="px-6 py-1">{{ user.enabled }}</td>
-          <td v-if="user.branch" class="px-6 py-1">{{ user.branch.branch_name }}</td>
 
+          <td v-if="user.branch" class="px-6 py-1">{{ user.branch.branch_name }}</td>
+          <td class="px-6 py-2 text-center">
+            <StatusBadge :modelValue="user.is_active" />
+          </td>
+
+          <td>
+
+            <ToggleSwitch :modelValue="user.is_active"
+              @update:modelValue="userStore.toggleUserActive(user.user_id).then(() => userStore.getUsers())" />
+          </td>
           <td class="px-6 py-3 flex justify-center space-x-2">
             <button class="edit-btn" @click="openEdit(user)">
               <span class="pi pi-pencil"></span>
@@ -350,13 +361,7 @@ const preSave = async () => {
           </div>
         </div>
 
-        <div class="mb-4">
-          <label class="text-sm font-medium">สถานะ</label>
-          <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded bg-gray-50">
-            <option :value="true">เปิดใช้งาน</option>
-            <option :value="false">ปิดใช้งาน</option>
-          </select>
-        </div>
+
       </template>
 
       <div class="flex justify-center gap-4">

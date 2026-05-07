@@ -19,6 +19,10 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
+    if (!user.is_active) {
+      throw new UnauthorizedException('บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
+    }
+
     if (user.password !== pass) {
       throw new UnauthorizedException('Incorrect password');
     }

@@ -16,7 +16,7 @@ export class StockService {
     private movementRepository: Repository<StockMovement>,
 
     private dataSource: DataSource,
-  ) {}
+  ) { }
 
   async getStock(
     branch_id: number,
@@ -61,6 +61,7 @@ export class StockService {
         product_price: stock.product.price,
         image: stock.product.images?.[0]?.image ?? null,
         status_label: stockStatus,
+        is_active: stock.product.is_active
       };
     });
 

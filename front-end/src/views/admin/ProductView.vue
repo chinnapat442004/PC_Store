@@ -13,6 +13,8 @@ import {
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
+import StatusBadge from '@/components/StatusBadge.vue'
+import ToggleSwitch from '@/components/ToggleSwitch.vue'
 const loadingStore = useLoadingStore()
 const productStore = useProductStore()
 const categoryStore = useCategoryStore()
@@ -20,7 +22,6 @@ const categoryStore = useCategoryStore()
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
-const deleteConfirm = ref(false)
 const previewImage = ref<string | null>(null);
 const mode = ref<'create' | 'edit'>('create')
 const editingId = ref<number | null>(null)
@@ -29,7 +30,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 
 onMounted(async () => {
   await productStore.getProducts()
-  await categoryStore.getCategories()
+  await categoryStore.getCategories(true)
 })
 
 watch(selectedCategory, (val) => {
@@ -125,24 +126,6 @@ const searchProduct = async () => {
   await productStore.getProducts()
 }
 
-const openDelete = (item: Product) => {
-  deleteConfirm.value = true
-  editingId.value = item.product_id
-}
-
-const removeItem = async () => {
-  if (!editingId.value) return
-
-  await productStore.deleteProduct(editingId.value)
-
-  deleteConfirm.value = false
-  editingId.value = null
-}
-
-const closeDialogDelete = () => {
-  deleteConfirm.value = false
-  editingId.value = null
-}
 
 const handleFileUpload = (event: Event) => {
   const input = event.target as HTMLInputElement
@@ -200,6 +183,8 @@ const removeImage = () => {
           <th class="px-6 py-3">รายละเอียด</th>
           <th class="px-6 py-3">หมวดหมู่</th>
           <th class="px-6 py-3">ราคา</th>
+          <th class="px-6 py-3 text-center">สถานะ</th>
+          <th class="px-3 py-3">เปิดใช้งาน</th>
           <th class="px-6 py-3 text-center">จัดการ</th>
         </tr>
       </thead>
@@ -218,17 +203,25 @@ const removeImage = () => {
           <td class="px-6 py-1">
             {{ product.category?.name }}
           </td>
-          <td class="px-6 py-1">{{ product.price }}</td>
+          <td class="px-6 py-1">
+            {{ product.price }}
+          </td>
+          <td class="px-6 py-2 text-center">
+            <StatusBadge :modelValue="product.is_active" />
+          </td>
+
 
           <td class="px-6 py-1 align-middle">
-            <div class="flex justify-center items-center space-x-2">
+            <ToggleSwitch :modelValue="product.is_active"
+              @update:modelValue="productStore.toggleProductActive(product.product_id).then(() => productStore.getProducts())" />
+          </td>
+          <td class="px-6 py-1 align-middle">
+            <div class="flex justify-center items-center space-x-4">
               <button class="edit-btn" @click="openEdit(product)">
                 <span class="pi pi-pencil"></span>
               </button>
 
-              <button class="delete-btn" @click="openDelete(product)">
-                <span class="pi pi-trash"></span>
-              </button>
+
             </div>
           </td>
         </tr>
@@ -350,8 +343,6 @@ const removeImage = () => {
   <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
     @confirm="saveProduct()" @cancel="showConfirm = false" />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้ใช่หรือไม่" @confirm="removeItem"
-    @cancel="closeDialogDelete()" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

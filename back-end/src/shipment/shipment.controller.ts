@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   Patch,
-  Delete,
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
@@ -23,8 +22,11 @@ export class ShipmentController {
   }
 
   @Get()
-  findAll(@Query('search') search?: string) {
-    return this.shipmentService.findAll(search);
+  findAll(
+    @Query('search') search?: string,
+    @Query('onlyActive') onlyActive?: string,
+  ) {
+    return this.shipmentService.findAll(search, onlyActive === 'true');
   }
 
   @Get(':id')
@@ -40,8 +42,9 @@ export class ShipmentController {
     return this.shipmentService.update(id, body);
   }
 
-  @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.shipmentService.remove(id);
+
+  @Patch(':id/toggle-active')
+  toggleActive(@Param('id', ParseIntPipe) id: number) {
+    return this.shipmentService.toggleActive(id);
   }
 }

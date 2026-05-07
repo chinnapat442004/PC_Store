@@ -4,7 +4,7 @@ import { useCartStore } from '../stores/cart'
 import type { CartDetail } from '../types/CartDetail'
 import { trash } from 'ionicons/icons'
 import { IonIcon } from '@ionic/vue'
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useLoadingStore } from '@/stores/loading'
@@ -83,7 +83,14 @@ async function remove(cartDetail: CartDetail) {
   }
 }
 
+const hasInvalidItems = computed(() => {
+  return cartStore.cart?.cartDetails?.some(
+    (detail) => !detail.product.is_active
+  )
+})
+
 const goToCheckout = () => {
+  if (hasInvalidItems.value) return
   router.push({ name: 'checkout' })
 }
 
@@ -100,48 +107,56 @@ async function clearCart() {
 
     <div class="max-w-[750px] w-full min-w-[300px] flex flex-col gap-3 h-full ">
       <div v-for="detail in cartStore.cart?.cartDetails" :key="detail.cart_detail_id"
-        class="p-3 bg-white rounded-[10px] h-auto flex sm:h-[120px]  md:px-[10px] lg:px-[30px] mx-auto w-full">
+        class="p-3 bg-white rounded-[10px] h-auto flex flex-col sm:flex-row md:px-[10px] lg:px-[30px] mx-auto w-full relative"
+        :class="{ 'opacity-70 grayscale': !detail.product.is_active }">
 
-        <img :src="detail.product.images[0]?.image" alt=""
-          class="w-[100px] h-[100px] object-cover rounded-md border " />
+        <div v-if="!detail.product.is_active"
+          class="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-2 py-1 rounded-full z-10">
+          สินค้านี้เลิกจำหน่ายแล้ว
+        </div>
 
-        <div class="w-full pt-2 pb-4 px-7 flex flex-col justify-around gap-3 sm:gap-0">
-          <div class="flex justify-between items-center">
-            <div class="font-medium">{{ detail.product.title }}</div>
-            <div class="flex transition-transform duration-500 ease-in-out justify-center items-center">
-              <div class="font-medium text-red-400 text-sm md:text-base">฿{{ detail.price }} </div>
-            </div>
-          </div>
+        <div class="flex flex-row w-full h-full">
+          <img :src="detail.product.images[0]?.image" alt=""
+            class="w-[100px] h-[100px] object-cover rounded-md border " />
 
-          <div class="flex flex-row  justify-between gap-3 sm:gap-0">
-
-
-            <div class="flex items-center gap-4 bg-gray-100 px-2 py-1 rounded-lg">
-              <button
-                class="rounded-md flex justify-center items-center text-white h-[27px] w-[27px] bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95"
-                @click="minus(detail)">
-                <span class="mb-1">-</span>
-              </button>
-
-              <div class="text-[10px] md:text-[14px] font-medium min-w-[30px] text-center">{{ detail.quantity }}</div>
-
-              <button
-                class="rounded-md flex justify-center items-center  h-[27px] w-[27px] text-white bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95"
-                @click="plus(detail)">
-                <span class="mb-1">+</span>
-              </button>
-            </div>
-
-
-            <div class="flex gap-4 items-center">
+          <div class="w-full pt-2 pb-4 px-7 flex flex-col justify-around gap-3 sm:gap-0">
+            <div class="flex justify-between items-center">
+              <div class="font-medium">{{ detail.product.title }}</div>
               <div class="flex transition-transform duration-500 ease-in-out justify-center items-center">
-                <button class="bg-[#da6969] w-[30px] h-[30px] text-white rounded-[5px] hover:bg-[#d94f4f]"
-                  @click="remove(detail)">
-                  <IonIcon class="" :icon="trash" />
+                <div class="font-medium text-red-400 text-sm md:text-base">฿{{ detail.price }} </div>
+              </div>
+            </div>
+
+            <div class="flex flex-row  justify-between gap-3 sm:gap-0">
+
+
+              <div class="flex items-center gap-4 bg-gray-100 px-2 py-1 rounded-lg">
+                <button
+                  class="rounded-md flex justify-center items-center text-white h-[27px] w-[27px] bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95 disabled:opacity-50"
+                  @click="minus(detail)" :disabled="!detail.product.is_active">
+                  <span class="mb-1">-</span>
+                </button>
+
+                <div class="text-[10px] md:text-[14px] font-medium min-w-[30px] text-center">{{ detail.quantity }}</div>
+
+                <button
+                  class="rounded-md flex justify-center items-center  h-[27px] w-[27px] text-white bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95 disabled:opacity-50"
+                  @click="plus(detail)" :disabled="!detail.product.is_active">
+                  <span class="mb-1">+</span>
                 </button>
               </div>
 
 
+              <div class="flex gap-4 items-center">
+                <div class="flex transition-transform duration-500 ease-in-out justify-center items-center">
+                  <button class="bg-[#da6969] w-[30px] h-[30px] text-white rounded-[5px] hover:bg-[#d94f4f]"
+                    @click="remove(detail)">
+                    <IonIcon class="" :icon="trash" />
+                  </button>
+                </div>
+
+
+              </div>
             </div>
           </div>
         </div>
@@ -169,12 +184,13 @@ async function clearCart() {
         <div>฿{{ cartStore.cart?.total }}</div>
       </div>
       <div class="flex flex-col gap-3 mt-[15px]">
-        <button class="bg-[#82d182] w-full h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
-          @click="goToCheckout">
-          ดำเนินการต่อ
+        <button class="w-full h-[35px] rounded-[10px] text-white font-medium transition-colors"
+          :class="hasInvalidItems ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#82d182] hover:bg-[#69c769]'"
+          @click="goToCheckout" :disabled="hasInvalidItems">
+          {{ hasInvalidItems ? 'กรุณาลบสินค้าที่เลิกจำหน่าย' : 'ดำเนินการต่อ' }}
         </button>
 
-        <button class="w-full h-[35px] rounded-[10px] font-mediumtext-sm border hover:bg-gray-100" @click="clearCart">
+        <button class="w-full h-[35px] rounded-[10px] font-medium text-sm border hover:bg-gray-100" @click="clearCart">
           ล้างตะกร้า
         </button>
       </div>

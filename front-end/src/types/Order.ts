@@ -17,6 +17,7 @@ export type OrderStatus =
 type CreateOrder = {
     payment_method: PaymentMethod;
     coupon_code?: string
+    shipment_id?: number
 
     items?: {
         product_id: number;

@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Query,
 } from '@nestjs/common';
 import { CouponService } from './coupon.service';
@@ -26,8 +25,9 @@ export class CouponController {
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('search') search?: string,
+    @Query('onlyActive') onlyActive?: string,
   ) {
-    return this.couponService.findAll(+page, +limit, search);
+    return this.couponService.findAll(+page, +limit, search, onlyActive === 'true');
   }
 
   @Get(':id')
@@ -40,9 +40,8 @@ export class CouponController {
     return this.couponService.update(+id, updateCouponDto);
   }
 
-  @Patch(':id/toggle')
-  toggleCoupon(@Param('id') id: number) {
-    console.log(id);
+  @Patch(':id/toggle-active')
+  toggleActive(@Param('id') id: string) {
     return this.couponService.toggleActive(+id);
   }
 }

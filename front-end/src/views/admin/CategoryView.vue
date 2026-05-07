@@ -6,6 +6,8 @@ import type { Category } from '@/types/Category'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useCategoryStore } from '@/stores/category'
+import StatusBadge from '@/components/StatusBadge.vue'
+import ToggleSwitch from '@/components/ToggleSwitch.vue'
 
 const loadingStore = useLoadingStore()
 const categoryStore = useCategoryStore()
@@ -13,7 +15,7 @@ const categoryStore = useCategoryStore()
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
-const deleteConfirm = ref(false)
+
 
 onMounted(async () => {
   await categoryStore.getCategories()
@@ -23,7 +25,10 @@ const mode = ref<'create' | 'edit'>('create')
 
 const openEdit = (category: Category) => {
   mode.value = 'edit'
-  categoryStore.editedCategory = { ...category }
+  categoryStore.editedCategory = {
+    category_id: category.category_id,
+    name: category.name,
+  }
   showDialog.value = true
 }
 
@@ -50,25 +55,15 @@ const openCreateDialog = () => {
   showDialog.value = true
 }
 
-const removeItem = async (category: Category) => {
-  await categoryStore.deleteCategory(category.category_id!)
-  await categoryStore.getCategories()
-  categoryStore.resetForm()
-}
+
 
 const searchCategory = async () => {
   await categoryStore.getCategories()
 }
 
-const openDelete = (item: Category) => {
-  deleteConfirm.value = true
-  categoryStore.editedCategory = item
-}
 
-const closeDialogDelete = () => {
-  deleteConfirm.value = false
-  categoryStore.resetForm()
-}
+
+
 
 const clearSearch = async () => {
   search.value = ''
@@ -104,8 +99,21 @@ const clearSearch = async () => {
     <table class="w-full text-left text-black">
       <thead class="bg-[#383838] text-gray-300 text-sm">
         <tr>
-          <th class="px-6 py-3">หมวดหมู่ </th>
-          <th class="px-6 py-3 text-center">จัดการ</th>
+          <th class="px-6 py-3 text-left w-[40%]">
+            หมวดหมู่
+          </th>
+
+          <th class="px-6 py-3 text-center w-[20%]">
+            สถานะ
+          </th>
+
+          <th class="px-3 py-3 text-center w-[20%]">
+            เปิดใช้งาน
+          </th>
+
+          <th class="px-6 py-3 text-center w-[20%]">
+            จัดการ
+          </th>
         </tr>
       </thead>
 
@@ -118,22 +126,26 @@ const clearSearch = async () => {
         </tr>
 
         <tr v-else v-for="category in categoryStore.categories" :key="category.category_id">
-          <td class="px-6 py-2">{{ category.name }}</td>
-
-          <td class="px-6 py-3 flex justify-center space-x-2">
-            <button @click="openEdit(category)">
+          <td class="px-6 py-2  w-[70%]">{{ category.name }}</td>
+          <td class="px-6 py-2 text-center  w-[10%]">
+            <StatusBadge :modelValue="category.is_active" />
+          </td>
+          <td class="px-6 py-2 text-center  w-[10%]">
+            <ToggleSwitch :modelValue="category.is_active"
+              @update:modelValue="categoryStore.toggleCategoryActive(category).then(() => categoryStore.getCategories())" />
+          </td>
+          <td class="px-6 py-2 text-center  w-[10%]">
+            <button @click="openEdit(category)" class="edit-btn">
               <span class="pi pi-pencil"></span>
             </button>
-
-            <button @click="openDelete(category)">
-              <span class="pi pi-trash"></span>
-            </button>
           </td>
+
         </tr>
 
       </tbody>
     </table>
   </div>
+
 
   <div v-if="showDialog" class="overlay">
     <div class="dialog">
@@ -162,8 +174,6 @@ const clearSearch = async () => {
   <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
     @confirm="saveCategory" @cancel="showConfirm = false" />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้ใช่หรือไม่"
-    @confirm="removeItem(categoryStore.editedCategory)" @cancel="closeDialogDelete" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

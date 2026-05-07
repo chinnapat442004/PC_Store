@@ -48,7 +48,7 @@ export class UserService {
 
     const user = new User();
     user.email = createUserDto.email;
-    user.enabled = true;
+    user.is_active = true;
 
     user.name = createUserDto.name;
     user.password = createUserDto.password;
@@ -91,7 +91,7 @@ export class UserService {
     user.name = createUserDto.name;
 
     user.role = Role.CUSTOMER;
-    user.enabled = true;
+    user.is_active = true;
 
     const savedUser = await this.userRepository.save(user);
     delete savedUser.password;
@@ -174,9 +174,7 @@ export class UserService {
       user.email = updateUserDto.email;
     }
 
-    if (updateUserDto.enabled !== undefined) {
-      user.enabled = updateUserDto.enabled;
-    }
+
 
     if (updateUserDto.name) {
       user.name = updateUserDto.name;
@@ -276,7 +274,8 @@ export class UserService {
       skip,
       take: limit,
       order: {
-        user_id: 'DESC',
+
+        is_active: 'DESC', user_id: 'DESC'
       },
     });
 
@@ -339,4 +338,28 @@ export class UserService {
       },
     });
   }
+
+
+  async toggleUserActive(user_id: number, currentUser: User) {
+    const user = await this.userRepository.findOne({
+      where: { user_id },
+      relations: { branch: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.ensureCanManage(currentUser, user);
+
+    user.is_active = !user.is_active;
+
+    const updatedUser = await this.userRepository.save(user);
+
+    delete updatedUser.password;
+
+    return updatedUser;
+  }
 }
+
+

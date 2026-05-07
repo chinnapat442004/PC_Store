@@ -8,13 +8,14 @@ import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { computed } from 'vue'
 import { useBranchStore } from '@/stores/branch'
+import StatusBadge from '@/components/StatusBadge.vue'
+import ToggleSwitch from '@/components/ToggleSwitch.vue'
 
 const loadingStore = useLoadingStore()
 const userStore = useUserStore()
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
-const deleteConfirm = ref(false)
 
 const branchStore = useBranchStore()
 import { useForm } from 'vee-validate'
@@ -142,7 +143,7 @@ const saveUser = async () => {
         name: nameEdit.value,
         email: emailEdit.value,
         password: passwordEdit.value,
-        enabled: userStore.editedUser?.enabled,
+        is_active: userStore.editedUser?.is_active,
       }
 
       await userStore.updateUserByAdmin(payload)
@@ -167,7 +168,7 @@ const closeDialog = () => {
 
 const openCreateDialog = async () => {
   mode.value = 'create'
-  await branchStore.getBranches()
+  await branchStore.getBranches(1, 100, '', true)
   resetFormCreate()
   if (authStore.user?.role === 'manager' && authStore.user.branch) {
     setFieldValueCreate('branch_id', authStore.user.branch.branch_id)
@@ -192,11 +193,6 @@ const prevPage = async () => {
 const searchUser = async () => {
   userStore.search = search.value
   await userStore.getUsers()
-}
-
-const closeDialogDelete = async () => {
-  deleteConfirm.value = false
-  userStore.clearUser()
 }
 
 const clearSearch = async () => {
@@ -238,8 +234,9 @@ const clearSearch = async () => {
           <th class="px-6 py-3">ชื่อผู้ใช้</th>
           <th class="px-6 py-3">อีเมล</th>
           <th class="px-6 py-3">บทบาท</th>
-          <th class="px-6 py-3">สถานะการใช้งาน</th>
           <th class="px-6 py-3">สาขา</th>
+          <th class="px-6 py-3">สถานะการใช้งาน</th>
+          <th class="px-3 py-3">เปิดใช้งาน</th>
           <th class="px-6 py-3 text-center">จัดการ</th>
         </tr>
       </thead>
@@ -255,14 +252,23 @@ const clearSearch = async () => {
           <td class="px-6 py-1">{{ user.name }}</td>
           <td class="px-6 py-1">{{ user.email }}</td>
           <td class="px-6 py-1">{{ user.role }}</td>
-          <td class="px-6 py-1">{{ user.enabled }}</td>
-          <td v-if="user.branch" class="px-6 py-1">{{ user.branch.branch_name }}</td>
 
-          <td class="px-6 py-3 flex justify-center space-x-2">
+          <td v-if="user.branch" class="px-6 py-1">{{ user.branch.branch_name }}</td>
+          <td class="px-6 py-2 text-center">
+            <StatusBadge :modelValue="user.is_active" />
+          </td>
+
+          <td>
+
+            <ToggleSwitch :modelValue="user.is_active"
+              @update:modelValue="userStore.toggleUserActive(user.user_id).then(() => userStore.getUsers())" />
+          </td>
+          <td class="px-6 py-3 flex justify-center space-x-4">
             <button class="edit-btn" @click="openEdit(user)">
               <span class="pi pi-pencil"></span>
             </button>
           </td>
+
         </tr>
       </tbody>
     </table>
@@ -364,13 +370,7 @@ const clearSearch = async () => {
             class="border w-full px-3 py-2 rounded bg-gray-100 cursor-not-allowed" readonly />
         </div>
 
-        <div class="mb-4">
-          <label class="text-sm font-medium">สถานะ</label>
-          <select v-model="userStore.editedUser.enabled" class="border w-full px-3 py-2 rounded bg-gray-50">
-            <option :value="true">เปิดใช้งาน</option>
-            <option :value="false">ปิดใช้งาน</option>
-          </select>
-        </div>
+
       </template>
 
       <div class="flex justify-center gap-4">
@@ -388,8 +388,6 @@ const clearSearch = async () => {
   <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่" @confirm="saveUser()"
     @cancel="showConfirm = false" />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้ใช่หรือไม่"
-    @cancel="closeDialogDelete()" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

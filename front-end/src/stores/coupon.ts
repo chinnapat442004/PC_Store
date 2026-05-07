@@ -65,13 +65,30 @@ export const useCouponStore = defineStore('coupon', () => {
 
     }
 
-    function toggleCouponStatus(id: number) {
+   async function toggleCouponActive(coupon_id: number) {
+    try {
+      const res = await couponService.toggleActive(coupon_id)
 
-        return couponService.toggleCouponStatus(id)
+      coupons.value = coupons.value.map((coupon) => {
+        if (coupon.coupon_id === coupon_id) {
+          return {
+            ...coupon,
+            is_active: res.data.is_active,
+          }
+        }
+
+        return coupon
+      })
+
+      return res
+    } catch (error) {
+      console.error(error)
+      throw error
     }
+  }
 
 
     return {
-        getCoupons, setEditCoupon, cerateCoupon, editCoupon, toggleCouponStatus, editedCoupon, coupons
+        getCoupons, setEditCoupon, cerateCoupon, editCoupon, toggleCouponActive, editedCoupon, coupons
     }
 })

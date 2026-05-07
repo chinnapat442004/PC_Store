@@ -22,9 +22,9 @@ export const useBranchStore = defineStore('branch', () => {
 
   const editedBranch = ref(<Branch>structuredClone(initialBranch))
 
-  async function getBranches(p = page.value, l = limit.value, s = search.value) {
+  async function getBranches(p = page.value, l = limit.value, s = search.value, onlyActive = false) {
     loadingStore.doLoad()
-    const res = await branchService.getBranches(p, l, s)
+    const res = await branchService.getBranches(p, l, s, onlyActive)
 
     branches.value = res.data.data
     page.value = res.data.page
@@ -43,9 +43,27 @@ export const useBranchStore = defineStore('branch', () => {
     await getBranches()
   }
 
-  async function removeBranch(branch: Branch) {
-    await branchService.deleteBranch(branch)
-    await getBranches()
+
+  async function toggleBranchActive(branch_id: number) {
+    try {
+      const res = await branchService.toggleBranchActive(branch_id)
+
+      branches.value = branches.value.map((branch) => {
+        if (branch.branch_id === branch_id) {
+          return {
+            ...branch,
+            is_active: res.data.is_active,
+          }
+        }
+
+        return branch
+      })
+
+      return res
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 
   function clearBranch() {
@@ -63,7 +81,7 @@ export const useBranchStore = defineStore('branch', () => {
     getBranches,
     addBranch,
     updateBranch,
-    removeBranch,
+    toggleBranchActive,
     clearBranch,
   }
 })

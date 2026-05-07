@@ -163,7 +163,16 @@ const updateStock = async () => {
             <img :src="stock.image" alt="" class="h-32 w-32 object-cover rounded" />
           </td>
 
-          <td class="px-6 py-1">{{ stock.product_title }}</td>
+          <td class="px-6 py-1">
+            <div class="flex items-center gap-2">
+              <span>{{ stock.product_title }}</span>
+
+              <span v-if="stock.is_active == false"
+                class="px-2 py-[2px] text-xs font-medium text-red-500 bg-red-500/10 border border-red-500/20 rounded-full">
+                ปิดการใช้งาน
+              </span>
+            </div>
+          </td>
           <td class="px-6 py-1">{{ stock.product_price }}</td>
           <td class="px-6 py-1">{{ stock.quantity }}</td>
 

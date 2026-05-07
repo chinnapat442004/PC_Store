@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Param,
-  Delete,
   UseInterceptors,
   UploadedFiles,
   Query,
@@ -177,8 +176,9 @@ export class ProductsController {
     @Query('page') page = '1',
     @Query('limit') limit = '10',
     @Query('search') search: string,
+    @Query('onlyActive') onlyActive?: string,
   ) {
-    return this.productsService.findAll(+page, +limit, search);
+    return this.productsService.findAll(+page, +limit, search, onlyActive === 'true');
   }
 
   @Get(':id')
@@ -186,8 +186,9 @@ export class ProductsController {
     return this.productsService.findOne(+id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+
+  @Patch(':id/toggle-active')
+  toggleActive(@Param('id') id: string) {
+    return this.productsService.toggleActive(+id);
   }
 }

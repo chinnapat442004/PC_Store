@@ -85,6 +85,18 @@ export class UserController {
     return this.userService.changePassword(req.user.user_id, updatePasswordDto);
   }
 
+  @Patch(':id/toggle-active')
+  toggleUserActive(
+    @Param('id') id: string,
+    @Req() req,
+  ) {
+    return this.userService.toggleUserActive(
+      +id,
+      req.user,
+    );
+  }
+
+
   @Patch(':id')
   @UseGuards(RolesGuard)
   @Roles(Role.ADMIN, Role.MANAGER)

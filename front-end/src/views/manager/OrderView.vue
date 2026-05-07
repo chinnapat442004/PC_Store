@@ -108,7 +108,7 @@ const closeDialog = () => {
         </tr>
         <tr v-for="order in orderStore.orders" :key="order.address_detail">
 
-          <td class="px-6 py-2">{{ order.order_id }}</td>
+          <td class="px-6 py-2">{{ order.order_id }} </td>
           <td class="px-6 py-2">{{ order.fullname }}</td>
           <td class="px-6 py-2">{{ order.payment_method }}</td>
           <td class="px-6 py-2">{{ order.total_amount }}</td>

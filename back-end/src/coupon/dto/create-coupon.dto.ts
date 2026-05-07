@@ -53,7 +53,4 @@ export class CreateCouponDto {
   @Min(0)
   used_count?: number;
 
-  @IsBoolean()
-  @IsOptional()
-  is_active?: boolean;
 }

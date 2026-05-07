@@ -9,6 +9,9 @@ export class Shipment {
   @Column()
   name: string;
 
+  @Column({ default: true })
+  is_active: boolean;
+
   @OneToMany(() => Order, (order) => order.shipment)
   orders: Order[];
 }

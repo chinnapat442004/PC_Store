@@ -14,6 +14,7 @@ type CreateProductPayload = {
 
 type UpdateProductPayload = Partial<CreateProductPayload> & {
   product_id: number
+  is_active?: boolean
 }
 
 type Product = {
@@ -27,6 +28,7 @@ type Product = {
   categoryId: number
   category?: Category
   stock_quantity: number
+  is_active: boolean
 }
 
 export {

@@ -7,7 +7,8 @@ import MapPicker from '@/components/MapPicker.vue'
 import type { Branch } from '@/types/Branch'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
-
+import StatusBadge from '@/components/StatusBadge.vue'
+import ToggleSwitch from '@/components/ToggleSwitch.vue'
 const loadingStore = useLoadingStore()
 const branchStore = useBranchStore()
 
@@ -15,7 +16,6 @@ const mode = ref<'create' | 'edit'>('create')
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
-const deleteConfirm = ref(false)
 
 onMounted(async () => {
   await branchStore.getBranches()
@@ -56,11 +56,6 @@ const setLocation = (location: { lat: number; lng: number }) => {
   branchStore.editedBranch.lng = location.lng
 }
 
-const removeItem = async (branch: Branch) => {
-  await branchStore.removeBranch(branch)
-  await branchStore.getBranches()
-  branchStore.clearBranch()
-}
 
 const nextPage = async () => {
   if (branchStore.page < branchStore.lastPage) {
@@ -81,15 +76,6 @@ const searchBranch = async () => {
   await branchStore.getBranches()
 }
 
-const openDelete = async (item: Branch) => {
-  deleteConfirm.value = true
-  branchStore.editedBranch = item
-}
-
-const closeDialogDelete = async () => {
-  deleteConfirm.value = false
-  branchStore.clearBranch()
-}
 
 const clearSearch = async () => {
   search.value = ''
@@ -130,6 +116,7 @@ const clearSearch = async () => {
           <th class="px-6 py-3">ชื่อสาขา</th>
           <th class="px-6 py-3">ที่อยู่สาขา</th>
           <th class="px-6 py-3">สถานะการใช้งาน</th>
+          <th class="px-3 py-3">เปิดใช้งาน</th>
           <th class="px-6 py-3 text-center">จัดการ</th>
         </tr>
       </thead>
@@ -144,21 +131,19 @@ const clearSearch = async () => {
         <tr v-else v-for="branch in branchStore.branches" :key="branch.branch_id">
           <td class="px-6 py-1">{{ branch.branch_name }}</td>
           <td class="px-6 py-1">{{ branch.address }}</td>
-          <td class="px-6 py-1">
-            <span class="text-white text-sm px-3 py-1 rounded-full inline-block"
-              :class="branch.status === 'active' ? 'bg-green-500' : 'bg-red-500'">
-              {{ branch.status }}
-            </span>
+          <td class="px-6 py-2 text-center">
+            <StatusBadge :modelValue="branch.is_active" />
           </td>
-          <td class="px-6 py-3 flex justify-center space-x-2">
+          <td>
+            <ToggleSwitch :modelValue="branch.is_active"
+              @update:modelValue="branchStore.toggleBranchActive(branch.branch_id).then(() => branchStore.getBranches())" />
+          </td>
+          <td class="px-6 py-3 flex justify-center space-x-4">
             <button class="edit-btn" @click="openEdit(branch)">
               <span class="pi pi-pencil"></span>
             </button>
-
-            <button class="delete-btn" @click="openDelete(branch)">
-              <span class="pi pi-trash"></span>
-            </button>
           </td>
+
         </tr>
       </tbody>
     </table>
@@ -200,13 +185,6 @@ const clearSearch = async () => {
       <MapPicker @update:location="setLocation" :lat="branchStore.editedBranch.lat"
         :lng="branchStore.editedBranch.lng" />
 
-      <div class="mb-4">
-        <label class="block mb-1">สถานะ</label>
-        <select v-model="branchStore.editedBranch.status" class="border w-full px-3 py-2 rounded bg-gray-50">
-          <option value="active">เปิดใช้งาน</option>
-          <option value="inactive">ปิดใช้งาน</option>
-        </select>
-      </div>
 
       <div class="flex justify-center gap-4">
         <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">
@@ -223,8 +201,6 @@ const clearSearch = async () => {
   <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
     @confirm="saveBranch()" @cancel="showConfirm = false" />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้ใช่หรือไม่"
-    @confirm="removeItem(branchStore.editedBranch)" @cancel="closeDialogDelete()" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

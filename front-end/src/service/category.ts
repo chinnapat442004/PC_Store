@@ -1,25 +1,28 @@
-import type { Category } from '@/types/Category'
+import type { CreateCategory } from '@/types/Category'
 import http from './http'
 
-function getCategories() {
-  return http.get('/category')
+function getCategories(onlyActive?: boolean) {
+  return http.get(`/category?onlyActive=${onlyActive || false}`)
 }
 
-function createCategory(data: Category) {
+function createCategory(data: CreateCategory) {
   return http.post('/category', data)
 }
 
-function updateCategory(id: number, data: Category) {
-  return http.put(`/category/${id}`, data)
+function updateCategory(id: number, data: CreateCategory) {
+
+  return http.patch(`/category/${id}`, data)
 }
 
-function deleteCategory(id: number) {
-  return http.delete(`/category/${id}`)
+
+
+function toggleCategoryActive(id: number) {
+  return http.patch(`/category/${id}/toggle-active`)
 }
 
 export default {
   getCategories,
   createCategory,
   updateCategory,
-  deleteCategory,
+  toggleCategoryActive,
 }
