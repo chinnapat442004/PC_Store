@@ -17,14 +17,10 @@ onMounted(async () => {
 })
 
 
-
-
 const goToOrders = (tabKey: string = 'all') => {
       orderStore.activeTab = tabKey
       router.push('/staff/orders')
 }
-
-
 
 </script>
 
