@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const initialCreateUser: CreateUser = {
     email: '',
     password: '',
+    confirm_password: '',
     name: '',
     branch_id: 0
   }

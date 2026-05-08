@@ -28,12 +28,8 @@ onMounted(async () => {
     paymentStore.fetchPaymentQr(orderId)
 })
 
-const fetchOrders = async () => {
-    await orderStore.getOrdersByCustomer(
-        orderStore.page,
-        orderStore.limit,
-        selectedTab?.status
-    )
+const fetchOrderDetail = async () => {
+    await orderStore.getOrderByCustomer(orderId)
 }
 const createUpdatePayload = (status: OrderStatus): UpdateOrder => ({
     status: status
@@ -42,7 +38,7 @@ const createUpdatePayload = (status: OrderStatus): UpdateOrder => ({
 const confirmReceived = async (orderId: number) => {
     try {
         await orderStore.updateStatus(orderId, createUpdatePayload('done'))
-        fetchOrders()
+        await fetchOrderDetail()
     } catch (err) {
         console.error(err)
     }
@@ -51,7 +47,7 @@ const confirmReceived = async (orderId: number) => {
 
 const payOrder = async (orderId: number) => {
     try {
-        fetchOrders()
+        await fetchOrderDetail()
         router.push({
             name: 'payment-confirmation',
             params: { orderId: orderId }
@@ -64,7 +60,7 @@ const payOrder = async (orderId: number) => {
 const cancelOrder = async (orderId: number) => {
     try {
         await orderStore.updateStatus(orderId, { status: 'cancelled' })
-        await fetchOrders()
+        await fetchOrderDetail()
     } catch (err) {
         console.error(err)
     }

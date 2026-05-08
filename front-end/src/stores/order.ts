@@ -31,7 +31,7 @@ export const useOrderStore = defineStore('order', () => {
     const limit = ref(10)
     const lastPage = ref(1)
     const total = ref(0)
-    const status = ref<OrderStatus>()
+    const status = ref<OrderStatus | OrderStatus[]>()
 
 
     const handleOrderResponse = (res: any) => {
@@ -41,7 +41,7 @@ export const useOrderStore = defineStore('order', () => {
         lastPage.value = res.data.lastPage
     }
 
-    async function getOrders(p = page.value, l = limit.value, s = status.value) {
+    async function getOrders(p = page.value, l = limit.value, s: OrderStatus | OrderStatus[] | undefined = status.value) {
         loadingStore.doLoad()
         try {
             const res = s ? await orderService.getOrders(p, l, s) : await orderService.getOrders(p, l)
@@ -51,7 +51,7 @@ export const useOrderStore = defineStore('order', () => {
         }
     }
 
-    async function getOrdersByCustomer(p = page.value, l = limit.value, s = status.value) {
+    async function getOrdersByCustomer(p = page.value, l = limit.value, s: OrderStatus | OrderStatus[] | undefined = status.value) {
         loadingStore.doLoad()
         try {
             const res = s ? await orderService.getOrdersByCustomer(p, l, s) : await orderService.getOrdersByCustomer(p, l)

@@ -136,7 +136,7 @@ const clearSearch = async () => {
           </td>
           <td>
             <ToggleSwitch :modelValue="branch.is_active"
-              @update:modelValue="branchStore.toggleBranchActive(branch.branch_id).then(() => branchStore.getBranches())" />
+              @update:modelValue="branch.branch_id && branchStore.toggleBranchActive(branch.branch_id).then(() => branchStore.getBranches())" />
           </td>
           <td class="px-6 py-3 flex justify-center space-x-4">
             <button class="edit-btn" @click="openEdit(branch)">
@@ -181,10 +181,10 @@ const clearSearch = async () => {
         <input v-model="branchStore.editedBranch.address" type="text" class="border w-full px-3 py-2 rounded bg-gray-50"
           placeholder="กรอกที่อยู่" />
       </div>
-
-      <MapPicker @update:location="setLocation" :lat="branchStore.editedBranch.lat"
-        :lng="branchStore.editedBranch.lng" />
-
+      <div class="mb-3">
+        <MapPicker @update:location="setLocation" :lat="branchStore.editedBranch.lat"
+          :lng="branchStore.editedBranch.lng" />
+      </div>
 
       <div class="flex justify-center gap-4">
         <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">

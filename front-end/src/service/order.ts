@@ -1,7 +1,7 @@
 import type { CreateOrder, OrderStatus, UpdateOrder, UpdateTracking } from "@/types/Order";
 import http from "./http";
 
-function getOrders(page: number, limit: number, status?: OrderStatus) {
+function getOrders(page: number, limit: number, status?: OrderStatus | OrderStatus[]) {
     return http.get('/orders', {
         params: {
             page,
@@ -12,7 +12,7 @@ function getOrders(page: number, limit: number, status?: OrderStatus) {
 }
 
 
-function getOrdersByCustomer(page: number, limit: number, status?: OrderStatus) {
+function getOrdersByCustomer(page: number, limit: number, status?: OrderStatus | OrderStatus[]) {
     return http.get('/orders/customer', {
         params: {
             page,

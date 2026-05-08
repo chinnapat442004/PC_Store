@@ -26,7 +26,7 @@ const menusByRole: Record<UserRole, MenuItem[]> = {
   ],
   staff: [{ name: 'staff-dashboard', label: 'Dashboard', path: { name: 'staff-dashboard' } },
   { name: 'staff-orders', label: 'Order Management', path: { name: 'staff-orders' } },
-  { name: 'staff-stock', label: 'Stock', path: { name: 'staff-stock' } },]
+  { name: 'staff-stock', label: 'Stock', path: { name: 'staff-stock' } },], customer: []
 }
 const menus = computed<MenuItem[]>(() => {
   const role = authStore.user?.role

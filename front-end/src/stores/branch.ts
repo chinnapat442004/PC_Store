@@ -12,6 +12,7 @@ export const useBranchStore = defineStore('branch', () => {
     status: 'active',
     lat: undefined,
     lng: undefined,
+    is_active: true,
   }
 
   const page = ref(1)

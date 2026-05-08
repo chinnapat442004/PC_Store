@@ -9,6 +9,7 @@ export const useShipmentStore = defineStore('shipment', () => {
     const loadingStore = useLoadingStore()
     const initialShipment: Shipment = {
         name: '',
+        is_active: true,
     }
 
     const editedShipment = ref<Shipment>(
