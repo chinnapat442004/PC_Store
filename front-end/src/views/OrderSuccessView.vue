@@ -125,7 +125,7 @@ onMounted(async () => {
 
 
         <button class="bg-[#82d182] w-full mt-[20px] h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
-          @click="router.push({ name: 'order' })">
+          @click="router.push({ name: 'orders' })">
           ดูคำสั่งซื้อทั้งหมด
         </button>
         <button @click="router.push({ name: 'home' })"
