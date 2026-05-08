@@ -126,7 +126,7 @@ const savePasswordUI = async () => {
 
                     <div class="flex flex-col">
                         <div class="font-semibold text-lg leading-tight">
-                            {{ authStore.user?.name || 'Guest' }}
+                            {{ authStore.user?.name }}
                         </div>
 
                         <div v-if="authStore.user" class="text-sm text-gray-500 sm:hidden">

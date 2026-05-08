@@ -18,7 +18,7 @@ import { Branch } from 'src/branches/entities/branch.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
@@ -29,6 +29,7 @@ export class UserService {
     @InjectRepository(Branch)
     private branchRepository: Repository<Branch>,
   ) { }
+
 
   async createUser(
     createUserDto: CreateUserDto,
@@ -46,12 +47,14 @@ export class UserService {
       throw new ConflictException('Email is already taken');
     }
 
+    const hash = await bcrypt.hash(createUserDto.password, 10);
+
     const user = new User();
     user.email = createUserDto.email;
     user.is_active = true;
 
     user.name = createUserDto.name;
-    user.password = createUserDto.password;
+    user.password = hash;
     user.branch = await this.branchRepository.findOne({
       where: { branch_id: createUserDto.branch_id },
     });
@@ -82,9 +85,7 @@ export class UserService {
       throw new ConflictException('Email is already taken');
     }
 
-    if (createUserDto.password !== createUserDto.confirm_password) {
-      throw new BadRequestException('Passwords do not match');
-    }
+
     const user = new User();
     user.email = createUserDto.email;
     user.password = createUserDto.password;
@@ -154,6 +155,7 @@ export class UserService {
     currentUser: any,
     updateUserDto: UpdateUserDto,
   ) {
+    const hash = await bcrypt.hash(updateUserDto.password, 10);
     const user = await this.userRepository.findOne({
       where: { user_id },
       relations: { branch: true },
@@ -181,7 +183,7 @@ export class UserService {
     }
 
     if (updateUserDto.password) {
-      user.password = updateUserDto.password;
+      user.password = hash;
     }
 
     const updatedUser = await this.userRepository.save(user);
@@ -215,34 +217,34 @@ export class UserService {
       throw new UnauthorizedException('รหัสผ่านปัจจุบันไม่ถูกต้อง');
     }
 
-    if (updatePasswordDto.new_password !== updatePasswordDto.confirm_password) {
-      throw new BadRequestException('รหัสผ่านใหม่ไม่ตรงกัน');
-    }
 
+    const hash = await bcrypt.hash(updatePasswordDto.new_password, 10);
+
+    user.password = hash
     const updatedUser = await this.userRepository.save(user);
     delete updatedUser.password;
     return updatedUser;
   }
 
-  async resetPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const user = await this.userRepository.findOne({
-      where: { email: forgotPasswordDto.email },
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+  // async resetPassword(forgotPasswordDto: ForgotPasswordDto) {
+  //   const user = await this.userRepository.findOne({
+  //     where: { email: forgotPasswordDto.email },
+  //   });
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
 
-    if (forgotPasswordDto.new_password !== forgotPasswordDto.confirm_password) {
-      throw new BadRequestException('Passwords do not match');
-    }
+  //   if (forgotPasswordDto.new_password !== forgotPasswordDto.confirm_password) {
+  //     throw new BadRequestException('Passwords do not match');
+  //   }
 
-    user.password = forgotPasswordDto.new_password;
-    await this.userRepository.save(user);
+  //   user.password = forgotPasswordDto.new_password;
+  //   await this.userRepository.save(user);
 
-    return {
-      message: 'Password has been reset successfully',
-    };
-  }
+  //   return {
+  //     message: 'Password has been reset successfully',
+  //   };
+  // }
 
   async findUsersByRole(
     role: Role,

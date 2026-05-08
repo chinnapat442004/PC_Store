@@ -9,6 +9,7 @@ import {
   UseGuards,
   Query,
   Patch,
+  BadRequestException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -65,6 +66,10 @@ export class UserController {
   async create(@Req() req: any, @Body() createUserDto: CreateUserDto) {
     const currentUser = req.user;
 
+    if (createUserDto.password !== createUserDto.confirm_password) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
     if (![Role.ADMIN, Role.MANAGER].includes(currentUser.role)) {
       throw new ForbiddenException('You are not allowed to create users');
     }
@@ -82,6 +87,9 @@ export class UserController {
     @Req() req: any,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
+    if (updatePasswordDto.new_password !== updatePasswordDto.confirm_password) {
+      throw new BadRequestException('รหัสผ่านใหม่ไม่ตรงกัน');
+    }
     return this.userService.changePassword(req.user.user_id, updatePasswordDto);
   }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
@@ -12,7 +12,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UserService,
-  ) {}
+  ) { }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
@@ -28,11 +28,14 @@ export class AuthController {
 
   @Post('register')
   register(@Body() createUserDto: CreateUserDto) {
+    if (createUserDto.password !== createUserDto.confirm_password) {
+      throw new BadRequestException('Passwords do not match');
+    }
     return this.authService.register(createUserDto);
   }
 
-  @Post('forgot-password')
-  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto);
-  }
+  // @Post('forgot-password')
+  // forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+  //   return this.authService.forgotPassword(forgotPasswordDto);
+  // }
 }
