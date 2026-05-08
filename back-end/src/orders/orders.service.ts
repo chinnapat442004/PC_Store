@@ -31,7 +31,7 @@ export class OrdersService {
 
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
-  ) {}
+  ) { }
 
   //หาสาขาที่ใกล้ที่สุด
   private getDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
@@ -41,9 +41,9 @@ export class OrdersService {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLng / 2) *
-        Math.sin(dLng / 2);
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) *
+      Math.sin(dLng / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
@@ -57,7 +57,7 @@ export class OrdersService {
     productItems: { product_id: number; quantity: number }[],
   ) {
     const sortedBranches = branches
-      .map((b) => ({
+      .filter((branch) => branch.is_active === true).map((b) => ({
         branch: b,
         distance: this.getDistance(lat, lng, b.lat, b.lng),
       }))

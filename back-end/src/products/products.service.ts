@@ -19,7 +19,7 @@ export class ProductsService {
     private branchRepository: Repository<Branch>,
     @InjectRepository(Stock)
     private stockRepository: Repository<Stock>,
-  ) {}
+  ) { }
 
   async create(createProductDto: CreateProductDto) {
     const product = new Product();
@@ -61,11 +61,19 @@ export class ProductsService {
     return savedProduct;
   }
 
-  async findAll(page: number, limit: number, search?: string, onlyActive?: boolean) {
+  async findAll(
+    page: number,
+    limit: number,
+    search?: string,
+    onlyActive?: boolean,
+  ) {
     const skip = (page - 1) * limit;
 
     let where: any = search
-      ? [{ title: Like(`%${search}%`) }, { description: Like(`%${search}%`) }]
+      ? [
+        { title: Like(`%${search}%`) },
+        { description: Like(`%${search}%`) },
+      ]
       : {};
 
     if (onlyActive) {
@@ -89,7 +97,9 @@ export class ProductsService {
       relations: {
         images: true,
         category: true,
-        stocks: true,
+        stocks: {
+          branch: true,
+        },
       },
       skip,
       take: limit,
@@ -102,7 +112,9 @@ export class ProductsService {
     });
 
     const dataWithStock = data.map((product) => {
-      const stocks = product.stocks ?? [];
+      const stocks = (product.stocks ?? []).filter(
+        (stock) => stock.branch?.is_active,
+      );
 
       const maxStock = stocks.reduce((max, s) => {
         return s.quantity > max.quantity ? s : max;
@@ -131,16 +143,22 @@ export class ProductsService {
       relations: {
         images: true,
         category: true,
-        stocks: true,
+        stocks: {
+          branch: true,
+        },
       },
     });
 
     if (!product) return null;
 
-    const stocks = product.stocks ?? [];
+    const stocks = (product.stocks ?? []).filter(
+      (stock) => stock.branch?.is_active,
+    );
 
     const maxStock = stocks.length
-      ? stocks.reduce((max, s) => (s.quantity > max.quantity ? s : max))
+      ? stocks.reduce((max, s) =>
+        s.quantity > max.quantity ? s : max,
+      )
       : null;
 
     const { stocks: _, ...restProduct } = product;
@@ -148,6 +166,7 @@ export class ProductsService {
     return {
       ...restProduct,
       stock_quantity: maxStock?.quantity ?? 0,
+      stock_branch: maxStock?.branch ?? null,
     };
   }
 
