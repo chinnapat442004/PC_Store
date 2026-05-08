@@ -1,3 +1,4 @@
+import type { Branch } from "./Branch";
 import type { DiscountType } from "./Coupon";
 import type { OrderDetail } from "./OrderDetail";
 import type { PaymentMethod } from "./Payment";
@@ -64,6 +65,7 @@ type Order = {
     shipment: Shipment
     details: OrderDetail[]
     orderHistory: OrderStatusHistory[]
+    branch: Branch
 
 }
 

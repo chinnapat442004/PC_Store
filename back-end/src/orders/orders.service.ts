@@ -403,6 +403,7 @@ export class OrdersService {
           user: {
             user_id: user_id,
           },
+
         }),
       };
     }
@@ -411,6 +412,7 @@ export class OrdersService {
       relations: {
         details: true,
         shipment: true,
+        branch: true
       },
       order: {
         created_at: 'DESC',

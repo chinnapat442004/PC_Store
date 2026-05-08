@@ -170,8 +170,13 @@ const goToOrderDetail = (orderId: number) => {
         @click="goToOrderDetail(order.order_id)">
 
         <div class="flex justify-between items-center">
-          <div class="font-semibold text-sm sm:text-base">
-            ออเดอร์ #{{ order.order_id }}
+          <div class="flex gap-5">
+            <div class="font-semibold text-sm sm:text-base">
+              ออเดอร์ #{{ order.order_id }}
+            </div>
+            <div class="text-xs sm:text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+              ส่งจากสาขา {{ order.branch.branch_name }}
+            </div>
           </div>
 
           <span class="px-3 py-1 rounded-full text-xs font-semibold" :class="OrderStatusColor[order.order_status]">
