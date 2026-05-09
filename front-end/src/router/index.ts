@@ -107,25 +107,49 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
+
+  if (authStore.token && !authStore.user) {
+    try {
+      await authStore.getCurrentUser()
+    } catch (error) {
+      authStore.clearUser()
+      return next({ name: 'login' })
+    }
+  }
+
   const isAuth = to.meta.requiresAuth
-  const requiredRoles = to.meta.role
+  const requiredRole = to.meta.role as string | undefined
+  const userRole = authStore.user?.role
+
+
+  if (authStore.token && userRole) {
+    if (to.path === '/' || to.name === 'login' || to.name === 'register') {
+      if (userRole === 'admin' && to.path !== '/admin') {
+        return next({ name: 'dashboard' })
+      } else if (userRole === 'manager' && to.path !== '/manager') {
+        return next({ name: 'manager-dashboard' })
+      } else if (userRole === 'staff' && to.path !== '/staff') {
+        return next({ name: 'staff-dashboard' })
+      } else if (userRole === 'customer' && (to.name === 'login' || to.name === 'register')) {
+        return next({ name: 'home' })
+      }
+    }
+  }
+
 
   if (isAuth && !authStore.token) {
     return next({ name: 'login' })
   }
 
-  if (authStore.user?.role)
 
-    if (requiredRoles !== authStore.user?.role) {
-
-      return next({ name: '403' })
-    }
+  if (requiredRole && userRole && requiredRole !== userRole) {
+    return next({ name: '403' })
+  }
 
   next()
-
 })
 
 export default router
