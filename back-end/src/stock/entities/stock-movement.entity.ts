@@ -1,5 +1,6 @@
 import { Branch } from 'src/branches/entities/branch.entity';
 import { Product } from 'src/products/entities/product.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -27,7 +28,7 @@ export class StockMovement {
   type: string;
 
   @Column({ nullable: true })
-  ref_id: number;
+  ref_id?: number;
 
   @Column({ nullable: true })
   note: string;
@@ -42,4 +43,8 @@ export class StockMovement {
   @ManyToOne(() => Branch)
   @JoinColumn({ name: 'branch_id' })
   branch: Branch;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'ref_id' })
+  ref?: User;
 }

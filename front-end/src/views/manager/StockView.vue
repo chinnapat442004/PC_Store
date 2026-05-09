@@ -27,7 +27,7 @@ watch(tab, async () => {
 
 const formatQty = (qty: number, type: string) => {
   if (type === 'IN') return `+${qty}`
-  if (type === 'OUT') return `-${qty}`
+  if (type === 'OUT') return `${qty}`
   return qty
 }
 
@@ -234,12 +234,19 @@ const updateStock = async () => {
               'bg-green-100 text-green-700': movement.type === 'IN',
               'bg-red-100 text-red-700': movement.type === 'OUT',
             }">
-              {{ movement.type }}
+              {{
+                movement.type === 'IN'
+                  ? 'เพิ่มสต็อก'
+                  : movement.type === 'OUT'
+                    ? 'ตัดสต็อก'
+              : movement.type
+              }}
             </span>
           </td>
-
           <td class="px-6 py-3">{{ movement.note }}</td>
-          <td class="px-6 py-3">{{ movement.ref ? movement.ref : '-' }}</td>
+          <td class="px-6 py-3">
+            {{ movement.ref?.name || '-' }}
+          </td>
           <td class="px-6 py-3">{{ formatThaiDateTime(movement.created_at) }}</td>
         </tr>
       </tbody>

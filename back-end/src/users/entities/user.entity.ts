@@ -16,6 +16,7 @@ import { Branch } from 'src/branches/entities/branch.entity';
 import { Address } from 'src/address/entities/address.entity';
 import { OrderStatus } from 'src/orders/emums/order-status.enum';
 import { OrderStatusHistory } from 'src/orders/entities/order-status-history.entity';
+import { StockMovement } from 'src/stock/entities/stock-movement.entity';
 
 @Entity()
 export class User {
@@ -59,4 +60,10 @@ export class User {
 
   @OneToMany(() => OrderStatusHistory, (status) => status.user)
   orderStatus: OrderStatus[];
+
+  @OneToMany(
+    () => StockMovement,
+    (stockMovement) => stockMovement.ref,
+  )
+  stockMovements: StockMovement[];
 }

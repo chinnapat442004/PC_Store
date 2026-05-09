@@ -6,6 +6,7 @@ import { UpdateStockDto } from './dto/update-stock.dto';
 import { Stock } from './entities/stock.entity';
 import { StockMovement } from './entities/stock-movement.entity';
 
+
 @Injectable()
 export class StockService {
   constructor(
@@ -72,7 +73,7 @@ export class StockService {
       lastPage: Math.ceil(total / limit),
     };
   }
-  async updateStock(dto: UpdateStockDto) {
+  async updateStock(dto: UpdateStockDto, userId: number) {
     const { product_id, branch_id, quantity, note } = dto;
 
     return this.dataSource.transaction(async (manager) => {
@@ -100,6 +101,7 @@ export class StockService {
           change_qty: diff,
           type: diff >= 0 ? 'IN' : 'OUT',
           note: note,
+          ref_id: userId
         }),
       );
 
@@ -118,12 +120,14 @@ export class StockService {
     const qb = this.movementRepository
       .createQueryBuilder('movement')
       .leftJoinAndSelect('movement.product', 'product')
+      .leftJoinAndSelect('movement.ref', 'ref')
       .where('movement.branch_id = :branch_id', { branch_id });
 
     if (search) {
       qb.andWhere(
         `(LOWER(product.title) LIKE LOWER(:search) 
-        OR LOWER(movement.type) LIKE LOWER(:search))`,
+      OR LOWER(movement.type) LIKE LOWER(:search)
+      OR LOWER(ref.name) LIKE LOWER(:search))`,
         {
           search: `%${search}%`,
         },
@@ -143,9 +147,18 @@ export class StockService {
         type: m.type,
         note: m.note,
         created_at: m.created_at,
-        ref: m.ref_id,
+        ref: m.ref
+          ? {
+            user_id: m.ref.user_id,
+            name: m.ref.name,
+            email: m.ref.email,
+          }
+          : null,
+
       };
     });
+
+
 
     return {
       data,

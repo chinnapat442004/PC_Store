@@ -1,3 +1,5 @@
+import type { User } from "./User"
+
 export type StockItem = {
   id: number
   quantity: number
@@ -26,5 +28,5 @@ export type MovementItem = {
   type: 'IN' | 'OUT'
   note: string | null
   created_at: string
-  ref: number | null
+  ref: User
 }

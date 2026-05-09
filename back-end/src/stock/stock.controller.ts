@@ -8,7 +8,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('stock')
 export class StockController {
-  constructor(private readonly stockService: StockService) {}
+  constructor(private readonly stockService: StockService) { }
 
   @Get()
   getStock(
@@ -32,7 +32,7 @@ export class StockController {
     return this.stockService.updateStock({
       ...dto,
       branch_id,
-    });
+    }, req.user.user_id,);
   }
   @Get('movement')
   getMovement(

@@ -96,23 +96,19 @@ export class ProductsController {
           const imageUrlString = imageObj.image;
 
           if (imageUrlString) {
-            // 1. แยก String ด้วย '/upload/' เพื่อเอาเฉพาะส่วนหลัง
+
             const parts = imageUrlString.split('/upload/');
             if (parts.length > 1) {
-              const afterUpload = parts[1]; // ได้: "c_limit,q_auto,w_400/v1/products/k4pinzuwkijcal65v1og.webp?..."
-
-              // 2. แยกด้วย '/' แล้วกรองเอาเฉพาะส่วนที่ไม่ใช่ Transformations (พวกที่มีเครื่องหมาย =) 
-              // หรือพวก Version (v1, v2) และเอาตัวสุดท้ายกับรองสุดท้ายมาต่อกัน
+              const afterUpload = parts[1];
               const pathParts = afterUpload.split('/');
 
-              // ค้นหาจุดเริ่มของ Public ID โดยข้ามพวก v1 หรือ transformation
-              // ปกติ Public ID คือส่วนที่อยู่หลัง 'v数字/' หรือหลัง transformation ตัวสุดท้าย
+
               const cleanPathParts = pathParts.filter(part => {
                 return !part.includes(',') && !/^v\d+$/.test(part);
               });
 
-              // 3. จัดการเรื่องนามสกุลไฟล์และ Query String (เช่น .webp?_a=...)
-              const lastPart = cleanPathParts.pop(); // k4pinzuwkijcal65v1og.webp?_a=...
+
+              const lastPart = cleanPathParts.pop();
               const publicIdWithoutExt = lastPart.split('.')[0].split('?')[0];
 
 

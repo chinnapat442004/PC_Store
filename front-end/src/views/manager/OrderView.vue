@@ -4,7 +4,7 @@ import { useOrderStore } from '@/stores/order'
 import { useLoadingStore } from '@/stores/loading'
 import { OrderStatusColor, OrderStatusLabel } from '@/constants/orderStatus'
 import LoadingComponent from '@/components/LoadingComponent.vue'
-
+import { formatThaiDateTime } from '@/utils/formatDate'
 const orderStore = useOrderStore()
 const loadingStore = useLoadingStore()
 
@@ -120,7 +120,7 @@ const closeDialog = () => {
           </td>
 
           <td class="px-6 py-1">
-            {{ formatDate(order.updated_at) }}
+            {{ formatThaiDateTime(order.updated_at) }}
           </td>
 
           <td class="px-6 py-1 align-middle">
