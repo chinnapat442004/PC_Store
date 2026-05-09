@@ -27,9 +27,22 @@ const orderId = Number(route.params.orderId as string)
 onMounted(async () => {
   await authStore.getCurrentUser()
   await addressStore.getAddresses()
-  orderStore.getOrderById(orderId)
-  paymentStore.fetchPaymentQr(orderId)
 
+  if (isNaN(orderId)) {
+    router.replace({ name: '404' })
+    return
+  }
+
+  try {
+    await orderStore.getOrderById(orderId)
+    if (!orderStore.selectedOrder) {
+      router.replace({ name: '404' })
+      return
+    }
+    await paymentStore.fetchPaymentQr(orderId)
+  } catch (err) {
+    router.replace({ name: '404' })
+  }
 })
 
 

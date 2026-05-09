@@ -20,6 +20,8 @@ import PaymentConfirmation from '@/views/PaymentConfirmation.vue'
 import ShipmentView from '@/views/admin/ShipmentView.vue'
 import OrderDetailView from '@/views/OrderDetailView.vue'
 import CouponView from '@/views/admin/CouponView.vue'
+import ForbiddenView from '@/views/ForbiddenView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -102,6 +104,20 @@ const router = createRouter({
         { path: 'orders', name: 'staff-orders', component: () => import('@/views/staff/OrderView.vue') },
         { path: 'stock', name: 'staff-stock', component: () => import('@/views/staff/StockView.vue') },
 
+      ],
+    },
+    {
+      path: '/403',
+      component: () => import('@/layouts/AuthLayout.vue'),
+      children: [
+        { path: '', name: '403', component: ForbiddenView },
+      ],
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('@/layouts/AuthLayout.vue'),
+      children: [
+        { path: '', name: '404', component: NotFoundView },
       ],
     }
   ],

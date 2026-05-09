@@ -26,9 +26,22 @@ const stockWarning = ref('')
 onMounted(async () => {
   cartStore.getCarts()
   const id = Number(route.params.id as string)
-  await productStore.getProduct(id)
-  if (productStore.product)
+
+  if (isNaN(id)) {
+    router.replace({ name: '404' })
+    return
+  }
+
+  try {
+    await productStore.getProduct(id)
+    if (!productStore.product) {
+      router.replace({ name: '404' })
+      return
+    }
     cartStore.editedCartDetail.product = productStore.product
+  } catch (err) {
+    router.replace({ name: '404' })
+  }
 })
 
 const plus = () => {
