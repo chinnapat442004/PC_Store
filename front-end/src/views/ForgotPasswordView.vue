@@ -1,58 +1,54 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 const email = ref('')
-const loading = ref(false)
-const success = ref(false)
+const isSubmitting = ref(false)
+// const isToastActive = ref(false)
 
-const onSubmit = async () => {
-  loading.value = true
-  // Mock API call
-  setTimeout(() => {
-    loading.value = false
-    success.value = true
-  }, 1000)
+const sendResetEmail = async () => {
+  if (!email.value) {
+    toast.error('กรุณากรอกอีเมล')
+    return
+  }
+
+  isSubmitting.value = true
+
+  try {
+    toast.success('เราได้ส่งลิงก์สำหรับรีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว')
+  } catch (err) {
+    console.error(err)
+    toast.error('ไม่สามารถส่งอีเมลได้ กรุณาลองใหม่อีกครั้ง')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-900 px-4">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-      <div class="text-center mb-8">
-        <h2 class="text-3xl font-extrabold text-gray-900">Forgot Password</h2>
-        <p class="mt-2 text-sm text-gray-600">
-          Enter your email address and we'll send you a link to reset your password.
-        </p>
+  <div
+    class="w-full max-w-[500px] py-[40px] px-[20px] rounded-[10px] shadow-xl bg-[#414141] flex justify-center items-center flex-col">
+    <h1 class="text-3xl font-semibold text-white text-center mb-6 ">ลืมรหัสผ่าน</h1>
+
+    <form @submit.prevent="sendResetEmail" class="space-y-6 w-full max-w-[350px]">
+      <div>
+        <label for="email" class="block text-white font-medium mb-2">Email:</label>
+        <input type="email" id="email" v-model="email" required
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#202020]"
+          placeholder="กรอกอีเมลที่ใช้ลงทะเบียน" />
       </div>
 
-      <div v-if="success" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
-        If an account exists for {{ email }}, you will receive a password reset link shortly.
-      </div>
+      <button type="submit" :disabled="isSubmitting" class="w-full bg-[#637aad] text-white py-2 rounded-lg hover:bg-[#556b95]">
+        <span v-if="isSubmitting">กำลังส่ง...</span>
+        <span v-else>ส่งลิงก์รีเซ็ตรหัสผ่าน</span>
+      </button>
+    </form>
 
-      <form v-else @submit.prevent="onSubmit" class="space-y-6">
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
-          <div class="mt-1">
-            <input id="email" v-model="email" name="email" type="email" autocomplete="email" required
-              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="you@example.com" />
-          </div>
-        </div>
-
-        <div>
-          <button type="submit" :disabled="loading"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
-            <span v-if="loading">Sending...</span>
-            <span v-else>Send reset link</span>
-          </button>
-        </div>
-      </form>
-
-      <div class="mt-6 text-center">
-        <router-link to="/login" class="font-medium text-indigo-600 hover:text-indigo-500 text-sm">
-          Back to login
-        </router-link>
-      </div>
+    <div class="mt-6 text-center">
+      <router-link to="/login" class="text-[#637aad] hover:underline text-sm">
+        กลับไปหน้าเข้าสู่ระบบ
+      </router-link>
     </div>
   </div>
 </template>

@@ -137,10 +137,10 @@ async function onRegister() {
 
 <template>
 
-  <div class=" bg-[#414141] py-[25px] 
-       w-[500px] max-h-[680px] rounded-[10px] shadow-xl flex flex-col justify-center items-center">
+  <div class=" bg-[#414141] py-[25px] px-[20px] 
+       w-full max-w-[500px] rounded-[10px] shadow-xl flex flex-col justify-center items-center">
     <h1 class="text-3xl font-semibold text-white mb-6">Register</h1>
-    <form @submit.prevent="onRegister" class="w-[350px]">
+    <form @submit.prevent="onRegister" class="w-full max-w-[350px]">
       <div class="mb-4">
         <label class="text-white">Username:</label>
         <input v-model="authStore.registerUser.name" type="text" :class="[

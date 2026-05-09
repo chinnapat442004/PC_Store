@@ -89,11 +89,11 @@ async function onSubmit() {
 <template>
 
   <div
-    class="bg-[#414141] w-[500px] max-h-[500px] rounded-[10px] shadow-xl flex justify-center items-center flex-col py-[40px]">
+    class="bg-[#414141] w-full max-w-[500px] rounded-[10px] shadow-xl flex justify-center items-center flex-col py-[40px] px-[20px]">
     <h1 class="text-3xl font-semibold text-center text-white mb-6">Sign in</h1>
 
 
-    <form @submit.prevent="onSubmit" class="w-[350px]">
+    <form @submit.prevent="onSubmit" class="w-full max-w-[350px]">
 
       <div class="mb-4">
         <label for="email" class="block text-white font-medium">Email:</label>
