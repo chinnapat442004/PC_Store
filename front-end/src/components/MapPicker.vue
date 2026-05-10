@@ -90,8 +90,6 @@ const searchLocation = async () => {
 
   const data = await res.json()
 
-
-
   if (data.length > 0) {
     lat.value = parseFloat(data[0].lat)
     lng.value = parseFloat(data[0].lon)
@@ -116,24 +114,26 @@ const searchLocation = async () => {
 
 <template>
   <div class="space-y-3">
-
-    <div v-if="!locationSelected"
-      class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded text-sm">
+    <div
+      v-if="!locationSelected"
+      class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-2 rounded text-sm"
+    >
       กรุณาคลิกบนแผนที่เพื่อเลือกตำแหน่งของสาขา
     </div>
 
-
     <div class="flex gap-2">
-      <input v-model="search" placeholder="Search location..." class="border px-3 py-2 rounded w-full" />
+      <input
+        v-model="search"
+        placeholder="Search location..."
+        class="border px-3 py-2 rounded w-full"
+      />
 
       <button @click="searchLocation" class="bg-blue-500 text-white px-4 py-2 rounded">
         Search
       </button>
     </div>
 
-
     <div id="map" class="h-[300px] w-full rounded"></div>
-
 
     <div class="flex gap-4">
       <div class="w-full">

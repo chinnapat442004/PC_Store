@@ -1,11 +1,10 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, FindOptionsWhere } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 
 import { UpdateStockDto } from './dto/update-stock.dto';
 import { Stock } from './entities/stock.entity';
 import { StockMovement } from './entities/stock-movement.entity';
-
 
 @Injectable()
 export class StockService {
@@ -17,7 +16,7 @@ export class StockService {
     private movementRepository: Repository<StockMovement>,
 
     private dataSource: DataSource,
-  ) { }
+  ) {}
 
   async getStock(
     branch_id: number,
@@ -62,7 +61,7 @@ export class StockService {
         product_price: stock.product.price,
         image: stock.product.images?.[0]?.image ?? null,
         status_label: stockStatus,
-        is_active: stock.product.is_active
+        is_active: stock.product.is_active,
       };
     });
 
@@ -101,7 +100,7 @@ export class StockService {
           change_qty: diff,
           type: diff >= 0 ? 'IN' : 'OUT',
           note: note,
-          ref_id: userId
+          ref_id: userId,
         }),
       );
 
@@ -149,16 +148,13 @@ export class StockService {
         created_at: m.created_at,
         ref: m.ref
           ? {
-            user_id: m.ref.user_id,
-            name: m.ref.name,
-            email: m.ref.email,
-          }
+              user_id: m.ref.user_id,
+              name: m.ref.name,
+              email: m.ref.email,
+            }
           : null,
-
       };
     });
-
-
 
     return {
       data,

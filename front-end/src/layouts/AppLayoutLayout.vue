@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import Sidebar from '@/components/SidebarComponent.vue'
-import { useAuthStore } from '@/stores/auth';
-import type { MenuItem, UserRole } from '@/types/Menu';
-import { computed } from 'vue';
-
+import { useAuthStore } from '@/stores/auth'
+import type { MenuItem, UserRole } from '@/types/Menu'
+import { computed } from 'vue'
 
 const authStore = useAuthStore()
 
@@ -15,7 +14,7 @@ const menusByRole: Record<UserRole, MenuItem[]> = {
     { name: 'category', label: 'Category Management', path: { name: 'category' } },
     { name: 'editproduct', label: 'Product Management', path: { name: 'editproduct' } },
     { name: 'manager-shipment', label: 'Shipment Management', path: { name: 'manager-shipment' } },
-    { name: 'coupon', label: 'Coupon Management', path: { name: 'coupon' } }
+    { name: 'coupon', label: 'Coupon Management', path: { name: 'coupon' } },
   ],
 
   manager: [
@@ -24,9 +23,12 @@ const menusByRole: Record<UserRole, MenuItem[]> = {
     { name: 'manager-stock', label: 'Stock', path: { name: 'manager-stock' } },
     { name: 'manager-staff', label: 'Staff Management', path: { name: 'manager-staff' } },
   ],
-  staff: [{ name: 'staff-dashboard', label: 'Dashboard', path: { name: 'staff-dashboard' } },
-  { name: 'staff-orders', label: 'Order Management', path: { name: 'staff-orders' } },
-  { name: 'staff-stock', label: 'Stock', path: { name: 'staff-stock' } },], customer: []
+  staff: [
+    { name: 'staff-dashboard', label: 'Dashboard', path: { name: 'staff-dashboard' } },
+    { name: 'staff-orders', label: 'Order Management', path: { name: 'staff-orders' } },
+    { name: 'staff-stock', label: 'Stock', path: { name: 'staff-stock' } },
+  ],
+  customer: [],
 }
 const menus = computed<MenuItem[]>(() => {
   const role = authStore.user?.role
@@ -40,10 +42,8 @@ const menus = computed<MenuItem[]>(() => {
 <template>
   <Sidebar :menus="menus" />
   <div class="pl-[240px] w-full">
-    <div class="h-full  lg:px-[20px] min-h-screen pt-6">
-
+    <div class="h-full lg:px-[20px] min-h-screen pt-6">
       <router-view />
-
     </div>
   </div>
 </template>

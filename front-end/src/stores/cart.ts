@@ -7,7 +7,6 @@ import { useLoadingStore } from './loading'
 
 import { useAuthStore } from './auth'
 
-
 export const useCartStore = defineStore('Cart', () => {
   const loadingStore = useLoadingStore()
   const cart = ref<Cart>()
@@ -21,8 +20,6 @@ export const useCartStore = defineStore('Cart', () => {
     cartDetails: [],
   }
 
-
-
   const initialCartDetail: CartDetail = {
     quantity: 0,
     product: {
@@ -35,13 +32,12 @@ export const useCartStore = defineStore('Cart', () => {
       categoryId: 0,
       category: undefined,
       stock_quantity: 0,
-      is_active: true
-    }
+      is_active: true,
+    },
   }
 
-
   const initialCoupon: ApplyCouponDto = {
-    code: ''
+    code: '',
   }
 
   const editedCode = ref(<ApplyCouponDto>structuredClone(initialCoupon))
@@ -54,12 +50,9 @@ export const useCartStore = defineStore('Cart', () => {
 
   const editedCartDetail = ref(<CartDetail>structuredClone(initialCartDetail))
 
-
-
   async function getCarts() {
     loadingStore.doLoad()
     if (authStore.user) {
-
       const res = await cartService.getCart()
       cart.value = res.data
       console.log(cart.value?.cartDetails)
@@ -92,12 +85,21 @@ export const useCartStore = defineStore('Cart', () => {
   }
 
   function removeCoupon() {
-
     return cartService.removeCoupon()
-
-
   }
 
-  return { getCarts, addCartDetail, clearCart, update, remove, applyCoupon, removeCoupon, cart, editedCart, editedCartDetail, cartDetailCount, editedCode }
+  return {
+    getCarts,
+    addCartDetail,
+    clearCart,
+    update,
+    remove,
+    applyCoupon,
+    removeCoupon,
+    cart,
+    editedCart,
+    editedCartDetail,
+    cartDetailCount,
+    editedCode,
+  }
 })
-

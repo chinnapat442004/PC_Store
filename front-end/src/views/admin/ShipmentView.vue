@@ -28,7 +28,6 @@ const openEdit = (item: Shipment) => {
   showDialog.value = true
 }
 
-
 const closeDialog = () => {
   showDialog.value = false
   shimpentStore.resetForm()
@@ -48,23 +47,29 @@ const saveShipment = async () => {
 </script>
 
 <template>
-
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-white">Shipment Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="ค้นหาผู้ให้บริการ..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input
+        type="text"
+        placeholder="ค้นหาผู้ให้บริการ..."
+        v-model="search"
+        class="border px-3 py-2 rounded w-64"
+      />
 
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md">
         <span class="pi pi-search"></span>
       </button>
 
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="">
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="search = ''">
         <span class="pi pi-times"></span>
       </button>
 
-      <button class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md"
-        @click="openCreateDialog()">
+      <button
+        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md"
+        @click="openCreateDialog()"
+      >
         <span class="pi pi-plus"></span>
         เพิ่มผู้ให้บริการ
       </button>
@@ -83,15 +88,11 @@ const saveShipment = async () => {
       </thead>
 
       <tbody class="divide-y">
-
         <tr v-if="shimpentStore.shipments.length === 0">
-          <td colspan="2" class="text-center py-6 text-gray-500">
-            ไม่พบข้อมูล
-          </td>
+          <td colspan="2" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
 
         <tr v-else v-for="shipment in shimpentStore.shipments" :key="shipment.shipment_id">
-
           <td class="px-6 py-2">{{ shipment.name }}</td>
 
           <td class="px-6 py-2 text-center">
@@ -99,8 +100,14 @@ const saveShipment = async () => {
           </td>
 
           <td class="px-6 py-2 text-center">
-            <ToggleSwitch :modelValue="shipment.is_active"
-              @update:modelValue="shimpentStore.toggleShipmentActive(shipment).then(() => shimpentStore.getShipments())" />
+            <ToggleSwitch
+              :modelValue="shipment.is_active"
+              @update:modelValue="
+                shimpentStore
+                  .toggleShipmentActive(shipment)
+                  .then(() => shimpentStore.getShipments())
+              "
+            />
           </td>
           <td class="px-6 py-3 flex justify-center space-x-2">
             <button @click="openEdit(shipment)" class="edit-btn">
@@ -108,7 +115,6 @@ const saveShipment = async () => {
             </button>
           </td>
         </tr>
-
       </tbody>
     </table>
   </div>
@@ -121,14 +127,16 @@ const saveShipment = async () => {
 
       <div class="mb-3">
         <label class="block mb-1">ชื่อผู้ให้บริการ</label>
-        <input v-model="shimpentStore.editedShipment.name" type="text" placeholder="กรอกชื่อผู้ให้บริการ"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
+        <input
+          v-model="shimpentStore.editedShipment.name"
+          type="text"
+          placeholder="กรอกชื่อผู้ให้บริการ"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+        />
       </div>
 
       <div class="flex justify-center gap-4">
-        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">
-          ยกเลิก
-        </button>
+        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">ยกเลิก</button>
 
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
           บันทึก
@@ -137,9 +145,13 @@ const saveShipment = async () => {
     </div>
   </div>
 
-  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
-    @cancel="showConfirm = false" @confirm="saveShipment()" />
-
+  <ConfirmComponent
+    :show="showConfirm"
+    type="save"
+    message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
+    @cancel="showConfirm = false"
+    @confirm="saveShipment()"
+  />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

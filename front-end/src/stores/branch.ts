@@ -23,7 +23,12 @@ export const useBranchStore = defineStore('branch', () => {
 
   const editedBranch = ref(<Branch>structuredClone(initialBranch))
 
-  async function getBranches(p = page.value, l = limit.value, s = search.value, onlyActive = false) {
+  async function getBranches(
+    p = page.value,
+    l = limit.value,
+    s = search.value,
+    onlyActive = false,
+  ) {
     loadingStore.doLoad()
     const res = await branchService.getBranches(p, l, s, onlyActive)
 
@@ -43,7 +48,6 @@ export const useBranchStore = defineStore('branch', () => {
     await branchService.updateBranch(branch)
     await getBranches()
   }
-
 
   async function toggleBranchActive(branch_id: number) {
     try {

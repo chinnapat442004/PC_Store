@@ -99,28 +99,40 @@ const updateStock = async () => {
     <h1 class="text-3xl font-bold text-white">Stock Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="ค้นหาสินค้า..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input
+        type="text"
+        placeholder="ค้นหาสินค้า..."
+        v-model="search"
+        class="border px-3 py-2 rounded w-64"
+      />
 
       <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="searchData()">
         <span class="pi pi-search"></span>
       </button>
 
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="clearSearch()">
+      <button
+        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md"
+        @click="clearSearch()"
+      >
         <span class="pi pi-times"></span>
       </button>
     </div>
   </div>
 
   <div class="inline-flex bg-gray-100 mb-4 rounded-xl">
-    <button @click="tab = 'stock'" class="px-4 py-2 text-sm rounded-lg transition" :class="tab === 'stock'
-      ? 'bg-white shadow text-black'
-      : 'text-gray-500'">
+    <button
+      @click="tab = 'stock'"
+      class="px-4 py-2 text-sm rounded-lg transition"
+      :class="tab === 'stock' ? 'bg-white shadow text-black' : 'text-gray-500'"
+    >
       สินค้าคงเหลือ
     </button>
 
-    <button @click="tab = 'history'" class="px-4 py-2 text-sm rounded-lg transition" :class="tab === 'history'
-      ? 'bg-white shadow text-black'
-      : 'text-gray-500'">
+    <button
+      @click="tab = 'history'"
+      class="px-4 py-2 text-sm rounded-lg transition"
+      :class="tab === 'history' ? 'bg-white shadow text-black' : 'text-gray-500'"
+    >
       ประวัติ
     </button>
   </div>
@@ -152,8 +164,10 @@ const updateStock = async () => {
             <div class="flex items-center gap-2">
               <span>{{ stock.product_title }}</span>
 
-              <span v-if="stock.is_active == false"
-                class="px-2 py-[2px] text-xs font-medium text-red-500 bg-red-500/10 border border-red-500/20 rounded-full">
+              <span
+                v-if="stock.is_active == false"
+                class="px-2 py-[2px] text-xs font-medium text-red-500 bg-red-500/10 border border-red-500/20 rounded-full"
+              >
                 ปิดการใช้งาน
               </span>
             </div>
@@ -162,11 +176,14 @@ const updateStock = async () => {
           <td class="px-6 py-1">{{ stock.quantity }}</td>
 
           <td class="px-6 py-1">
-            <span class="px-2 py-1 rounded-full text-xs font-semibold" :class="{
-              'bg-green-100 text-green-700': stock.status_label === 'in stock',
-              'bg-yellow-100 text-yellow-700': stock.status_label === 'low stock',
-              'bg-red-100 text-red-700': stock.status_label === 'out of stock',
-            }">
+            <span
+              class="px-2 py-1 rounded-full text-xs font-semibold"
+              :class="{
+                'bg-green-100 text-green-700': stock.status_label === 'in stock',
+                'bg-yellow-100 text-yellow-700': stock.status_label === 'low stock',
+                'bg-red-100 text-red-700': stock.status_label === 'out of stock',
+              }"
+            >
               {{ stock.status_label }}
             </span>
           </td>
@@ -191,9 +208,7 @@ const updateStock = async () => {
         <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
-      <span class="text-sm text-gray-600">
-        {{ stockStore.page }} / {{ stockStore.lastPage }}
-      </span>
+      <span class="text-sm text-gray-600"> {{ stockStore.page }} / {{ stockStore.lastPage }} </span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
         ถัดไป <span class="pi pi-chevron-right text-sm"></span>
@@ -222,24 +237,30 @@ const updateStock = async () => {
         <tr v-for="movement in stockStore.movements" :key="movement.id">
           <td class="px-6 py-3">{{ movement.product_title }}</td>
 
-          <td class="px-6 py-3" :class="{
-            'text-green-700': movement.type === 'IN',
-            'text-red-700': movement.type === 'OUT',
-          }">
+          <td
+            class="px-6 py-3"
+            :class="{
+              'text-green-700': movement.type === 'IN',
+              'text-red-700': movement.type === 'OUT',
+            }"
+          >
             {{ formatQty(movement.change_qty, movement.type) }}
           </td>
 
           <td class="px-6 py-3">
-            <span class="px-2 py-1 rounded-full text-xs font-semibold" :class="{
-              'bg-green-100 text-green-700': movement.type === 'IN',
-              'bg-red-100 text-red-700': movement.type === 'OUT',
-            }">
+            <span
+              class="px-2 py-1 rounded-full text-xs font-semibold"
+              :class="{
+                'bg-green-100 text-green-700': movement.type === 'IN',
+                'bg-red-100 text-red-700': movement.type === 'OUT',
+              }"
+            >
               {{
                 movement.type === 'IN'
                   ? 'เพิ่มสต็อก'
                   : movement.type === 'OUT'
                     ? 'ตัดสต็อก'
-              : movement.type
+                    : movement.type
               }}
             </span>
           </td>
@@ -257,9 +278,7 @@ const updateStock = async () => {
         <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
-      <span class="text-sm text-gray-600">
-        {{ stockStore.page }} / {{ stockStore.lastPage }}
-      </span>
+      <span class="text-sm text-gray-600"> {{ stockStore.page }} / {{ stockStore.lastPage }} </span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
         ถัดไป <span class="pi pi-chevron-right text-sm"></span>
@@ -269,32 +288,40 @@ const updateStock = async () => {
 
   <div v-if="showDialog" class="overlay">
     <div class="dialog">
-      <h2 class="text-lg font-semibold mb-4">
-        อัปเดตสต็อก
-      </h2>
+      <h2 class="text-lg font-semibold mb-4">อัปเดตสต็อก</h2>
 
       <div class="mb-3">
         <label class="block mb-1">สินค้า</label>
-        <input :value="selectedStock?.product_title || ''" disabled
-          class="border w-full px-3 py-2 rounded bg-gray-100" />
+        <input
+          :value="selectedStock?.product_title || ''"
+          disabled
+          class="border w-full px-3 py-2 rounded bg-gray-100"
+        />
       </div>
 
       <div class="mb-3">
         <label class="block mb-1">จำนวน</label>
-        <input v-model.number="quantity" type="number" min="0" class="border w-full px-3 py-2 rounded bg-gray-50"
-          placeholder="กรอกจำนวนสินค้า" />
+        <input
+          v-model.number="quantity"
+          type="number"
+          min="0"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+          placeholder="กรอกจำนวนสินค้า"
+        />
       </div>
 
       <div class="mb-3">
         <label class="block mb-1">หมายเหตุ</label>
-        <textarea v-model="note" rows="3" placeholder="เพิ่มหมายเหตุ เช่น ปรับสต็อก / สินค้าชำรุด"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
+        <textarea
+          v-model="note"
+          rows="3"
+          placeholder="เพิ่มหมายเหตุ เช่น ปรับสต็อก / สินค้าชำรุด"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+        />
       </div>
 
       <div class="flex justify-center gap-4">
-        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">
-          ปิด
-        </button>
+        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">ปิด</button>
 
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="updateStock">
           บันทึก

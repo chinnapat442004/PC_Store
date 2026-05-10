@@ -18,7 +18,7 @@ import cloudinary from 'config/cloudinary.config';
 
 @Controller('product')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) { }
+  constructor(private readonly productsService: ProductsService) {}
 
   @Post()
   @UseInterceptors(
@@ -37,17 +37,17 @@ export class ProductsController {
             new Promise<string>((resolve, reject) => {
               const stream = cloudinary.uploader.upload_stream(
                 {
-                  folder: 'products', format: 'webp', //  บังคับแปลงไฟล์ต้นฉบับให้เป็น .webp 
+                  folder: 'products',
+                  format: 'webp', //  บังคับแปลงไฟล์ต้นฉบับให้เป็น .webp
 
                   transformation: [
-                    { width: 400, crop: 'limit' } // ถ้าภาพใหญ่กว่า 1200px จะถูกย่อลงมา
-                  ]
+                    { width: 400, crop: 'limit' }, // ถ้าภาพใหญ่กว่า 1200px จะถูกย่อลงมา
+                  ],
                 },
                 (error, result) => {
                   if (error) return reject(error);
 
-
-                  // ให้สร้าง URL ใหม่ที่ใส่ Parameter 
+                  // ให้สร้าง URL ใหม่ที่ใส่ Parameter
                   const optimizedUrl = cloudinary.url(result.public_id, {
                     secure: true,
                     format: 'webp',
@@ -83,48 +83,49 @@ export class ProductsController {
     @Param('id') id: string,
   ) {
     if (images && images.length > 0) {
-
-      //1. ดึงข้อมูล Product เดิมขึ้นมาก่อน 
+      //1. ดึงข้อมูล Product เดิมขึ้นมาก่อน
       const existingProduct = await this.productsService.findOne(+id);
 
       // 2. ลบรูปเก่าออกจาก Cloudinary
 
-      console.log(existingProduct.images)
+      console.log(existingProduct.images);
 
-      if (existingProduct && existingProduct.images && existingProduct.images.length > 0) {
-        const deleteOldImagesPromises = existingProduct.images.map(async (imageObj: any) => {
-          const imageUrlString = imageObj.image;
+      if (
+        existingProduct &&
+        existingProduct.images &&
+        existingProduct.images.length > 0
+      ) {
+        const deleteOldImagesPromises = existingProduct.images.map(
+          async (imageObj: any) => {
+            const imageUrlString = imageObj.image;
 
-          if (imageUrlString) {
+            if (imageUrlString) {
+              const parts = imageUrlString.split('/upload/');
+              if (parts.length > 1) {
+                const afterUpload = parts[1];
+                const pathParts = afterUpload.split('/');
 
-            const parts = imageUrlString.split('/upload/');
-            if (parts.length > 1) {
-              const afterUpload = parts[1];
-              const pathParts = afterUpload.split('/');
+                const cleanPathParts = pathParts.filter((part) => {
+                  return !part.includes(',') && !/^v\d+$/.test(part);
+                });
 
+                const lastPart = cleanPathParts.pop();
+                const publicIdWithoutExt = lastPart.split('.')[0].split('?')[0];
 
-              const cleanPathParts = pathParts.filter(part => {
-                return !part.includes(',') && !/^v\d+$/.test(part);
-              });
+                const publicId =
+                  cleanPathParts.length > 0
+                    ? `${cleanPathParts.join('/')}/${publicIdWithoutExt}`
+                    : publicIdWithoutExt;
 
-
-              const lastPart = cleanPathParts.pop();
-              const publicIdWithoutExt = lastPart.split('.')[0].split('?')[0];
-
-
-              const publicId = cleanPathParts.length > 0
-                ? `${cleanPathParts.join('/')}/${publicIdWithoutExt}` : publicIdWithoutExt;
-
-              try {
-
-                const result = await cloudinary.uploader.destroy(publicId);
-
-              } catch (err) {
-                console.error(`Error deleting ${publicId}:`, err);
+                try {
+                  await cloudinary.uploader.destroy(publicId);
+                } catch (err) {
+                  console.error(`Error deleting ${publicId}:`, err);
+                }
               }
             }
-          }
-        });
+          },
+        );
 
         await Promise.all(deleteOldImagesPromises);
       }
@@ -136,15 +137,13 @@ export class ProductsController {
               const stream = cloudinary.uploader.upload_stream(
                 {
                   folder: 'products',
-                  format: 'webp', // บังคับแปลงไฟล์ให้เป็น .webp 
-                  transformation: [
-                    { width: 400, crop: 'limit' }
-                  ]
+                  format: 'webp', // บังคับแปลงไฟล์ให้เป็น .webp
+                  transformation: [{ width: 400, crop: 'limit' }],
                 },
                 (error, result) => {
                   if (error) return reject(error);
 
-                  // สร้าง URL ที่ผ่านการ Optimize 
+                  // สร้าง URL ที่ผ่านการ Optimize
                   const optimizedUrl = cloudinary.url(result.public_id, {
                     secure: true,
                     format: 'webp',
@@ -174,14 +173,18 @@ export class ProductsController {
     @Query('search') search: string,
     @Query('onlyActive') onlyActive?: string,
   ) {
-    return this.productsService.findAll(+page, +limit, search, onlyActive === 'true');
+    return this.productsService.findAll(
+      +page,
+      +limit,
+      search,
+      onlyActive === 'true',
+    );
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
   }
-
 
   @Patch(':id/toggle-active')
   toggleActive(@Param('id') id: string) {

@@ -10,7 +10,6 @@ import type {
   UpdateProfile,
   UpdatePassword,
   ForgotPassword,
-
 } from '@/types/User'
 
 import { useLoadingStore } from './loading'
@@ -22,7 +21,7 @@ export const useUserStore = defineStore('user', () => {
 
   // แยก profile กับ admin
   const editedProfile = ref<User | null>(null)
-  const editedUser = ref<User & { password?: string } | null>(null)
+  const editedUser = ref<(User & { password?: string }) | null>(null)
 
   const page = ref(1)
   const limit = ref(10)
@@ -35,20 +34,18 @@ export const useUserStore = defineStore('user', () => {
     password: '',
     confirm_password: '',
     name: '',
-    branch_id: 0
+    branch_id: 0,
   }
 
   const initialUpdatePassword: UpdatePassword = {
     current_password: '',
     new_password: '',
-    confirm_password: ''
+    confirm_password: '',
   }
 
   const createUserForm = ref<CreateUser>(structuredClone(initialCreateUser))
 
-  const updatePasswordForm = ref<UpdatePassword>(
-    structuredClone(initialUpdatePassword)
-  )
+  const updatePasswordForm = ref<UpdatePassword>(structuredClone(initialUpdatePassword))
 
   async function getUser(user_id: number) {
     const res = await userService.getUser(user_id)
@@ -59,7 +56,7 @@ export const useUserStore = defineStore('user', () => {
     // admin edit (มี password)
     editedUser.value = {
       ...res.data,
-      password: ''
+      password: '',
     }
   }
 
@@ -76,7 +73,6 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function createUser(user: CreateUser) {
-
     try {
       const res = await userService.createUser(user)
       clearCreateUser()
@@ -93,10 +89,7 @@ export const useUserStore = defineStore('user', () => {
       user_id: user.user_id,
       email: user.email,
       name: user.name,
-
-
     }
-
 
     if (user.password) {
       payload.password = user.password
@@ -197,6 +190,7 @@ export const useUserStore = defineStore('user', () => {
     clearUser,
     clearProfile,
     clearCreateUser,
-    clearUpdatePassword, toggleUserActive
+    clearUpdatePassword,
+    toggleUserActive,
   }
 })

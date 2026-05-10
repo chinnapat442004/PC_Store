@@ -42,7 +42,6 @@ export class ShipmentController {
     return this.shipmentService.update(id, body);
   }
 
-
   @Patch(':id/toggle-active')
   toggleActive(@Param('id', ParseIntPipe) id: number) {
     return this.shipmentService.toggleActive(id);

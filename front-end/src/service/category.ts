@@ -10,11 +10,8 @@ function createCategory(data: CreateCategory) {
 }
 
 function updateCategory(id: number, data: CreateCategory) {
-
   return http.patch(`/category/${id}`, data)
 }
-
-
 
 function toggleCategoryActive(id: number) {
   return http.patch(`/category/${id}/toggle-active`)

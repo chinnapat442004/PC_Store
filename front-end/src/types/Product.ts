@@ -2,7 +2,6 @@ import type { Image } from './Image'
 import type { Category } from './Category'
 import type { OrderDetail } from './OrderDetail'
 
-
 type CreateProductPayload = {
   title: string
   description: string
@@ -10,7 +9,6 @@ type CreateProductPayload = {
   images: Image[]
   categoryId?: number
 }
-
 
 type UpdateProductPayload = Partial<CreateProductPayload> & {
   product_id: number
@@ -31,8 +29,4 @@ type Product = {
   is_active: boolean
 }
 
-export {
-  type CreateProductPayload,
-  type UpdateProductPayload,
-  type Product
-}
+export { type CreateProductPayload, type UpdateProductPayload, type Product }

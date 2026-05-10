@@ -35,7 +35,12 @@ export class BranchsController {
     @Query('search') search: string,
     @Query('onlyActive') onlyActive?: string,
   ) {
-    return this.branchsService.findAll(+page, +limit, search, onlyActive === 'true');
+    return this.branchsService.findAll(
+      +page,
+      +limit,
+      search,
+      onlyActive === 'true',
+    );
   }
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -46,7 +51,6 @@ export class BranchsController {
   update(@Param('id') id: string, @Body() updateBranchDto: UpdateBranchDto) {
     return this.branchsService.update(+id, updateBranchDto);
   }
-
 
   @Patch(':id/toggle-active')
   @UseGuards(AuthGuard('jwt'), RolesGuard)

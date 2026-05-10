@@ -26,49 +26,50 @@ import NotFoundView from '@/views/NotFoundView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
-
     {
       path: '/login',
       component: () => import('@/layouts/AuthLayout.vue'),
-      children: [
-        { path: '', name: 'login', component: LoginView },
-      ],
+      children: [{ path: '', name: 'login', component: LoginView }],
     },
     {
       path: '/register',
       component: () => import('@/layouts/AuthLayout.vue'),
-      children: [
-        { path: '', name: 'register', component: RegisterView },
-      ],
-    }, {
+      children: [{ path: '', name: 'register', component: RegisterView }],
+    },
+    {
       path: '/forgot-password',
       component: () => import('@/layouts/AuthLayout.vue'),
-      children: [
-        { path: '', name: 'forgot-password', component: ForgotPasswordView },
-      ],
+      children: [{ path: '', name: 'forgot-password', component: ForgotPasswordView }],
     },
-
 
     {
       path: '/',
-      component: () => import('@/layouts/CustomerLayout.vue'), meta: { requiresAuth: true, role: 'customer' },
+      component: () => import('@/layouts/CustomerLayout.vue'),
+      meta: { requiresAuth: true, role: 'customer' },
       children: [
         { path: '', name: 'home', component: HomeView, meta: { requiresAuth: false } },
         { path: 'shop', name: 'shop', component: ShopView, meta: { requiresAuth: false } },
         { path: 'cart', name: 'cart', component: CartView, meta: { requiresAuth: false } },
         { path: 'checkout', name: 'checkout', component: CheckoutView },
-        { path: 'dashbord', name: 'dashbord', component: DashboardView, meta: { requiresAuth: false } },
+        {
+          path: 'dashbord',
+          name: 'dashbord',
+          component: DashboardView,
+          meta: { requiresAuth: false },
+        },
         { path: 'product/:id', name: 'product', component: ProductView },
         { path: 'order-success', name: 'order-success', component: OrderSuccessView },
         { path: 'orders', name: 'orders', component: OrderView },
-        { path: 'payment-confirmation/:orderId', name: 'payment-confirmation', component: PaymentConfirmation },
+        {
+          path: 'payment-confirmation/:orderId',
+          name: 'payment-confirmation',
+          component: PaymentConfirmation,
+        },
         { path: 'order-succes/:orderId', name: 'order-succes', component: OrderSuccessView },
         { path: 'order-detail/:orderId', name: 'order-detail', component: OrderDetailView },
         { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue') },
       ],
     },
-
 
     {
       path: '/admin',
@@ -82,55 +83,77 @@ const router = createRouter({
         { path: 'category', name: 'category', component: CategoryView },
         { path: 'shipment', name: 'manager-shipment', component: ShipmentView },
         { path: 'coupon', name: 'coupon', component: CouponView },
-
       ],
-    }, {
+    },
+    {
       path: '/manager',
       component: () => import('@/layouts/AppLayoutLayout.vue'),
       meta: { requiresAuth: true, role: 'manager' },
       children: [
-        { path: '', name: 'manager-dashboard', component: () => import('@/views/manager/DashboardView.vue') },
-        { path: 'orders', name: 'manager-orders', component: () => import('@/views/manager/OrderView.vue') },
-        { path: 'stock', name: 'manager-stock', component: () => import('@/views/manager/StockView.vue') },
-        { path: 'staff', name: 'manager-staff', component: () => import('@/views/manager/StaffView.vue') },
-
+        {
+          path: '',
+          name: 'manager-dashboard',
+          component: () => import('@/views/manager/DashboardView.vue'),
+        },
+        {
+          path: 'orders',
+          name: 'manager-orders',
+          component: () => import('@/views/manager/OrderView.vue'),
+        },
+        {
+          path: 'stock',
+          name: 'manager-stock',
+          component: () => import('@/views/manager/StockView.vue'),
+        },
+        {
+          path: 'staff',
+          name: 'manager-staff',
+          component: () => import('@/views/manager/StaffView.vue'),
+        },
       ],
-    }, {
+    },
+    {
       path: '/staff',
       component: () => import('@/layouts/AppLayoutLayout.vue'),
       meta: { requiresAuth: true, role: 'staff' },
       children: [
-        { path: '', name: 'staff-dashboard', component: () => import('@/views/staff/DashboardView.vue') },
-        { path: 'orders', name: 'staff-orders', component: () => import('@/views/staff/OrderView.vue') },
-        { path: 'stock', name: 'staff-stock', component: () => import('@/views/staff/StockView.vue') },
-
+        {
+          path: '',
+          name: 'staff-dashboard',
+          component: () => import('@/views/staff/DashboardView.vue'),
+        },
+        {
+          path: 'orders',
+          name: 'staff-orders',
+          component: () => import('@/views/staff/OrderView.vue'),
+        },
+        {
+          path: 'stock',
+          name: 'staff-stock',
+          component: () => import('@/views/staff/StockView.vue'),
+        },
       ],
     },
     {
       path: '/403',
       component: () => import('@/layouts/AuthLayout.vue'),
-      children: [
-        { path: '', name: '403', component: ForbiddenView },
-      ],
+      children: [{ path: '', name: '403', component: ForbiddenView }],
     },
     {
       path: '/:pathMatch(.*)*',
       component: () => import('@/layouts/AuthLayout.vue'),
-      children: [
-        { path: '', name: '404', component: NotFoundView },
-      ],
-    }
+      children: [{ path: '', name: '404', component: NotFoundView }],
+    },
   ],
 })
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-
   if (authStore.token && !authStore.user) {
     try {
       await authStore.getCurrentUser()
-    } catch (error) {
+    } catch {
       authStore.clearUser()
       return next({ name: 'login' })
     }
@@ -139,7 +162,6 @@ router.beforeEach(async (to, from, next) => {
   const isAuth = to.meta.requiresAuth
   const requiredRole = to.meta.role as string | undefined
   const userRole = authStore.user?.role
-
 
   if (authStore.token && userRole) {
     if (to.path === '/' || to.name === 'login' || to.name === 'register') {
@@ -155,11 +177,9 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-
   if (isAuth && !authStore.token) {
     return next({ name: 'login' })
   }
-
 
   if (requiredRole && userRole && requiredRole !== userRole) {
     return next({ name: '403' })

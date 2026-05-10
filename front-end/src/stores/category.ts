@@ -12,8 +12,7 @@ export const useCategoryStore = defineStore('category', () => {
     name: '',
   }
 
-  const editedCategory = ref<CreateCategory>(
-    structuredClone(initialCategory))
+  const editedCategory = ref<CreateCategory>(structuredClone(initialCategory))
 
   async function getCategories(onlyActive = false) {
     loadingStore.doLoad()
@@ -33,8 +32,6 @@ export const useCategoryStore = defineStore('category', () => {
     await getCategories()
     resetForm()
   }
-
-
 
   async function toggleCategoryActive(category: Category) {
     try {

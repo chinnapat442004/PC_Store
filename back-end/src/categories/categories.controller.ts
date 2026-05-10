@@ -13,7 +13,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('category')
 export class CategoriesController {
-  constructor(private readonly categoryService: CategoryService) { }
+  constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -38,11 +38,8 @@ export class CategoriesController {
     return this.categoryService.update(+id, updateCategoryDto);
   }
 
-
   @Patch(':id/toggle-active')
   toggleActive(@Param('id') id: string) {
     return this.categoryService.toggleActive(+id);
   }
-
-
 }

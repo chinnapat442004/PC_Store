@@ -10,15 +10,12 @@ function getUser(id: number) {
 }
 
 function createUser(user: CreateUser) {
-
   return http.post('/users', user)
 }
-
 
 function updateUserByAdmin(id: number, user: UpdateUser) {
   return http.patch(`/users/${id}`, user)
 }
-
 
 function toggleUserActive(id: number) {
   return http.patch(`/users/${id}/toggle-active`)
@@ -27,7 +24,6 @@ function toggleUserActive(id: number) {
 function updateMyProfile(user: UpdateProfile) {
   return http.patch('/users/me/profile', user)
 }
-
 
 function changeMyPassword(user: UpdatePassword) {
   return http.patch('/users/me/password', user)
@@ -39,5 +35,6 @@ export default {
   createUser,
   updateUserByAdmin,
   updateMyProfile,
-  changeMyPassword, toggleUserActive
+  changeMyPassword,
+  toggleUserActive,
 }

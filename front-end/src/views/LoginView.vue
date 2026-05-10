@@ -67,7 +67,6 @@ const checkValidate = () => {
   }
 }
 
-
 async function onSubmit() {
   submit.value = true
   try {
@@ -75,9 +74,10 @@ async function onSubmit() {
     await authStore.getCurrentUser()
     await cartStore.getCarts()
     pass()
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.log(error)
-    const msg = error.response?.data?.message
+    const err = error as { response?: { data?: { message?: string } } }
+    const msg = err.response?.data?.message
     notify(msg)
     checkValidate()
   } finally {
@@ -87,39 +87,48 @@ async function onSubmit() {
 </script>
 
 <template>
-
   <div
-    class="bg-[#414141] w-full max-w-[500px] rounded-[10px] shadow-xl flex justify-center items-center flex-col py-[40px] px-[20px]">
+    class="bg-[#414141] w-full max-w-[500px] rounded-[10px] shadow-xl flex justify-center items-center flex-col py-[40px] px-[20px]"
+  >
     <h1 class="text-3xl font-semibold text-center text-white mb-6">Sign in</h1>
 
-
     <form @submit.prevent="onSubmit" class="w-full max-w-[350px]">
-
       <div class="mb-4">
         <label for="email" class="block text-white font-medium">Email:</label>
-        <input type="text" id="username" name="username" placeholder="Enter your email " v-model="authStore.email"
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Enter your email "
+          v-model="authStore.email"
           :class="[
             'w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2',
             passwordError || loginError
               ? 'bg-red-50 border border-red-500  placeholder-red-700 '
               : 'focus:ring-[#202020]',
-          ]" />
+          ]"
+        />
         <p v-if="usernameError" class="text-red-500 text-sm mt-1">
           {{ usernameError }}
         </p>
       </div>
 
-
       <div class="mb-4">
         <label for="password" class="block text-white font-medium">Password:</label>
         <div></div>
-        <input type="password" id="password" name="password" placeholder="Enter your password"
-          v-model="authStore.password" :class="[
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          v-model="authStore.password"
+          :class="[
             'w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2',
             passwordError || loginError
               ? 'bg-red-50 border border-red-500  placeholder-red-700 '
               : 'focus:ring-[#202020]',
-          ]" />
+          ]"
+        />
         <p v-if="passwordError" class="text-red-500 text-sm mt-1">
           {{ passwordError }}
         </p>
@@ -128,10 +137,12 @@ async function onSubmit() {
         </p>
       </div>
 
-
       <div class="flex justify-center">
-        <button type="submit" :disabled="submit"
-          class="bg-[#637aad] hover:bg-[#4a68a8]  w-full px-4 py-2 mt-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#4c5f86] text-[white]">
+        <button
+          type="submit"
+          :disabled="submit"
+          class="bg-[#637aad] hover:bg-[#4a68a8] w-full px-4 py-2 mt-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#4c5f86] text-[white]"
+        >
           <span v-if="submit">Logging in...</span>
           <span v-else>Login</span>
         </button>
@@ -148,5 +159,4 @@ async function onSubmit() {
       </router-link>
     </p>
   </div>
-
 </template>

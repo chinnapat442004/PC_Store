@@ -4,12 +4,7 @@ import ConfirmComponent from '@/components/dialogs/ConfirmComponent.vue'
 import { useProductStore } from '@/stores/product'
 import type { Product } from '@/types/Product'
 import { useCategoryStore } from '@/stores/category'
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOptions,
-  ListboxOption,
-} from '@headlessui/vue'
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
@@ -22,10 +17,12 @@ const categoryStore = useCategoryStore()
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
-const previewImage = ref<string | null>(null);
+const previewImage = ref<string | null>(null)
 const mode = ref<'create' | 'edit'>('create')
 const editingId = ref<number | null>(null)
-const selectedCategory = ref<any>(null)
+import type { Category } from '@/types/Category'
+
+const selectedCategory = ref<Category | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 onMounted(async () => {
@@ -41,17 +38,12 @@ watch(selectedCategory, (val) => {
 watch(
   () => categoryStore.categories,
   (cats) => {
-    if (
-      mode.value === 'edit' &&
-      productStore.editedProduct.categoryId
-    ) {
+    if (mode.value === 'edit' && productStore.editedProduct.categoryId) {
       selectedCategory.value =
-        cats.find(
-          (c) => c.category_id === productStore.editedProduct.categoryId
-        ) || null
+        cats.find((c) => c.category_id === productStore.editedProduct.categoryId) || null
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const openEdit = async (product: Product) => {
@@ -64,7 +56,7 @@ const openEdit = async (product: Product) => {
     price: product.price,
     images: product.images,
     categoryId: product.categoryId,
-    files: []
+    files: [],
   }
 
   if (categoryStore.categories.length === 0) {
@@ -87,7 +79,6 @@ const saveProduct = async () => {
     }
 
     await productStore.getProducts()
-
 
     productStore.clearProduct()
     previewImage.value = null
@@ -126,7 +117,6 @@ const searchProduct = async () => {
   await productStore.getProducts()
 }
 
-
 const handleFileUpload = (event: Event) => {
   const input = event.target as HTMLInputElement
   const files = input.files
@@ -150,24 +140,33 @@ const removeImage = () => {
 </script>
 
 <template>
-
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-white">Product Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="ค้นหาสินค้า..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input
+        type="text"
+        placeholder="ค้นหาสินค้า..."
+        v-model="search"
+        class="border px-3 py-2 rounded w-64"
+      />
 
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="searchProduct()">
+      <button
+        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="searchProduct()"
+      >
         <span class="pi pi-search text-lg"></span>
       </button>
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="clearSearch()">
+      <button
+        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="clearSearch()"
+      >
         <span class="pi pi-times text-lg"></span>
       </button>
       <button
-        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8]  text-white px-4 py-2 rounded-md  transition"
-        @click="openCreateDialog()">
+        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
+        @click="openCreateDialog()"
+      >
         <span class="pi pi-plus text-lg"></span>
         <span>เพิ่มสินค้า</span>
       </button>
@@ -190,9 +189,7 @@ const removeImage = () => {
       </thead>
       <tbody class="divide-y">
         <tr v-if="productStore.products.length === 0">
-          <td colspan="6" class="text-center py-6 text-gray-500">
-            ไม่พบข้อมูล
-          </td>
+          <td colspan="6" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
         <tr v-for="product in productStore.products" :key="product.product_id">
           <td class="text-center align-middle">
@@ -210,18 +207,21 @@ const removeImage = () => {
             <StatusBadge :modelValue="product.is_active" />
           </td>
 
-
           <td class="px-6 py-1 align-middle">
-            <ToggleSwitch :modelValue="product.is_active"
-              @update:modelValue="productStore.toggleProductActive(product.product_id).then(() => productStore.getProducts())" />
+            <ToggleSwitch
+              :modelValue="product.is_active"
+              @update:modelValue="
+                productStore
+                  .toggleProductActive(product.product_id)
+                  .then(() => productStore.getProducts())
+              "
+            />
           </td>
           <td class="px-6 py-1 align-middle">
             <div class="flex justify-center items-center space-x-4">
               <button class="edit-btn" @click="openEdit(product)">
                 <span class="pi pi-pencil"></span>
               </button>
-
-
             </div>
           </td>
         </tr>
@@ -234,7 +234,8 @@ const removeImage = () => {
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ productStore.page }} จาก {{ productStore.lastPage }}</span>
+        {{ productStore.page }} จาก {{ productStore.lastPage }}</span
+      >
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
         ถัดไป <span class="pi pi-chevron-right text-sm"></span>
@@ -250,28 +251,49 @@ const removeImage = () => {
 
       <div class="mb-3">
         <label>ชื่อสินค้า</label>
-        <input v-model="productStore.editedProduct.title" type="text" placeholder="กรอกชื่อสินค้า"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
+        <input
+          v-model="productStore.editedProduct.title"
+          type="text"
+          placeholder="กรอกชื่อสินค้า"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+        />
       </div>
 
       <div class="mb-3">
         <label class="block mb-1 text-sm text-gray-700">อัปโหลดรูปภาพ</label>
 
-        <button type="button" @click="fileInput?.click()"
-          class="px-4 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition">
+        <button
+          type="button"
+          @click="fileInput?.click()"
+          class="px-4 py-2 text-sm bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 transition"
+        >
           เลือกรูปภาพ
         </button>
 
-        <input type="file" accept="image/*" ref="fileInput" class="hidden" @change="handleFileUpload" />
+        <input
+          type="file"
+          accept="image/*"
+          ref="fileInput"
+          class="hidden"
+          @change="handleFileUpload"
+        />
       </div>
 
-      <div class="mt-3 flex justify-center" v-if="previewImage || productStore.editedProduct.images?.length">
+      <div
+        class="mt-3 flex justify-center"
+        v-if="previewImage || productStore.editedProduct.images?.length"
+      >
         <div class="relative">
-          <img :src="previewImage || productStore.editedProduct.images?.[0]?.image"
-            class="w-40 h-40 object-cover rounded-lg border" />
+          <img
+            :src="previewImage || productStore.editedProduct.images?.[0]?.image"
+            class="w-40 h-40 object-cover rounded-lg border"
+          />
 
-          <button v-if="previewImage !== null" @click="removeImage"
-            class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow">
+          <button
+            v-if="previewImage !== null"
+            @click="removeImage"
+            class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow"
+          >
             ✕
           </button>
         </div>
@@ -279,14 +301,21 @@ const removeImage = () => {
 
       <div class="mb-3">
         <label>รายละเอียดสินค้า</label>
-        <textarea v-model="productStore.editedProduct.description" placeholder="กรอกรายละเอียดสินค้า"
-          class="border w-full px-3 py-2 rounded bg-gray-50"></textarea>
+        <textarea
+          v-model="productStore.editedProduct.description"
+          placeholder="กรอกรายละเอียดสินค้า"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+        ></textarea>
       </div>
 
       <div class="mb-3">
         <label>ราคา</label>
-        <input v-model.number="productStore.editedProduct.price" type="number" placeholder="กรอกราคา"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
+        <input
+          v-model.number="productStore.editedProduct.price"
+          type="number"
+          placeholder="กรอกราคา"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+        />
       </div>
 
       <div class="mb-3">
@@ -295,7 +324,8 @@ const removeImage = () => {
         <Listbox v-model="selectedCategory">
           <div class="relative">
             <ListboxButton
-              class="w-full border border-gray-300 bg-gray-50 px-3 py-2 rounded text-left text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-400 flex justify-between items-center">
+              class="w-full border border-gray-300 bg-gray-50 px-3 py-2 rounded text-left text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-400 flex justify-between items-center"
+            >
               <span class="truncate">
                 {{ selectedCategory?.name ?? 'เลือกหมวดหมู่' }}
               </span>
@@ -303,17 +333,29 @@ const removeImage = () => {
               <ChevronUpDownIcon class="w-4 h-4 text-gray-400" />
             </ListboxButton>
 
-            <transition enter-active-class="transition duration-100 ease-out" enter-from-class="opacity-0 scale-95"
-              enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-75 ease-in"
-              leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
+            <transition
+              enter-active-class="transition duration-100 ease-out"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="transition duration-75 ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
+            >
               <ListboxOptions
-                class="absolute z-50 bottom-full mb-1 w-full max-h-60 overflow-auto rounded border border-gray-200 bg-white shadow-md text-sm">
-                <ListboxOption v-for="cat in categoryStore.categories" :key="cat.category_id" :value="cat"
-                  v-slot="{ active, selected }">
-                  <li :class="[
-                    'cursor-pointer px-3 py-2 flex justify-between items-center',
-                    active ? 'bg-gray-100' : '',
-                  ]">
+                class="absolute z-50 bottom-full mb-1 w-full max-h-60 overflow-auto rounded border border-gray-200 bg-white shadow-md text-sm"
+              >
+                <ListboxOption
+                  v-for="cat in categoryStore.categories"
+                  :key="cat.category_id"
+                  :value="cat"
+                  v-slot="{ active, selected }"
+                >
+                  <li
+                    :class="[
+                      'cursor-pointer px-3 py-2 flex justify-between items-center',
+                      active ? 'bg-gray-100' : '',
+                    ]"
+                  >
                     <span :class="selected ? 'font-medium text-gray-900' : 'text-gray-700'">
                       {{ cat.name }}
                     </span>
@@ -323,7 +365,6 @@ const removeImage = () => {
                 </ListboxOption>
               </ListboxOptions>
             </transition>
-
           </div>
         </Listbox>
       </div>
@@ -340,9 +381,13 @@ const removeImage = () => {
     </div>
   </div>
 
-  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
-    @confirm="saveProduct()" @cancel="showConfirm = false" />
-
+  <ConfirmComponent
+    :show="showConfirm"
+    type="save"
+    message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
+    @confirm="saveProduct()"
+    @cancel="showConfirm = false"
+  />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

@@ -2,7 +2,9 @@ import type { CreateProductPayload } from '@/types/Product'
 import http from './http'
 
 function getProducts(page: number, limit: number, search: string, onlyActive?: boolean) {
-  return http.get(`/product?page=${page}&limit=${limit}&search=${search}&onlyActive=${onlyActive || false}`)
+  return http.get(
+    `/product?page=${page}&limit=${limit}&search=${search}&onlyActive=${onlyActive || false}`,
+  )
 }
 
 function getProduct(id: number) {
@@ -30,11 +32,7 @@ function createProduct(product: CreateProductPayload & { files?: File[] }) {
   })
 }
 
-
-function updateProduct(
-  id: number,
-  product: Partial<CreateProductPayload> & { files?: File[] }
-) {
+function updateProduct(id: number, product: Partial<CreateProductPayload> & { files?: File[] }) {
   const formData = new FormData()
 
   if (product.title) formData.append('title', product.title)
@@ -55,7 +53,6 @@ function updateProduct(
   })
 }
 
-
 function toggleProductActive(id: number) {
   return http.patch(`/product/${id}/toggle-active`)
 }
@@ -65,5 +62,5 @@ export default {
   getProduct,
   createProduct,
   updateProduct,
-  toggleProductActive
+  toggleProductActive,
 }

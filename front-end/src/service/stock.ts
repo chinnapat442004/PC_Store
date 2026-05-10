@@ -1,21 +1,20 @@
-import type { UpdateStock } from "@/types/Stock";
-import http from "./http";
+import type { UpdateStock } from '@/types/Stock'
+import http from './http'
 
 function getStocks(page: number, limit: number, search: string) {
   return http.get(`/stock?page=${page}&limit=${limit}&search=${search}`)
 }
 
-
 function getmovements(page: number, limit: number, search: string) {
   return http.get(`/stock/movement?page=${page}&limit=${limit}&search=${search}`)
 }
 
-
-function updateStock(data:UpdateStock) {
-   return http.post('/stock/update', data);
+function updateStock(data: UpdateStock) {
+  return http.post('/stock/update', data)
 }
 
 export default {
-getStocks,updateStock,getmovements
-
+  getStocks,
+  updateStock,
+  getmovements,
 }

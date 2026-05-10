@@ -19,7 +19,7 @@ export class ProductsService {
     private branchRepository: Repository<Branch>,
     @InjectRepository(Stock)
     private stockRepository: Repository<Stock>,
-  ) { }
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     const product = new Product();
@@ -70,10 +70,7 @@ export class ProductsService {
     const skip = (page - 1) * limit;
 
     let where: any = search
-      ? [
-        { title: Like(`%${search}%`) },
-        { description: Like(`%${search}%`) },
-      ]
+      ? [{ title: Like(`%${search}%`) }, { description: Like(`%${search}%`) }]
       : {};
 
     if (onlyActive) {
@@ -156,9 +153,7 @@ export class ProductsService {
     );
 
     const maxStock = stocks.length
-      ? stocks.reduce((max, s) =>
-        s.quantity > max.quantity ? s : max,
-      )
+      ? stocks.reduce((max, s) => (s.quantity > max.quantity ? s : max))
       : null;
 
     const { stocks: _, ...restProduct } = product;
@@ -208,7 +203,6 @@ export class ProductsService {
 
     return product;
   }
-
 
   async toggleActive(product_id: number) {
     const product = await this.productRepository.findOne({

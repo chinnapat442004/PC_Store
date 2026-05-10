@@ -61,9 +61,6 @@ export class User {
   @OneToMany(() => OrderStatusHistory, (status) => status.user)
   orderStatus: OrderStatus[];
 
-  @OneToMany(
-    () => StockMovement,
-    (stockMovement) => stockMovement.ref,
-  )
+  @OneToMany(() => StockMovement, (stockMovement) => stockMovement.ref)
   stockMovements: StockMovement[];
 }

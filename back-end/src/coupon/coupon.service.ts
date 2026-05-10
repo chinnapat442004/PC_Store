@@ -4,7 +4,6 @@ import { UpdateCouponDto } from './dto/update-coupon.dto';
 import { Coupon } from './entities/coupon.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
-import { Role } from 'src/users/enums/role.enum';
 
 @Injectable()
 export class CouponService {
@@ -16,7 +15,12 @@ export class CouponService {
     return this.couponRepository.save(createCouponDto);
   }
 
-  async findAll(page: number, limit: number, search?: string, onlyActive?: boolean) {
+  async findAll(
+    page: number,
+    limit: number,
+    search?: string,
+    onlyActive?: boolean,
+  ) {
     const skip = (page - 1) * limit;
     let where: any = {};
     if (search) {

@@ -1,5 +1,5 @@
-import type { Branch } from "./Branch"
-import type { UserRole } from "./Menu"
+import type { Branch } from './Branch'
+import type { UserRole } from './Menu'
 
 export type User = {
   user_id: number
@@ -26,10 +26,7 @@ export type UpdateUser = {
   email?: string
   name?: string
   password?: string
-
-
 }
-
 
 export type UpdateProfile = {
   name?: string

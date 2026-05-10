@@ -9,8 +9,4 @@ type CreateCategory = {
   name: string
 }
 
-export {
-  type Category,
-  type CreateCategory,
-
-}
+export { type Category, type CreateCategory }

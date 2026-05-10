@@ -15,7 +15,7 @@ export class BranchsService {
     @InjectRepository(Product)
     private productRepository: Repository<Product>,
     @InjectRepository(Stock) private stockRepository: Repository<Stock>,
-  ) { }
+  ) {}
 
   async create(createBranchDto: CreateBranchDto) {
     const branch = this.branchRepository.create(createBranchDto);
@@ -36,15 +36,20 @@ export class BranchsService {
     return savedBranch;
   }
 
-  async findAll(page: number, limit: number, search?: string, onlyActive?: boolean) {
+  async findAll(
+    page: number,
+    limit: number,
+    search?: string,
+    onlyActive?: boolean,
+  ) {
     const skip = (page - 1) * limit;
 
     let where: any = search
       ? [
-        { branch_name: Like(`%${search}%`) },
-        // { address: Like(`%${search}%`) },
-        // { status: Like(`%${search}%`) },
-      ]
+          { branch_name: Like(`%${search}%`) },
+          // { address: Like(`%${search}%`) },
+          // { status: Like(`%${search}%`) },
+        ]
       : {};
 
     if (onlyActive) {
@@ -80,7 +85,6 @@ export class BranchsService {
     await this.branchRepository.update(id, updateBranchDto);
     return this.findOne(id);
   }
-
 
   async toggleActive(branch_id: number) {
     const branch = await this.branchRepository.findOne({

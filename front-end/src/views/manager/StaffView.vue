@@ -31,38 +31,21 @@ const formUser = computed(() => {
   return mode.value === 'create' ? userStore.createUser : userStore.editedUser
 })
 
-
-
-
-
-
-
-
-
-
-
 // create schema
 const createUserSchema = yup.object({
   name: yup.string().required('กรุณากรอกชื่อผู้ใช้'),
-  email: yup
-    .string()
-    .required('กรุณากรอกอีเมล')
-    .email('รูปแบบอีเมลไม่ถูกต้อง'),
+  email: yup.string().required('กรุณากรอกอีเมล').email('รูปแบบอีเมลไม่ถูกต้อง'),
   password: yup.string().required('กรุณากรอกรหัสผ่าน'),
   confirm_password: yup
     .string()
     .required('กรุณายืนยันรหัสผ่าน')
     .oneOf([yup.ref('password')], 'รหัสผ่านไม่ตรงกัน'),
-
 })
 
 // edit schema
 const editUserSchema = yup.object({
   name: yup.string().required('กรุณากรอกชื่อผู้ใช้'),
-  email: yup
-    .string()
-    .required('กรุณากรอกอีเมล')
-    .email('รูปแบบอีเมลไม่ถูกต้อง'),
+  email: yup.string().required('กรุณากรอกอีเมล').email('รูปแบบอีเมลไม่ถูกต้อง'),
   password: yup.string().nullable().notRequired(),
 })
 
@@ -70,9 +53,7 @@ const editUserSchema = yup.object({
 const {
   errors: createErrors,
   defineField: defineFieldCreate,
-  setFieldValue: setFieldValueCreate,
   validate: validateCreate,
-  resetForm: resetFormCreate,
 } = useForm({
   validationSchema: createUserSchema,
   validateOnMount: false,
@@ -82,7 +63,6 @@ const {
 const {
   errors: editErrors,
   defineField: defineFieldEdit,
-  setFieldValue: setFieldValueEdit,
   validate: validateEdit,
   resetForm: resetFormEdit,
 } = useForm({
@@ -99,20 +79,6 @@ const [nameEdit] = defineFieldEdit('name')
 const [emailEdit] = defineFieldEdit('email')
 const [passwordEdit] = defineFieldEdit('password')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const openEdit = (user: User) => {
   mode.value = 'edit'
   userStore.editedUser = { ...user, password: '' }
@@ -122,7 +88,7 @@ const openEdit = (user: User) => {
       email: user.email,
       password: '',
       //
-    }
+    },
   })
   showDialog.value = true
 }
@@ -133,9 +99,6 @@ const saveUser = async () => {
       email: emailCreate.value,
       password: passwordCreate.value,
       confirm_password: confirmPasswordCreate.value,
-
-
-
     }
     await userStore.createUser(payload as CreateUser)
   } else if (mode.value === 'edit' && userStore.editedUser) {
@@ -144,7 +107,6 @@ const saveUser = async () => {
       name: nameEdit.value,
       email: emailEdit.value,
       password: passwordEdit.value,
-
     }
     await userStore.updateUserByAdmin(payload)
   }
@@ -196,7 +158,6 @@ const clearSearch = async () => {
   await userStore.getUsers()
 }
 
-
 const preSave = async () => {
   if (mode.value === 'create') {
     const { valid } = await validateCreate()
@@ -214,20 +175,31 @@ const preSave = async () => {
     <h1 class="text-3xl font-bold text-white">Staff Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="ค้นหาผู้ใช้..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input
+        type="text"
+        placeholder="ค้นหาผู้ใช้..."
+        v-model="search"
+        class="border px-3 py-2 rounded w-64"
+      />
 
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="searchUser()">
+      <button
+        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="searchUser()"
+      >
         <span class="pi pi-search text-lg"></span>
       </button>
 
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="clearSearch()">
+      <button
+        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="clearSearch()"
+      >
         <span class="pi pi-times text-lg"></span>
       </button>
 
-      <button class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
-        @click="openCreateDialog()">
+      <button
+        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
+        @click="openCreateDialog()"
+      >
         <span class="pi pi-plus text-lg"></span>
         <span>สร้าง</span>
       </button>
@@ -250,9 +222,7 @@ const preSave = async () => {
 
       <tbody class="divide-y">
         <tr v-if="userStore.users.length === 0">
-          <td colspan="6" class="text-center py-6 text-gray-500">
-            ไม่พบข้อมูล
-          </td>
+          <td colspan="6" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
 
         <tr v-else v-for="user in userStore.users" :key="user.user_id">
@@ -266,9 +236,12 @@ const preSave = async () => {
           </td>
 
           <td>
-
-            <ToggleSwitch :modelValue="user.is_active"
-              @update:modelValue="userStore.toggleUserActive(user.user_id).then(() => userStore.getUsers())" />
+            <ToggleSwitch
+              :modelValue="user.is_active"
+              @update:modelValue="
+                userStore.toggleUserActive(user.user_id).then(() => userStore.getUsers())
+              "
+            />
           </td>
           <td class="px-6 py-3 flex justify-center space-x-2">
             <button class="edit-btn" @click="openEdit(user)">
@@ -284,9 +257,7 @@ const preSave = async () => {
         <span class="pi pi-chevron-left text-sm"></span> ก่อนหน้า
       </button>
 
-      <span class="text-sm text-gray-600">
-        {{ userStore.page }} / {{ userStore.lastPage }}
-      </span>
+      <span class="text-sm text-gray-600"> {{ userStore.page }} / {{ userStore.lastPage }} </span>
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
         ถัดไป <span class="pi pi-chevron-right text-sm"></span>
@@ -303,84 +274,120 @@ const preSave = async () => {
       <template v-if="mode === 'create'">
         <div class="mb-3">
           <label class="text-sm font-medium">ชื่อผู้ใช้</label>
-          <input v-model="nameCreate" type="text" placeholder="กรอกชื่อผู้ใช้"
-            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.name }" />
+          <input
+            v-model="nameCreate"
+            type="text"
+            placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': createErrors.name }"
+          />
           <p v-if="createErrors.name" class="text-red-500 text-xs mt-1">{{ createErrors.name }}</p>
         </div>
 
         <div class="mb-3">
           <label class="text-sm font-medium">อีเมล</label>
-          <input v-model="emailCreate" type="email" placeholder="กรอกอีเมล"
-            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.email }" />
-          <p v-if="createErrors.email" class="text-red-500 text-xs mt-1">{{ createErrors.email }}</p>
+          <input
+            v-model="emailCreate"
+            type="email"
+            placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': createErrors.email }"
+          />
+          <p v-if="createErrors.email" class="text-red-500 text-xs mt-1">
+            {{ createErrors.email }}
+          </p>
         </div>
 
         <div class="mb-3">
           <label class="text-sm font-medium">รหัสผ่าน</label>
-          <input v-model="passwordCreate" type="password" placeholder="กรอกรหัสผ่าน"
-            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.password }" />
-          <p v-if="createErrors.password" class="text-red-500 text-xs mt-1">{{ createErrors.password }}</p>
+          <input
+            v-model="passwordCreate"
+            type="password"
+            placeholder="กรอกรหัสผ่าน"
+            class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': createErrors.password }"
+          />
+          <p v-if="createErrors.password" class="text-red-500 text-xs mt-1">
+            {{ createErrors.password }}
+          </p>
         </div>
 
         <div class="mb-3">
           <label class="text-sm font-medium">ยืนยันรหัสผ่าน</label>
-          <input v-model="confirmPasswordCreate" type="password" placeholder="ยืนยันรหัสผ่าน"
+          <input
+            v-model="confirmPasswordCreate"
+            type="password"
+            placeholder="ยืนยันรหัสผ่าน"
             class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.confirm_password }" />
+            :class="{ 'border-red-500': createErrors.confirm_password }"
+          />
           <p v-if="createErrors.confirm_password" class="text-red-500 text-xs mt-1">
             {{ createErrors.confirm_password }}
           </p>
         </div>
-
-
       </template>
 
       <template v-else-if="mode === 'edit' && userStore.editedUser">
         <div class="mb-3">
           <label class="text-sm font-medium">ชื่อผู้ใช้</label>
-          <input v-model="nameEdit" type="text" placeholder="กรอกชื่อผู้ใช้"
-            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.name }" />
+          <input
+            v-model="nameEdit"
+            type="text"
+            placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': editErrors.name }"
+          />
           <p v-if="editErrors.name" class="text-red-500 text-xs mt-1">{{ editErrors.name }}</p>
         </div>
 
         <div class="mb-3">
           <label class="text-sm font-medium">อีเมล</label>
-          <input v-model="emailEdit" type="email" placeholder="กรอกอีเมล"
-            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.email }" />
+          <input
+            v-model="emailEdit"
+            type="email"
+            placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': editErrors.email }"
+          />
           <p v-if="editErrors.email" class="text-red-500 text-xs mt-1">{{ editErrors.email }}</p>
         </div>
 
         <div class="mb-4">
           <label class="text-sm font-medium text-gray-700">รหัสผ่านใหม่</label>
           <div class="mt-1 border rounded-lg p-3 bg-gray-50">
-            <input v-model="passwordEdit" type="password" placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน"
-              class="w-full px-3 py-2 rounded bg-white border" />
-            <p class="text-xs text-gray-500 mt-1">
-              หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้
-            </p>
+            <input
+              v-model="passwordEdit"
+              type="password"
+              placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน"
+              class="w-full px-3 py-2 rounded bg-white border"
+            />
+            <p class="text-xs text-gray-500 mt-1">หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้</p>
           </div>
         </div>
-
-
       </template>
 
       <div class="flex justify-center gap-4">
-        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">
-          ปิด
-        </button>
+        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog()">ปิด</button>
 
-        <button class="bg-green-500 text-white px-4 py-1 rounded" @click="preSave()">
-          บันทึก
-        </button>
+        <button class="bg-green-500 text-white px-4 py-1 rounded" @click="preSave()">บันทึก</button>
       </div>
     </div>
   </div>
 
-  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้หรือไม่" @confirm="saveUser()"
-    @cancel="showConfirm = false" />
+  <ConfirmComponent
+    :show="showConfirm"
+    type="save"
+    message="คุณต้องการบันทึกข้อมูลนี้หรือไม่"
+    @confirm="saveUser()"
+    @cancel="showConfirm = false"
+  />
 
-  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้หรือไม่"
-    @cancel="closeDialogDelete()" />
+  <ConfirmComponent
+    :show="deleteConfirm"
+    type="delete"
+    message="คุณต้องการลบข้อมูลนี้หรือไม่"
+    @cancel="closeDialogDelete()"
+  />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

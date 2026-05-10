@@ -2,7 +2,9 @@ import type { Branch } from '@/types/Branch'
 import http from './http'
 
 function getBranches(page: number, limit: number, search: string, onlyActive?: boolean) {
-  return http.get(`/branch?page=${page}&limit=${limit}&search=${search}&onlyActive=${onlyActive || false}`)
+  return http.get(
+    `/branch?page=${page}&limit=${limit}&search=${search}&onlyActive=${onlyActive || false}`,
+  )
 }
 
 function createBranch(branch: Branch) {
@@ -12,7 +14,6 @@ function createBranch(branch: Branch) {
 function updateBranch(branch: Branch) {
   return http.patch(`/branch/${branch.branch_id}`, branch)
 }
-
 
 function toggleBranchActive(id: number) {
   return http.patch(`/branch/${id}/toggle-active`)

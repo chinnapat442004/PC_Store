@@ -11,7 +11,7 @@ export class AuthService {
   constructor(
     private usersService: UserService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   async signIn(email: string, pass: string) {
     const user = await this.usersService.findOneByEmail(email);
@@ -20,12 +20,16 @@ export class AuthService {
     }
 
     if (!user.is_active) {
-      throw new UnauthorizedException('บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
+      throw new UnauthorizedException(
+        'บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ',
+      );
     }
 
     if (user.branch) {
       if (!user.branch.is_active)
-        throw new UnauthorizedException('สาขาของคุณถูกปิดการใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
+        throw new UnauthorizedException(
+          'สาขาของคุณถูกปิดการใช้งาน กรุณาติดต่อผู้ดูแลระบบ',
+        );
     }
 
     const isMatch = await bcrypt.compare(pass, user.password);

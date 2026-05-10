@@ -7,7 +7,6 @@ import { useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
 
-
 const authStore = useAuthStore()
 const router = useRouter()
 const submit = ref(false)
@@ -18,8 +17,6 @@ const emailError = ref('')
 const passwordError = ref('')
 const confirmPasswordError = ref('')
 const valind = ref(true)
-
-
 
 watch(
   [
@@ -103,7 +100,6 @@ async function onRegister() {
       return
     }
 
-
     const email = authStore.registerUser.email
     const password = authStore.registerUser.password
 
@@ -136,19 +132,24 @@ async function onRegister() {
 </script>
 
 <template>
-
-  <div class=" bg-[#414141] py-[25px] px-[20px] 
-       w-full max-w-[500px] rounded-[10px] shadow-xl flex flex-col justify-center items-center">
+  <div
+    class="bg-[#414141] py-[25px] px-[20px] w-full max-w-[500px] rounded-[10px] shadow-xl flex flex-col justify-center items-center"
+  >
     <h1 class="text-3xl font-semibold text-white mb-6">Register</h1>
     <form @submit.prevent="onRegister" class="w-full max-w-[350px]">
       <div class="mb-4">
         <label class="text-white">Username:</label>
-        <input v-model="authStore.registerUser.name" type="text" :class="[
-          'w-full px-4 py-2 mt-2 border rounded-lg',
-          usernameError
-            ? 'bg-red-50 border border-red-500  placeholder-red-700 '
-            : 'focus:ring-[#202020]',
-        ]" placeholder="Enter your username" />
+        <input
+          v-model="authStore.registerUser.name"
+          type="text"
+          :class="[
+            'w-full px-4 py-2 mt-2 border rounded-lg',
+            usernameError
+              ? 'bg-red-50 border border-red-500  placeholder-red-700 '
+              : 'focus:ring-[#202020]',
+          ]"
+          placeholder="Enter your username"
+        />
         <p v-if="!valind" class="text-red-500 text-sm mt-1">
           {{ usernameError }}
         </p>
@@ -156,49 +157,69 @@ async function onRegister() {
 
       <div class="mb-4">
         <label class="text-white">Email:</label>
-        <input v-model="authStore.registerUser.email" type="text" :class="[
-          'w-full px-4 py-2 mt-2 border rounded-lg',
-          emailError
-            ? 'bg-red-50 border border-red-500  placeholder-red-700 '
-            : 'focus:ring-[#202020]',
-        ]" placeholder="Enter your email" />
+        <input
+          v-model="authStore.registerUser.email"
+          type="text"
+          :class="[
+            'w-full px-4 py-2 mt-2 border rounded-lg',
+            emailError
+              ? 'bg-red-50 border border-red-500  placeholder-red-700 '
+              : 'focus:ring-[#202020]',
+          ]"
+          placeholder="Enter your email"
+        />
         <p v-if="!valind" class="text-red-500 text-sm mt-1">
           {{ emailError }}
         </p>
       </div>
       <div class="mb-4">
         <label class="text-white">Password:</label>
-        <input v-model="authStore.registerUser.password" type="password" :class="[
-          'w-full px-4 py-2 mt-2 border rounded-lg',
-          passwordError
-            ? 'bg-red-50 border border-red-500  placeholder-red-700 '
-            : 'focus:ring-[#202020]',
-        ]" placeholder="Enter your password" />
+        <input
+          v-model="authStore.registerUser.password"
+          type="password"
+          :class="[
+            'w-full px-4 py-2 mt-2 border rounded-lg',
+            passwordError
+              ? 'bg-red-50 border border-red-500  placeholder-red-700 '
+              : 'focus:ring-[#202020]',
+          ]"
+          placeholder="Enter your password"
+        />
         <p v-if="!valind" class="text-red-500 text-sm mt-1">
           {{ passwordError }}
         </p>
       </div>
       <div class="mb-4">
         <label class="text-white">Confirm Password:</label>
-        <input v-model="authStore.registerUser.confirm_password" type="password" :class="[
-          'w-full px-4 py-2 mt-2 border rounded-lg',
-          confirmPasswordError
-            ? 'bg-red-50 border border-red-500  placeholder-red-700 '
-            : 'focus:ring-[#202020]',
-        ]" placeholder="Confirm password" />
+        <input
+          v-model="authStore.registerUser.confirm_password"
+          type="password"
+          :class="[
+            'w-full px-4 py-2 mt-2 border rounded-lg',
+            confirmPasswordError
+              ? 'bg-red-50 border border-red-500  placeholder-red-700 '
+              : 'focus:ring-[#202020]',
+          ]"
+          placeholder="Confirm password"
+        />
         <p v-if="!valind" class="text-red-500 text-sm mt-1">
           {{ confirmPasswordError }}
         </p>
       </div>
 
-      <button type="submit" :disabled="submit" class="bg-[#637aad] w-full px-4 py-2 mt-2 rounded-lg text-white">
+      <button
+        type="submit"
+        :disabled="submit"
+        class="bg-[#637aad] w-full px-4 py-2 mt-2 rounded-lg text-white"
+      >
         <span v-if="submit">Registering...</span>
         <span v-else>Register</span>
       </button>
     </form>
     <p class="mt-4 text-white text-sm">
-      <router-link to="/login" class="text-[#637aad] hover:underline">กลับไปยังหน้า Login</router-link>
+      <router-link to="/login" class="text-[#637aad] hover:underline"
+        >กลับไปยังหน้า Login</router-link
+      >
     </p>
   </div>
-
 </template>

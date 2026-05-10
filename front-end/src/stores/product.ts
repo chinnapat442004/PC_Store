@@ -5,7 +5,6 @@ import productService from '@/service/product'
 import { useLoadingStore } from './loading'
 
 export const useProductStore = defineStore('product', () => {
-
   const products = ref<Product[]>([])
   const product = ref<Product>()
   const loadingStore = useLoadingStore()
@@ -20,7 +19,7 @@ export const useProductStore = defineStore('product', () => {
   }
 
   const editedProduct = ref<CreateProductPayload & { files: File[] }>(
-    JSON.parse(JSON.stringify(initialProduct))
+    JSON.parse(JSON.stringify(initialProduct)),
   )
 
   const page = ref(1)
@@ -29,11 +28,14 @@ export const useProductStore = defineStore('product', () => {
   const total = ref(0)
   const search = ref('')
 
-
-  async function getProducts(p = page.value, l = limit.value, s = search.value, onlyActive = false) {
+  async function getProducts(
+    p = page.value,
+    l = limit.value,
+    s = search.value,
+    onlyActive = false,
+  ) {
     loadingStore.doLoad()
     try {
-
       const res = await productService.getProducts(p, l, s, onlyActive)
       products.value = res.data.data
       page.value = res.data.page
@@ -43,7 +45,6 @@ export const useProductStore = defineStore('product', () => {
       loadingStore.finishLoad()
     }
   }
-
 
   async function getProduct(id: number) {
     loadingStore.doLoad()
@@ -58,13 +59,12 @@ export const useProductStore = defineStore('product', () => {
         price: product.value.price,
         images: product.value.images,
         categoryId: product.value.category?.category_id ?? undefined,
-        files: []
+        files: [],
       }
     } finally {
       loadingStore.finishLoad()
     }
   }
-
 
   async function addProduct() {
     loadingStore.doLoad()
@@ -81,7 +81,6 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
-
   async function updateProduct(id: number) {
     loadingStore.doLoad()
     try {
@@ -96,8 +95,6 @@ export const useProductStore = defineStore('product', () => {
       loadingStore.finishLoad()
     }
   }
-
-
 
   async function toggleProductActive(product_id: number) {
     try {
@@ -140,6 +137,6 @@ export const useProductStore = defineStore('product', () => {
     limit,
     lastPage,
     total,
-    search
+    search,
   }
 })

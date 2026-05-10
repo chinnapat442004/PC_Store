@@ -27,7 +27,12 @@ export class CouponController {
     @Query('search') search?: string,
     @Query('onlyActive') onlyActive?: string,
   ) {
-    return this.couponService.findAll(+page, +limit, search, onlyActive === 'true');
+    return this.couponService.findAll(
+      +page,
+      +limit,
+      search,
+      onlyActive === 'true',
+    );
   }
 
   @Get(':id')

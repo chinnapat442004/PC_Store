@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
     password: '',
     confirm_password: '',
     name: '',
-    branch_id: 0
+    branch_id: 0,
   }
 
   const registerUser = ref<CreateUser>(structuredClone(initialCreateUser))
@@ -76,6 +76,6 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     clearUser,
     getCurrentUser,
-    register
+    register,
   }
 })

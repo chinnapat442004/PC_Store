@@ -1,4 +1,4 @@
-import type { User } from "./User"
+import type { User } from './User'
 
 export type StockItem = {
   id: number
@@ -12,10 +12,9 @@ export type StockItem = {
   is_active: boolean
 }
 
-
 export type UpdateStock = {
   product_id: number
-  quantity: number;
+  quantity: number
   ref_id?: number
   note?: string
 }

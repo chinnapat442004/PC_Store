@@ -4,7 +4,7 @@ import { useCartStore } from '../stores/cart'
 import { IonIcon } from '@ionic/vue'
 import { menu, close, person } from 'ionicons/icons'
 import { useRoute, useRouter } from 'vue-router'
-import { onBeforeUnmount, onMounted, ref, computed, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, computed } from 'vue'
 import { toast } from 'vue3-toastify'
 
 const authStore = useAuthStore()
@@ -19,12 +19,10 @@ const checkMenu = ref(false)
 const isToastActive = ref(false)
 
 const menus = [
-  { name: 'home', label: 'Home', path: { name: 'home' }, activeRoutes: ['home',] },
+  { name: 'home', label: 'Home', path: { name: 'home' }, activeRoutes: ['home'] },
   { name: 'shop', label: 'Shop', path: { name: 'shop' }, activeRoutes: ['shop', 'product'] },
   { name: 'cart', label: 'Cart', path: { name: 'cart' }, activeRoutes: ['cart', 'checkout'] },
 ]
-
-
 
 function checkAuthStatus() {
   const token = localStorage.getItem('access_token')
@@ -62,7 +60,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', checkScreenSize)
 })
 
-
 const userInitials = computed(() => {
   if (!authStore.user?.name) return ''
 
@@ -74,8 +71,6 @@ const userInitials = computed(() => {
 
   return (words[0][0] + words[1][0]).toUpperCase()
 })
-
-
 
 async function logout() {
   await authStore.clearUser()
@@ -107,24 +102,23 @@ const goToOrders = () => {
 <template>
   <header class="shadow-lg py-[10px] px-[5px] md:px-[30px] bg-[#202020] fixed top-0 left-0 w-full z-50">
     <div class="flex justify-between items-center w-[92%] mx-auto md:gap-4">
-
       <div class="md:hidden">
         <IonIcon @click="toggleMenu" :icon="open ? close : menu" class="text-3xl cursor-pointer text-white" />
       </div>
 
       <div class="flex items-center md:gap-10">
-        <div class="text-[30px] text-white">LOGO </div>
+        <div class="text-[30px] text-white">LOGO</div>
 
         <div class="md:static absolute left-0 top-[65px] w-full bg-[#202020]"
           :class="{ 'hidden md:block': !isMenuOpen }">
           <ul class="flex md:flex-row flex-col md:gap-4 items-center justify-center">
-
             <li v-for="menu in menus" :key="menu.name" @click="closeMenu">
               <router-link :to="menu.path"
                 class="md:w-[80px] w-[400px] md:h-[40px] h-[60px] flex items-center justify-center font-semibold rounded-[5px] duration-300 hover:bg-[#333333] md:hover:bg-[#6d717a] relative"
                 :class="menu.activeRoutes.includes(route.name as string)
-                  ? 'md:bg-[#979dac] bg-[#2E2E2E] text-white'
-                  : 'bg-[#202020] text-white'">
+                    ? 'md:bg-[#979dac] bg-[#2E2E2E] text-white'
+                    : 'bg-[#202020] text-white'
+                  ">
                 {{ menu.label }}
 
                 <span v-if="menu.name === 'cart' && cartStore.cartDetailCount > 0"
@@ -133,27 +127,20 @@ const goToOrders = () => {
                 </span>
               </router-link>
             </li>
-
           </ul>
         </div>
       </div>
 
       <div class="flex gap-4 items-center justify-center">
-        <button @click="checkMenu = !checkMenu" class="w-[40px] h-[40px] rounded-full border-2 flex items-center justify-center
-           hover:text-[#333] hover:bg-[#979dac] duration-300 overflow-hidden">
-
-
+        <button @click="checkMenu = !checkMenu"
+          class="w-[40px] h-[40px] rounded-full border-2 flex items-center justify-center hover:text-[#333] hover:bg-[#979dac] duration-300 overflow-hidden">
           <IonIcon v-if="!isLogin" :icon="person" class="text-2xl text-white" />
-
 
           <span v-else
             class="w-full h-full flex items-center justify-center bg-[#637aad] hover:bg-[#4a68a8] text-white font-semibold">
             {{ userInitials }}
           </span>
-
         </button>
-
-
 
         <div v-if="checkMenu && !isLogin"
           class="bg-white absolute w-[170px] h-[120px] top-14 rounded-[10px] shadow-lg flex flex-col items-center justify-center gap-2 md:right-auto right-0">
@@ -182,10 +169,8 @@ const goToOrders = () => {
             ออกจากระบบ
           </button>
         </div>
-
       </div>
     </div>
-
   </header>
 
   <div class="pb-[60px]"></div>

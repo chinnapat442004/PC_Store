@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { useLoadingStore } from '@/stores/loading'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { onMounted, ref, watch } from 'vue'
@@ -8,12 +7,10 @@ import { useOrderStore } from '@/stores/order'
 import { OrderStatusColor, OrderStatusLabelCustomer } from '@/constants/orderStatus'
 import router from '@/router'
 
-
 const orderStore = useOrderStore()
 const loadingStore = useLoadingStore()
 
-
-const tab = ref<typeof tabs[number]['key']>('all')
+const tab = ref<(typeof tabs)[number]['key']>('all')
 
 type Tab = {
   key: string
@@ -24,7 +21,7 @@ type Tab = {
 const tabs = [
   { key: 'all', label: 'ทั้งหมด' },
   { key: 'pending', label: 'รอชำระเงิน', status: ['pending', 'waiting_verify'] as OrderStatus[] },
-  { key: 'processing', label: 'กำลังดำเนินการ', status: ['confirmed', 'picking',] as OrderStatus[] },
+  { key: 'processing', label: 'กำลังดำเนินการ', status: ['confirmed', 'picking'] as OrderStatus[] },
   { key: 'shipped', label: 'กำลังจัดส่ง', status: ['shipped'] as OrderStatus[] },
   { key: 'done', label: 'สำเร็จ', status: ['done'] as OrderStatus[] },
   { key: 'cancelled', label: 'ยกเลิก', status: ['cancelled'] as OrderStatus[] },
@@ -32,27 +29,17 @@ const tabs = [
 
 onMounted(async () => {
   await fetchOrders()
-
 })
-
-
-
 
 watch(tab, async () => {
   orderStore.page = 1
   await fetchOrders()
 })
 
-
 const fetchOrders = async () => {
-  const selectedTab = tabs.find(t => t.key === tab.value)
-  await orderStore.getOrdersByCustomer(
-    orderStore.page,
-    orderStore.limit,
-    selectedTab?.status
-  )
+  const selectedTab = tabs.find((t) => t.key === tab.value)
+  await orderStore.getOrdersByCustomer(orderStore.page, orderStore.limit, selectedTab?.status)
 }
-
 
 const nextPage = async () => {
   if (orderStore.page < orderStore.lastPage) {
@@ -68,7 +55,6 @@ const prevPage = async () => {
   }
 }
 
-
 const cancelOrder = async (orderId: number) => {
   try {
     await orderStore.updateStatus(orderId, { status: 'cancelled' })
@@ -79,7 +65,7 @@ const cancelOrder = async (orderId: number) => {
 }
 
 const createUpdatePayload = (status: OrderStatus): UpdateOrder => ({
-  status: status
+  status: status,
 })
 
 const payOrder = async (orderId: number) => {
@@ -87,7 +73,7 @@ const payOrder = async (orderId: number) => {
     await fetchOrders()
     router.push({
       name: 'payment-confirmation',
-      params: { orderId: orderId }
+      params: { orderId: orderId },
     })
   } catch (err) {
     console.error(err)
@@ -103,13 +89,9 @@ const confirmReceived = async (orderId: number) => {
   }
 }
 
-
 const getCountByTab = (t: Tab) => {
   if (t.key === 'all') {
-    return Object.values(orderStore.counts || {}).reduce(
-      (sum, count) => sum + count,
-      0
-    )
+    return Object.values(orderStore.counts || {}).reduce((sum, count) => sum + count, 0)
   }
   if (!t.status) return 0
   return t.status.reduce((sum, s) => {
@@ -120,22 +102,20 @@ const getCountByTab = (t: Tab) => {
 const goToOrderDetail = (orderId: number) => {
   router.push({ name: 'order-detail', params: { orderId: orderId } })
 }
-
 </script>
 <template>
   <LoadingComponent v-model="loadingStore.loading" />
   <div
-    class=" w-full min-h-screen flex flex-col items-center gap-2 md:gap-3  py-[10px] md:py-[30px] px-[10px] md:px-[20px]">
-    <div class="w-full max-w-[750px] flex bg-gray-100 rounded-xl ">
-      <button v-for="t in tabs" :key="t.key" @click="tab = t.key" class="flex-1 py-2 
-         text-xs sm:text-sm 
-         font-semibold 
-         rounded-lg transition 
-         flex items-center justify-center gap-1" :class="tab === t.key
-          ? 'bg-white shadow text-black'
-          : 'text-gray-500'">
-
-
+    class="w-full min-h-screen flex flex-col items-center gap-2 md:gap-3 py-[10px] md:py-[30px] px-[10px] md:px-[20px]"
+  >
+    <div class="w-full max-w-[750px] flex bg-gray-100 rounded-xl">
+      <button
+        v-for="t in tabs"
+        :key="t.key"
+        @click="tab = t.key"
+        class="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition flex items-center justify-center gap-1"
+        :class="tab === t.key ? 'bg-white shadow text-black' : 'text-gray-500'"
+      >
         <span>
           {{ t.label }}
         </span>
@@ -143,43 +123,39 @@ const goToOrderDetail = (orderId: number) => {
         <span class="text-[10px] sm:text-xs md:text-sm font-bold text-red-500">
           ({{ getCountByTab(t) }})
         </span>
-
       </button>
     </div>
-    <div v-if="!orderStore.orders || orderStore.orders.length === 0"
-      class="w-full max-w-[750px] bg-white border rounded-xl shadow-sm p-8 flex flex-col items-center justify-center text-center">
-
-
-
+    <div
+      v-if="!orderStore.orders || orderStore.orders.length === 0"
+      class="w-full max-w-[750px] bg-white border rounded-xl shadow-sm p-8 flex flex-col items-center justify-center text-center"
+    >
       <span class="pi pi-box text-5xl mb-3 text-gray-700"></span>
 
-      <div class="text-lg font-semibold text-gray-700 mb-1">
-        ไม่มีรายการคำสั่งซื้อ
-      </div>
+      <div class="text-lg font-semibold text-gray-700 mb-1">ไม่มีรายการคำสั่งซื้อ</div>
 
-      <div class="text-sm text-gray-500 mb-4">
-        ยังไม่มีคำสั่งซื้อในหมวดนี้
-      </div>
-
-
-
+      <div class="text-sm text-gray-500 mb-4">ยังไม่มีคำสั่งซื้อในหมวดนี้</div>
     </div>
     <template v-else>
-      <div v-for="order in orderStore.orders" :key="order.order_id"
+      <div
+        v-for="order in orderStore.orders"
+        :key="order.order_id"
         class="bg-white p-4 rounded-xl w-full max-w-[750px] shadow-sm border flex flex-col gap-3 cursor-pointer hover:shadow-md transition-shadow"
-        @click="goToOrderDetail(order.order_id)">
-
+        @click="goToOrderDetail(order.order_id)"
+      >
         <div class="flex justify-between items-center">
           <div class="flex gap-5">
-            <div class="font-semibold text-sm sm:text-base">
-              ออเดอร์ #{{ order.order_id }}
-            </div>
-            <div class="text-xs sm:text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+            <div class="font-semibold text-sm sm:text-base">ออเดอร์ #{{ order.order_id }}</div>
+            <div
+              class="text-xs sm:text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium"
+            >
               ส่งจากสาขา {{ order.branch.branch_name }}
             </div>
           </div>
 
-          <span class="px-3 py-1 rounded-full text-xs font-semibold" :class="OrderStatusColor[order.order_status]">
+          <span
+            class="px-3 py-1 rounded-full text-xs font-semibold"
+            :class="OrderStatusColor[order.order_status]"
+          >
             {{ OrderStatusLabelCustomer[order.order_status] }}
           </span>
         </div>
@@ -187,9 +163,15 @@ const goToOrderDetail = (orderId: number) => {
         <div class="border-t"></div>
 
         <div class="flex flex-col gap-3">
-          <div v-for="detail in order.details" :key="detail.order_detail_id" class="flex items-center gap-3">
-            <img :src="detail.product_image"
-              class="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] object-cover rounded-md border" />
+          <div
+            v-for="detail in order.details"
+            :key="detail.order_detail_id"
+            class="flex items-center gap-3"
+          >
+            <img
+              :src="detail.product_image"
+              class="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] object-cover rounded-md border"
+            />
 
             <div class="flex-1 flex flex-col gap-1">
               <div class="flex justify-between items-start gap-2">
@@ -214,28 +196,27 @@ const goToOrderDetail = (orderId: number) => {
         <div class="border-t"></div>
 
         <div class="flex justify-between items-center">
-          <div class="font-semibold text-base">
-            รวม ฿{{ order.total_amount }}
-          </div>
+          <div class="font-semibold text-base">รวม ฿{{ order.total_amount }}</div>
 
           <div class="flex gap-2" @click.stop>
-
-
-            <button class="px-3 py-1 text-sm border rounded-lg hover:bg-gray-100"
-              @click="goToOrderDetail(order.order_id)">
+            <button
+              class="px-3 py-1 text-sm border rounded-lg hover:bg-gray-100"
+              @click="goToOrderDetail(order.order_id)"
+            >
               ดูรายละเอียด
             </button>
 
             <template v-if="order.order_status === 'pending'">
-              <button class="px-3 py-1 text-sm 
-           bg-gray-200 hover:bg-gray-300 
-           border border-gray-400 
-           text-gray-800
-           rounded-lg transition" @click="cancelOrder(order.order_id)">
+              <button
+                class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 border border-gray-400 text-gray-800 rounded-lg transition"
+                @click="cancelOrder(order.order_id)"
+              >
                 ยกเลิก
               </button>
-              <button class="px-3 py-1 text-sm bg-[#637aad] hover:bg-[#4a68a8] text-white rounded-lg"
-                @click="payOrder(order.order_id)">
+              <button
+                class="px-3 py-1 text-sm bg-[#637aad] hover:bg-[#4a68a8] text-white rounded-lg"
+                @click="payOrder(order.order_id)"
+              >
                 ชำระเงิน
               </button>
             </template>
@@ -245,34 +226,36 @@ const goToOrderDetail = (orderId: number) => {
             </template>
 
             <template v-else-if="order.order_status === 'shipped'">
-              <button class="px-3 py-1 text-sm bg-[#637aad] hover:bg-[#4a68a8] text-white rounded-lg"
-                @click="confirmReceived(order.order_id)">
+              <button
+                class="px-3 py-1 text-sm bg-[#637aad] hover:bg-[#4a68a8] text-white rounded-lg"
+                @click="confirmReceived(order.order_id)"
+              >
                 ยืนยันรับสินค้า
               </button>
             </template>
-
-
-
           </div>
         </div>
-
       </div>
-
     </template>
     <div class="flex-1 w-full max-w-[750px]">
-      <div class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-2   md:py-4 md:mr-3">
+      <div
+        class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-2 md:py-4 md:mr-3"
+      >
         <button
           class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          @click="prevPage()">
+          @click="prevPage()"
+        >
           <span class="pi pi-chevron-left text-sm"></span> Prev
         </button>
 
         <span class="text-sm text-white bg-[#555] px-3 py-1 rounded">
-          {{ orderStore.page }} of {{ orderStore.lastPage }}</span>
+          {{ orderStore.page }} of {{ orderStore.lastPage }}</span
+        >
 
         <button
           class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          @click="nextPage()">
+          @click="nextPage()"
+        >
           Next <span class="pi pi-chevron-right text-sm"></span>
         </button>
       </div>

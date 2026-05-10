@@ -1,8 +1,8 @@
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia'
 import stockService from '@/service/stock'
-import { ref } from "vue";
-import type { MovementItem, StockItem, UpdateStock } from "@/types/Stock";
-import { useLoadingStore } from "./loading";
+import { ref } from 'vue'
+import type { MovementItem, StockItem, UpdateStock } from '@/types/Stock'
+import { useLoadingStore } from './loading'
 
 export const useStockStore = defineStore('stock', () => {
   const loadingStore = useLoadingStore()
@@ -25,7 +25,6 @@ export const useStockStore = defineStore('stock', () => {
     loadingStore.finishLoad()
   }
 
-
   async function getMovements(p = page.value, l = limit.value, s = search.value) {
     const res = await stockService.getmovements(p, l, s)
     movements.value = res.data.data
@@ -34,15 +33,12 @@ export const useStockStore = defineStore('stock', () => {
     total.value = res.data.total
   }
 
-
   async function updateStock(stock: UpdateStock) {
-
     try {
       loadingStore.doLoad()
 
       await stockService.updateStock(stock)
       await getStocks()
-
     } catch (error) {
       console.error(error)
     } finally {
@@ -51,13 +47,15 @@ export const useStockStore = defineStore('stock', () => {
   }
 
   return {
-    stocks, page,
+    stocks,
+    page,
     limit,
     lastPage,
     total,
     search,
     movements,
     getStocks,
-    updateStock, getMovements
+    updateStock,
+    getMovements,
   }
 })

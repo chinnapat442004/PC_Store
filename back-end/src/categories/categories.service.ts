@@ -10,7 +10,7 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
-  ) { }
+  ) {}
 
   async create(createCategoryDto: CreateCategoryDto) {
     const category = this.categoryRepository.create(createCategoryDto);
@@ -39,7 +39,6 @@ export class CategoryService {
     Object.assign(category, updateCategoryDto);
     return await this.categoryRepository.save(category);
   }
-
 
   async toggleActive(category_id: number) {
     const category = await this.categoryRepository.findOne({

@@ -4,7 +4,7 @@ import { useCartStore } from '../stores/cart'
 import type { CartDetail } from '../types/CartDetail'
 import { trash } from 'ionicons/icons'
 import { IonIcon } from '@ionic/vue'
-import { onMounted, watch, computed } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import LoadingComponent from '@/components/LoadingComponent.vue'
 import { useLoadingStore } from '@/stores/loading'
@@ -20,12 +20,8 @@ onMounted(async () => {
   cartStore.getCarts()
 })
 
-
 function recalculateCart(cart: Cart) {
-  const subtotal = cart.cartDetails.reduce(
-    (sum, item) => sum + (item.price || 0),
-    0
-  )
+  const subtotal = cart.cartDetails.reduce((sum, item) => sum + (item.price || 0), 0)
   const total = subtotal
   cart.subtotal = Number(subtotal.toFixed(2))
   cart.total = Number(total.toFixed(2))
@@ -84,9 +80,7 @@ async function remove(cartDetail: CartDetail) {
 }
 
 const hasInvalidItems = computed(() => {
-  return cartStore.cart?.cartDetails?.some(
-    (detail) => !detail.product.is_active
-  )
+  return cartStore.cart?.cartDetails?.some((detail) => !detail.product.is_active)
 })
 
 const goToCheckout = () => {
@@ -96,20 +90,16 @@ const goToCheckout = () => {
 
 async function clearCart() {
   await cartStore.clearCart()
-
 }
 </script>
 
 <template>
   <div v-if="cartStore.cart?.cartDetails?.length"
-    class="flex justify-center w-full h-full  gap-3 md:flex-nowrap flex-wrap  py-[30px] px-[10px] md:px-[20px] m-auto pb-[20px] ">
-
-
-    <div class="max-w-[750px] w-full min-w-[300px] flex flex-col gap-3 h-full ">
+    class="flex justify-center w-full h-full gap-3 md:flex-nowrap flex-wrap py-[30px] px-[10px] md:px-[20px] m-auto pb-[20px]">
+    <div class="max-w-[750px] w-full min-w-[300px] flex flex-col gap-3 h-full">
       <div v-for="detail in cartStore.cart?.cartDetails" :key="detail.cart_detail_id"
         class="p-3 bg-white rounded-[10px] h-auto flex flex-col sm:flex-row md:px-[10px] lg:px-[30px] mx-auto w-full relative"
         :class="{ 'opacity-70 grayscale': !detail.product.is_active }">
-
         <div v-if="!detail.product.is_active"
           class="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-2 py-1 rounded-full z-10">
           สินค้านี้เลิกจำหน่ายแล้ว
@@ -117,19 +107,17 @@ async function clearCart() {
 
         <div class="flex flex-row w-full h-full">
           <img :src="detail.product.images[0]?.image" alt=""
-            class="w-[100px] h-[100px] object-cover rounded-md border " />
+            class="w-[100px] h-[100px] object-cover rounded-md border" />
 
           <div class="w-full pt-2 pb-4 px-7 flex flex-col justify-around gap-3 sm:gap-0">
             <div class="flex justify-between items-center">
               <div class="font-medium">{{ detail.product.title }}</div>
               <div class="flex transition-transform duration-500 ease-in-out justify-center items-center">
-                <div class="font-medium text-red-400 text-sm md:text-base">฿{{ detail.price }} </div>
+                <div class="font-medium text-red-400 text-sm md:text-base">฿{{ detail.price }}</div>
               </div>
             </div>
 
-            <div class="flex flex-row  justify-between gap-3 sm:gap-0">
-
-
+            <div class="flex flex-row justify-between gap-3 sm:gap-0">
               <div class="flex items-center gap-4 bg-gray-100 px-2 py-1 rounded-lg">
                 <button
                   class="rounded-md flex justify-center items-center text-white h-[27px] w-[27px] bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95 disabled:opacity-50"
@@ -137,15 +125,16 @@ async function clearCart() {
                   <span class="mb-1">-</span>
                 </button>
 
-                <div class="text-[10px] md:text-[14px] font-medium min-w-[30px] text-center">{{ detail.quantity }}</div>
+                <div class="text-[10px] md:text-[14px] font-medium min-w-[30px] text-center">
+                  {{ detail.quantity }}
+                </div>
 
                 <button
-                  class="rounded-md flex justify-center items-center  h-[27px] w-[27px] text-white bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95 disabled:opacity-50"
+                  class="rounded-md flex justify-center items-center h-[27px] w-[27px] text-white bg-[#4c4b4b] hover:bg-gray-800 transition active:scale-95 disabled:opacity-50"
                   @click="plus(detail)" :disabled="!detail.product.is_active">
                   <span class="mb-1">+</span>
                 </button>
               </div>
-
 
               <div class="flex gap-4 items-center">
                 <div class="flex transition-transform duration-500 ease-in-out justify-center items-center">
@@ -154,8 +143,6 @@ async function clearCart() {
                     <IonIcon class="" :icon="trash" />
                   </button>
                 </div>
-
-
               </div>
             </div>
           </div>
@@ -163,12 +150,8 @@ async function clearCart() {
       </div>
     </div>
 
-    <div class="bg-white max-w-[750px] w-full   md:w-[400px] rounded-[10px] p-[20px] h-[275px]">
-
-
-      <div class="text-lg font-semibold mb-4">
-        สรุปยอด
-      </div>
+    <div class="bg-white max-w-[750px] w-full md:w-[400px] rounded-[10px] p-[20px] h-[275px]">
+      <div class="text-lg font-semibold mb-4">สรุปยอด</div>
 
       <div class="flex justify-between text-sm mb-2">
         <div>ราคา:</div>
@@ -179,14 +162,13 @@ async function clearCart() {
         <div>฿{{ cartStore.cart?.discount_amount }}</div>
       </div>
       <hr class="my-3" />
-      <div class="flex justify-between text-lg font-bold ">
+      <div class="flex justify-between text-lg font-bold">
         <div>ยอดรวม:</div>
         <div>฿{{ cartStore.cart?.total }}</div>
       </div>
       <div class="flex flex-col gap-3 mt-[15px]">
-        <button class="w-full h-[35px] rounded-[10px] text-white font-medium transition-colors"
-          :class="hasInvalidItems ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#82d182] hover:bg-[#69c769]'"
-          @click="goToCheckout" :disabled="hasInvalidItems">
+        <button class="w-full h-[35px] rounded-[10px] text-white font-medium transition-colors" :class="hasInvalidItems ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#82d182] hover:bg-[#69c769]'
+          " @click="goToCheckout" :disabled="hasInvalidItems">
           {{ hasInvalidItems ? 'กรุณาลบสินค้าที่เลิกจำหน่าย' : 'ดำเนินการต่อ' }}
         </button>
 
@@ -195,49 +177,34 @@ async function clearCart() {
         </button>
       </div>
     </div>
-
-
   </div>
 
-
-  <div v-else-if="!authStore.token" class="flex justify-center   w-full py-[30px] px-[10px] md:px-[20px]">
+  <div v-else-if="!authStore.token" class="flex justify-center w-full py-[30px] px-[10px] md:px-[20px]">
     <div
-      class="max-w-[750px] w-full min-w-[300px] flex flex-col items-center justify-center bg-white rounded-[10px] p-10  text-gray-500">
-
-      <div class="text-lg font-semibold text-gray-700 mb-1">
-        กรุณาเข้าสู่ระบบก่อน
-      </div>
+      class="max-w-[750px] w-full min-w-[300px] flex flex-col items-center justify-center bg-white rounded-[10px] p-10 text-gray-500">
+      <div class="text-lg font-semibold text-gray-700 mb-1">กรุณาเข้าสู่ระบบก่อน</div>
 
       <div class="text-sm text-gray-500 mb-4">
         คุณยังไม่ได้เข้าสู่ระบบ กรุณาเข้าสู่ระบบเพื่อใช้งานตะกร้าสินค้า
       </div>
 
-      <button class=" text-white bg-[#637aad] hover:bg-[#4a68a8] rounded-lg px-3 py-1 transition"
+      <button class="text-white bg-[#637aad] hover:bg-[#4a68a8] rounded-lg px-3 py-1 transition"
         @click="$router.push('/login')">
         ไปหน้าเข้าสู่ระบบ
       </button>
-
     </div>
   </div>
-  <div v-else class="flex justify-center   w-full py-[30px] px-[10px] md:px-[20px]">
+  <div v-else class="flex justify-center w-full py-[30px] px-[10px] md:px-[20px]">
     <div
-      class="max-w-[750px] w-full min-w-[300px] flex flex-col items-center justify-center bg-white rounded-[10px] p-10  text-gray-500">
-      <div class="text-lg font-semibold text-gray-700 mb-1">
-        ไม่มีสินค้าในตะกร้า
-      </div>
-      <div class="text-sm text-gray-500 mb-4">
-        กรุณาเพิ่มสินค้าลงตะกร้าก่อนดำเนินการต่อ
-      </div>
-      <button class=" text-white bg-[#637aad] hover:bg-[#4a68a8] rounded-lg px-3 py-1 transition"
+      class="max-w-[750px] w-full min-w-[300px] flex flex-col items-center justify-center bg-white rounded-[10px] p-10 text-gray-500">
+      <div class="text-lg font-semibold text-gray-700 mb-1">ไม่มีสินค้าในตะกร้า</div>
+      <div class="text-sm text-gray-500 mb-4">กรุณาเพิ่มสินค้าลงตะกร้าก่อนดำเนินการต่อ</div>
+      <button class="text-white bg-[#637aad] hover:bg-[#4a68a8] rounded-lg px-3 py-1 transition"
         @click="$router.push('/shop')">
         ไปหน้า Shop
       </button>
-
     </div>
   </div>
-
-
-
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

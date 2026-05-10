@@ -56,7 +56,6 @@ const setLocation = (location: { lat: number; lng: number }) => {
   branchStore.editedBranch.lng = location.lng
 }
 
-
 const nextPage = async () => {
   if (branchStore.page < branchStore.lastPage) {
     branchStore.page++
@@ -76,7 +75,6 @@ const searchBranch = async () => {
   await branchStore.getBranches()
 }
 
-
 const clearSearch = async () => {
   search.value = ''
   branchStore.search = ''
@@ -90,19 +88,29 @@ const clearSearch = async () => {
     <h1 class="text-3xl font-bold text-white">Branch Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="ค้นหาสาขา..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input
+        type="text"
+        placeholder="ค้นหาสาขา..."
+        v-model="search"
+        class="border px-3 py-2 rounded w-64"
+      />
 
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="searchBranch()">
+      <button
+        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="searchBranch()"
+      >
         <span class="pi pi-search text-lg"></span>
       </button>
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="clearSearch()">
+      <button
+        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="clearSearch()"
+      >
         <span class="pi pi-times text-lg"></span>
       </button>
       <button
-        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8]  text-white  px-4 py-2 rounded-md transition"
-        @click="openCreateDialog()">
+        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
+        @click="openCreateDialog()"
+      >
         <span class="pi pi-plus text-lg"></span>
         <span>เพิ่มสาขา</span>
       </button>
@@ -123,9 +131,7 @@ const clearSearch = async () => {
 
       <tbody class="divide-y">
         <tr v-if="branchStore.branches.length === 0">
-          <td colspan="9" class="text-center py-6 text-gray-500">
-            ไม่พบข้อมูล
-          </td>
+          <td colspan="9" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
 
         <tr v-else v-for="branch in branchStore.branches" :key="branch.branch_id">
@@ -135,15 +141,21 @@ const clearSearch = async () => {
             <StatusBadge :modelValue="branch.is_active" />
           </td>
           <td>
-            <ToggleSwitch :modelValue="branch.is_active"
-              @update:modelValue="branch.branch_id && branchStore.toggleBranchActive(branch.branch_id).then(() => branchStore.getBranches())" />
+            <ToggleSwitch
+              :modelValue="branch.is_active"
+              @update:modelValue="
+                branch.branch_id &&
+                  branchStore
+                    .toggleBranchActive(branch.branch_id)
+                    .then(() => branchStore.getBranches())
+              "
+            />
           </td>
           <td class="px-6 py-3 flex justify-center space-x-4">
             <button class="edit-btn" @click="openEdit(branch)">
               <span class="pi pi-pencil"></span>
             </button>
           </td>
-
         </tr>
       </tbody>
     </table>
@@ -154,7 +166,8 @@ const clearSearch = async () => {
       </button>
 
       <span class="text-sm text-gray-600">
-        {{ branchStore.page }} จาก {{ branchStore.lastPage }}</span>
+        {{ branchStore.page }} จาก {{ branchStore.lastPage }}</span
+      >
 
       <button class="px-3 py-1 border rounded hover:bg-gray-100" @click="nextPage()">
         ถัดไป <span class="pi pi-chevron-right text-sm"></span>
@@ -172,18 +185,29 @@ const clearSearch = async () => {
 
       <div class="mb-3">
         <label class="block mb-1">ชื่อสาขา</label>
-        <input v-model="branchStore.editedBranch.branch_name" type="text"
-          class="border w-full px-3 py-2 rounded bg-gray-50" placeholder="กรอกชื่อสาขา" />
+        <input
+          v-model="branchStore.editedBranch.branch_name"
+          type="text"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+          placeholder="กรอกชื่อสาขา"
+        />
       </div>
 
       <div class="mb-3">
         <label class="block mb-1">ที่อยู่</label>
-        <input v-model="branchStore.editedBranch.address" type="text" class="border w-full px-3 py-2 rounded bg-gray-50"
-          placeholder="กรอกที่อยู่" />
+        <input
+          v-model="branchStore.editedBranch.address"
+          type="text"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+          placeholder="กรอกที่อยู่"
+        />
       </div>
       <div class="mb-3">
-        <MapPicker @update:location="setLocation" :lat="branchStore.editedBranch.lat"
-          :lng="branchStore.editedBranch.lng" />
+        <MapPicker
+          @update:location="setLocation"
+          :lat="branchStore.editedBranch.lat"
+          :lng="branchStore.editedBranch.lng"
+        />
       </div>
 
       <div class="flex justify-center gap-4">
@@ -198,9 +222,13 @@ const clearSearch = async () => {
     </div>
   </div>
 
-  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
-    @confirm="saveBranch()" @cancel="showConfirm = false" />
-
+  <ConfirmComponent
+    :show="showConfirm"
+    type="save"
+    message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
+    @confirm="saveBranch()"
+    @cancel="showConfirm = false"
+  />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

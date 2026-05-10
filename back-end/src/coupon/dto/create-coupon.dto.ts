@@ -7,7 +7,6 @@ import {
   Min,
   IsDateString,
   IsInt,
-  IsBoolean,
 } from 'class-validator';
 import { DiscountType } from '../entities/coupon.entity';
 
@@ -52,5 +51,4 @@ export class CreateCouponDto {
   @IsOptional()
   @Min(0)
   used_count?: number;
-
 }

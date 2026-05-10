@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -17,7 +16,7 @@ import { Role } from './enums/role.enum';
 import { Branch } from 'src/branches/entities/branch.entity';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
+
 import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
@@ -28,14 +27,12 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(Branch)
     private branchRepository: Repository<Branch>,
-  ) { }
-
+  ) {}
 
   async createUser(
     createUserDto: CreateUserDto,
     creatorRole: Role,
   ): Promise<User> {
-
     const existingUser = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
@@ -64,7 +61,6 @@ export class UserService {
     } else if (creatorRole === Role.MANAGER) {
       user.role = Role.STAFF;
     } else {
-
       throw new ConflictException('You are not allowed to create users');
     }
 
@@ -84,7 +80,6 @@ export class UserService {
       );
       throw new ConflictException('Email is already taken');
     }
-
 
     const user = new User();
     user.email = createUserDto.email;
@@ -176,8 +171,6 @@ export class UserService {
       user.email = updateUserDto.email;
     }
 
-
-
     if (updateUserDto.name) {
       user.name = updateUserDto.name;
     }
@@ -217,10 +210,9 @@ export class UserService {
       throw new UnauthorizedException('รหัสผ่านปัจจุบันไม่ถูกต้อง');
     }
 
-
     const hash = await bcrypt.hash(updatePasswordDto.new_password, 10);
 
-    user.password = hash
+    user.password = hash;
     const updatedUser = await this.userRepository.save(user);
     delete updatedUser.password;
     return updatedUser;
@@ -276,8 +268,8 @@ export class UserService {
       skip,
       take: limit,
       order: {
-
-        is_active: 'DESC', user_id: 'DESC'
+        is_active: 'DESC',
+        user_id: 'DESC',
       },
     });
 
@@ -341,7 +333,6 @@ export class UserService {
     });
   }
 
-
   async toggleUserActive(user_id: number, currentUser: User) {
     const user = await this.userRepository.findOne({
       where: { user_id },
@@ -363,5 +354,3 @@ export class UserService {
     return updatedUser;
   }
 }
-
-

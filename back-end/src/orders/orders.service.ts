@@ -31,7 +31,7 @@ export class OrdersService {
 
     @InjectRepository(Order)
     private orderRepository: Repository<Order>,
-  ) { }
+  ) {}
 
   //หาสาขาที่ใกล้ที่สุด
   private getDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
@@ -41,9 +41,9 @@ export class OrdersService {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
@@ -57,7 +57,8 @@ export class OrdersService {
     productItems: { product_id: number; quantity: number }[],
   ) {
     const sortedBranches = branches
-      .filter((branch) => branch.is_active === true).map((b) => ({
+      .filter((branch) => branch.is_active === true)
+      .map((b) => ({
         branch: b,
         distance: this.getDistance(lat, lng, b.lat, b.lng),
       }))
@@ -131,8 +132,11 @@ export class OrdersService {
       if (!address.lat || !address.lng)
         throw new BadRequestException('Address has no location');
 
-      const branches = await manager.find(Branch, { where: { is_active: true } });
-      if (!branches.length) throw new BadRequestException('No active branches found');
+      const branches = await manager.find(Branch, {
+        where: { is_active: true },
+      });
+      if (!branches.length)
+        throw new BadRequestException('No active branches found');
 
       const productIds = items.map((i) => i.product_id);
 
@@ -208,7 +212,8 @@ export class OrdersService {
           where: { code: createOrderDto.coupon_code },
         });
 
-        if (!coupon || !coupon.is_active) throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
+        if (!coupon || !coupon.is_active)
+          throw new BadRequestException('ไม่สามารถใช้โค้ดนี้ได้');
 
         const now = new Date();
         if (now < coupon.start_date || now > coupon.end_date) {
@@ -403,7 +408,6 @@ export class OrdersService {
           user: {
             user_id: user_id,
           },
-
         }),
       };
     }
@@ -412,7 +416,7 @@ export class OrdersService {
       relations: {
         details: true,
         shipment: true,
-        branch: true
+        branch: true,
       },
       order: {
         created_at: 'DESC',

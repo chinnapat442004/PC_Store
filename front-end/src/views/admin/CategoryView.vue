@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { onMounted, ref } from 'vue'
 import ConfirmComponent from '@/components/dialogs/ConfirmComponent.vue'
 import type { Category } from '@/types/Category'
@@ -15,7 +14,6 @@ const categoryStore = useCategoryStore()
 const showDialog = ref(false)
 const search = ref('')
 const showConfirm = ref(false)
-
 
 onMounted(async () => {
   await categoryStore.getCategories()
@@ -55,15 +53,9 @@ const openCreateDialog = () => {
   showDialog.value = true
 }
 
-
-
 const searchCategory = async () => {
   await categoryStore.getCategories()
 }
-
-
-
-
 
 const clearSearch = async () => {
   search.value = ''
@@ -72,14 +64,18 @@ const clearSearch = async () => {
 </script>
 
 <template>
-
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-white">Category Management</h1>
 
     <div class="flex items-center gap-3">
-      <input type="text" placeholder="ค้นหาหมวดหมู่..." v-model="search" class="border px-3 py-2 rounded w-64" />
+      <input
+        type="text"
+        placeholder="ค้นหาหมวดหมู่..."
+        v-model="search"
+        class="border px-3 py-2 rounded w-64"
+      />
 
-      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md">
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md" @click="searchCategory">
         <span class="pi pi-search"></span>
       </button>
 
@@ -87,8 +83,10 @@ const clearSearch = async () => {
         <span class="pi pi-times"></span>
       </button>
 
-      <button class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md"
-        @click="openCreateDialog">
+      <button
+        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md"
+        @click="openCreateDialog"
+      >
         <span class="pi pi-plus"></span>
         เพิ่มหมวดหมู่
       </button>
@@ -99,53 +97,45 @@ const clearSearch = async () => {
     <table class="w-full text-left text-black">
       <thead class="bg-[#383838] text-gray-300 text-sm">
         <tr>
-          <th class="px-6 py-3 text-left w-[40%]">
-            หมวดหมู่
-          </th>
+          <th class="px-6 py-3 text-left w-[40%]">หมวดหมู่</th>
 
-          <th class="px-6 py-3 text-center w-[20%]">
-            สถานะ
-          </th>
+          <th class="px-6 py-3 text-center w-[20%]">สถานะ</th>
 
-          <th class="px-3 py-3 text-center w-[20%]">
-            เปิดใช้งาน
-          </th>
+          <th class="px-3 py-3 text-center w-[20%]">เปิดใช้งาน</th>
 
-          <th class="px-6 py-3 text-center w-[20%]">
-            จัดการ
-          </th>
+          <th class="px-6 py-3 text-center w-[20%]">จัดการ</th>
         </tr>
       </thead>
 
       <tbody class="divide-y">
-
         <tr v-if="categoryStore.categories.length === 0">
-          <td colspan="2" class="text-center py-6 text-gray-500">
-            ไม่พบข้อมูล
-          </td>
+          <td colspan="2" class="text-center py-6 text-gray-500">ไม่พบข้อมูล</td>
         </tr>
 
         <tr v-else v-for="category in categoryStore.categories" :key="category.category_id">
-          <td class="px-6 py-2  w-[70%]">{{ category.name }}</td>
-          <td class="px-6 py-2 text-center  w-[10%]">
+          <td class="px-6 py-2 w-[70%]">{{ category.name }}</td>
+          <td class="px-6 py-2 text-center w-[10%]">
             <StatusBadge :modelValue="category.is_active" />
           </td>
-          <td class="px-6 py-2 text-center  w-[10%]">
-            <ToggleSwitch :modelValue="category.is_active"
-              @update:modelValue="categoryStore.toggleCategoryActive(category).then(() => categoryStore.getCategories())" />
+          <td class="px-6 py-2 text-center w-[10%]">
+            <ToggleSwitch
+              :modelValue="category.is_active"
+              @update:modelValue="
+                categoryStore
+                  .toggleCategoryActive(category)
+                  .then(() => categoryStore.getCategories())
+              "
+            />
           </td>
-          <td class="px-6 py-2 text-center  w-[10%]">
+          <td class="px-6 py-2 text-center w-[10%]">
             <button @click="openEdit(category)" class="edit-btn">
               <span class="pi pi-pencil"></span>
             </button>
           </td>
-
         </tr>
-
       </tbody>
     </table>
   </div>
-
 
   <div v-if="showDialog" class="overlay">
     <div class="dialog">
@@ -155,14 +145,16 @@ const clearSearch = async () => {
 
       <div class="mb-3">
         <label class="block mb-1">ชื่อหมวดหมู่</label>
-        <input v-model="categoryStore.editedCategory.name" type="text" placeholder="กรอกชื่อหมวดหมู่"
-          class="border w-full px-3 py-2 rounded bg-gray-50" />
+        <input
+          v-model="categoryStore.editedCategory.name"
+          type="text"
+          placeholder="กรอกชื่อหมวดหมู่"
+          class="border w-full px-3 py-2 rounded bg-gray-50"
+        />
       </div>
 
       <div class="flex justify-center gap-4">
-        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">
-          ยกเลิก
-        </button>
+        <button class="bg-red-500 text-white px-4 py-1 rounded" @click="closeDialog">ยกเลิก</button>
 
         <button class="bg-green-500 text-white px-4 py-1 rounded" @click="showConfirm = true">
           บันทึก
@@ -171,9 +163,13 @@ const clearSearch = async () => {
     </div>
   </div>
 
-  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
-    @confirm="saveCategory" @cancel="showConfirm = false" />
-
+  <ConfirmComponent
+    :show="showConfirm"
+    type="save"
+    message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
+    @confirm="saveCategory"
+    @cancel="showConfirm = false"
+  />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

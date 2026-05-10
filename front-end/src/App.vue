@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted } from 'vue'
 import { RouterView } from 'vue-router'
-import { useCartStore } from './stores/cart';
-import { useAuthStore } from './stores/auth';
+import { useCartStore } from './stores/cart'
+import { useAuthStore } from './stores/auth'
 const cartStore = useCartStore()
 
 const authStore = useAuthStore()

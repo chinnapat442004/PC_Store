@@ -1,6 +1,6 @@
-import type { PaymentMethod } from "@/types/Payment";
+import type { PaymentMethod } from '@/types/Payment'
 
 export const PaymentMethodLabel: Record<PaymentMethod, string> = {
-    promptpay: 'QR พร้อมเพย์',
-    cod: 'เก็บเงินปลายทาง',
+  promptpay: 'QR พร้อมเพย์',
+  cod: 'เก็บเงินปลายทาง',
 }

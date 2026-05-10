@@ -16,7 +16,7 @@ export class ShipmentService {
   }
 
   async findAll(search?: string, onlyActive?: boolean) {
-    let where: any = search ? { name: Like(`%${search}%`) } : {};
+    const where: any = search ? { name: Like(`%${search}%`) } : {};
 
     if (onlyActive) {
       where.is_active = true;
@@ -49,7 +49,6 @@ export class ShipmentService {
 
     return await this.shipmentRepository.save(shipment);
   }
-
 
   async toggleActive(shipment_id: number) {
     const shipment = await this.shipmentRepository.findOne({

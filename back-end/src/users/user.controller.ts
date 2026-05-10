@@ -25,7 +25,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   async findAll(
@@ -94,16 +94,9 @@ export class UserController {
   }
 
   @Patch(':id/toggle-active')
-  toggleUserActive(
-    @Param('id') id: string,
-    @Req() req,
-  ) {
-    return this.userService.toggleUserActive(
-      +id,
-      req.user,
-    );
+  toggleUserActive(@Param('id') id: string, @Req() req) {
+    return this.userService.toggleUserActive(+id, req.user);
   }
-
 
   @Patch(':id')
   @UseGuards(RolesGuard)
