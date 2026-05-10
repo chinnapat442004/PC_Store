@@ -34,7 +34,8 @@ export const useCartStore = defineStore('Cart', () => {
       images: [],
       categoryId: 0,
       category: undefined,
-      stock_quantity: 0
+      stock_quantity: 0,
+      is_active: true
     }
   }
 

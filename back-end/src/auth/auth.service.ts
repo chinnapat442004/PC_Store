@@ -15,30 +15,23 @@ export class AuthService {
 
   async signIn(email: string, pass: string) {
     const user = await this.usersService.findOneByEmail(email);
-
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
     }
 
     if (!user.is_active) {
       throw new UnauthorizedException('บัญชีของคุณถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
     }
+
     if (user.branch) {
       if (!user.branch.is_active)
-        throw new UnauthorizedException('สาขาของคุณถูกปิดการใช้งาน กรุณาติดต่อผู้ดูแลระบบ')
+        throw new UnauthorizedException('สาขาของคุณถูกปิดการใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
     }
 
+    const isMatch = await bcrypt.compare(pass, user.password);
 
-
-
-
-    if (user.role != 'customer') {
-      const isMatch = await bcrypt.compare(pass, user.password);
-
-
-      if (!isMatch) {
-        throw new UnauthorizedException('Incorrect password');
-      }
+    if (!isMatch) {
+      throw new UnauthorizedException('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
     }
     const payload = {
       sub: user.user_id,
