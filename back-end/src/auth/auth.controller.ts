@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { ForgotPasswordDto } from 'src/users/dto/forgot-password.dto';
+
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UserService } from 'src/users/user.service';
 
