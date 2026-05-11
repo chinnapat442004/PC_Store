@@ -27,7 +27,7 @@
     "install": "^0.13.0",
     "ionicons": "^7.4.0",
     "leaflet": "^1.9.4",
-    "pinia": "^2.2.6",
+    "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
     "tailwindcss-primeui": "^0.6.1",
     "toastify-js": "^1.12.0",
@@ -41,7 +41,6 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@pinia/testing": "^1.0.3",
     "@tsconfig/node22": "^22.0.0",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^22.10.1",
