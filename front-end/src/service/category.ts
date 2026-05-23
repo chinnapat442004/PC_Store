@@ -1,8 +1,8 @@
 import type { CreateCategory } from '@/types/Category'
 import http from './http'
 
-function getCategories(onlyActive?: boolean) {
-  return http.get(`/category?onlyActive=${onlyActive || false}`)
+function getCategories(page = 1, limit = 10, search = '', onlyActive = false) {
+  return http.get(`/category?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&onlyActive=${onlyActive}`)
 }
 
 function createCategory(data: CreateCategory) {

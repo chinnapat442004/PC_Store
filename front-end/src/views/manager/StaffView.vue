@@ -23,7 +23,7 @@ const deleteConfirm = ref(false)
 const mode = ref<'create' | 'edit'>('create')
 
 onMounted(async () => {
-  await userStore.getUsers()
+  await userStore.getUsers(1, 10, '')
   await authStore.getCurrentUser()
 })
 
@@ -175,31 +175,20 @@ const preSave = async () => {
     <h1 class="text-3xl font-bold text-white">Staff Management</h1>
 
     <div class="flex items-center gap-3">
-      <input
-        type="text"
-        placeholder="ค้นหาผู้ใช้..."
-        v-model="search"
-        class="border px-3 py-2 rounded w-64"
-      />
+      <input type="text" placeholder="ค้นหาผู้ใช้..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
-      <button
-        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="searchUser()"
-      >
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="searchUser()">
         <span class="pi pi-search text-lg"></span>
       </button>
 
-      <button
-        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="clearSearch()"
-      >
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="clearSearch()">
         <span class="pi pi-times text-lg"></span>
       </button>
 
-      <button
-        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
-        @click="openCreateDialog()"
-      >
+      <button class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
+        @click="openCreateDialog()">
         <span class="pi pi-plus text-lg"></span>
         <span>สร้าง</span>
       </button>
@@ -236,12 +225,9 @@ const preSave = async () => {
           </td>
 
           <td>
-            <ToggleSwitch
-              :modelValue="user.is_active"
-              @update:modelValue="
-                userStore.toggleUserActive(user.user_id).then(() => userStore.getUsers())
-              "
-            />
+            <ToggleSwitch :modelValue="user.is_active" @update:modelValue="
+              userStore.toggleUserActive(user.user_id).then(() => userStore.getUsers())
+              " />
           </td>
           <td class="px-6 py-3 flex justify-center space-x-2">
             <button class="edit-btn" @click="openEdit(user)">
@@ -273,54 +259,35 @@ const preSave = async () => {
 
       <template v-if="mode === 'create'">
         <div class="mb-3">
-          <label class="text-sm font-medium">ชื่อผู้ใช้</label>
-          <input
-            v-model="nameCreate"
-            type="text"
-            placeholder="กรอกชื่อผู้ใช้"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.name }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">ชื่อผู้ใช้</label>
+          <input v-model="nameCreate" type="text" placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.name }" />
           <p v-if="createErrors.name" class="text-red-500 text-xs mt-1">{{ createErrors.name }}</p>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">อีเมล</label>
-          <input
-            v-model="emailCreate"
-            type="email"
-            placeholder="กรอกอีเมล"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.email }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">อีเมล</label>
+          <input v-model="emailCreate" type="email" placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.email }" />
           <p v-if="createErrors.email" class="text-red-500 text-xs mt-1">
             {{ createErrors.email }}
           </p>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">รหัสผ่าน</label>
-          <input
-            v-model="passwordCreate"
-            type="password"
-            placeholder="กรอกรหัสผ่าน"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.password }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">รหัสผ่าน</label>
+          <input v-model="passwordCreate" type="password" placeholder="กรอกรหัสผ่าน"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.password }" />
           <p v-if="createErrors.password" class="text-red-500 text-xs mt-1">
             {{ createErrors.password }}
           </p>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">ยืนยันรหัสผ่าน</label>
-          <input
-            v-model="confirmPasswordCreate"
-            type="password"
-            placeholder="ยืนยันรหัสผ่าน"
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">ยืนยันรหัสผ่าน</label>
+          <input v-model="confirmPasswordCreate" type="password" placeholder="ยืนยันรหัสผ่าน"
             class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.confirm_password }"
-          />
+            :class="{ 'border-red-500': createErrors.confirm_password }" />
           <p v-if="createErrors.confirm_password" class="text-red-500 text-xs mt-1">
             {{ createErrors.confirm_password }}
           </p>
@@ -329,38 +296,24 @@ const preSave = async () => {
 
       <template v-else-if="mode === 'edit' && userStore.editedUser">
         <div class="mb-3">
-          <label class="text-sm font-medium">ชื่อผู้ใช้</label>
-          <input
-            v-model="nameEdit"
-            type="text"
-            placeholder="กรอกชื่อผู้ใช้"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': editErrors.name }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">ชื่อผู้ใช้</label>
+          <input v-model="nameEdit" type="text" placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.name }" />
           <p v-if="editErrors.name" class="text-red-500 text-xs mt-1">{{ editErrors.name }}</p>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">อีเมล</label>
-          <input
-            v-model="emailEdit"
-            type="email"
-            placeholder="กรอกอีเมล"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': editErrors.email }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">อีเมล</label>
+          <input v-model="emailEdit" type="email" placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.email }" />
           <p v-if="editErrors.email" class="text-red-500 text-xs mt-1">{{ editErrors.email }}</p>
         </div>
 
         <div class="mb-4">
           <label class="text-sm font-medium text-gray-700">รหัสผ่านใหม่</label>
           <div class="mt-1 border rounded-lg p-3 bg-gray-50">
-            <input
-              v-model="passwordEdit"
-              type="password"
-              placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน"
-              class="w-full px-3 py-2 rounded bg-white border"
-            />
+            <input v-model="passwordEdit" type="password" placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน"
+              class="w-full px-3 py-2 rounded bg-white border" />
             <p class="text-xs text-gray-500 mt-1">หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้</p>
           </div>
         </div>
@@ -374,20 +327,11 @@ const preSave = async () => {
     </div>
   </div>
 
-  <ConfirmComponent
-    :show="showConfirm"
-    type="save"
-    message="คุณต้องการบันทึกข้อมูลนี้หรือไม่"
-    @confirm="saveUser()"
-    @cancel="showConfirm = false"
-  />
+  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้หรือไม่" @confirm="saveUser()"
+    @cancel="showConfirm = false" />
 
-  <ConfirmComponent
-    :show="deleteConfirm"
-    type="delete"
-    message="คุณต้องการลบข้อมูลนี้หรือไม่"
-    @cancel="closeDialogDelete()"
-  />
+  <ConfirmComponent :show="deleteConfirm" type="delete" message="คุณต้องการลบข้อมูลนี้หรือไม่"
+    @cancel="closeDialogDelete()" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

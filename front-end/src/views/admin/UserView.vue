@@ -22,7 +22,7 @@ import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 
 onMounted(async () => {
-  await userStore.getUsers()
+  await userStore.getUsers(1, 10, '')
 })
 
 const authStore = useAuthStore()
@@ -77,7 +77,6 @@ const [emailCreate] = defineFieldCreate('email')
 const [passwordCreate] = defineFieldCreate('password')
 const [branchCreate] = defineFieldCreate('branch_id')
 const [confirmPasswordCreate] = defineFieldCreate('confirm_password')
-
 const [nameEdit] = defineFieldEdit('name')
 const [emailEdit] = defineFieldEdit('email')
 const [passwordEdit] = defineFieldEdit('password')
@@ -196,29 +195,18 @@ const clearSearch = async () => {
     <h1 class="text-3xl font-bold text-white">User Management</h1>
 
     <div class="flex items-center gap-3">
-      <input
-        type="text"
-        placeholder="ค้นหาผู้ใช้..."
-        v-model="search"
-        class="border px-3 py-2 rounded w-64"
-      />
+      <input type="text" placeholder="ค้นหาผู้ใช้..." v-model="search" class="border px-3 py-2 rounded w-64" />
 
-      <button
-        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="searchUser()"
-      >
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="searchUser()">
         <span class="pi pi-search text-lg"></span>
       </button>
-      <button
-        class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
-        @click="clearSearch()"
-      >
+      <button class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md flex items-center justify-center"
+        @click="clearSearch()">
         <span class="pi pi-times text-lg"></span>
       </button>
-      <button
-        class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
-        @click="openCreateDialog()"
-      >
+      <button class="flex items-center gap-2 bg-[#637aad] hover:bg-[#4a68a8] text-white px-4 py-2 rounded-md transition"
+        @click="openCreateDialog()">
         <span class="pi pi-plus text-lg"></span>
         <span>เพิ่มผู้ใช้</span>
       </button>
@@ -255,12 +243,9 @@ const clearSearch = async () => {
           </td>
 
           <td>
-            <ToggleSwitch
-              :modelValue="user.is_active"
-              @update:modelValue="
-                userStore.toggleUserActive(user.user_id).then(() => userStore.getUsers())
-              "
-            />
+            <ToggleSwitch :modelValue="user.is_active" @update:modelValue="
+              userStore.toggleUserActive(user.user_id).then(() => userStore.getUsers())
+              " />
           </td>
           <td class="px-6 py-3 flex justify-center space-x-4">
             <button class="edit-btn" @click="openEdit(user)">
@@ -292,66 +277,44 @@ const clearSearch = async () => {
 
       <template v-if="mode === 'create'">
         <div class="mb-3">
-          <label class="text-sm font-medium">ชื่อผู้ใช้</label>
-          <input
-            v-model="nameCreate"
-            type="text"
-            placeholder="กรอกชื่อผู้ใช้"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.name }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">ชื่อผู้ใช้</label>
+          <input v-model="nameCreate" type="text" placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.name }" />
           <p v-if="createErrors.name" class="text-red-500 text-xs mt-1">{{ createErrors.name }}</p>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">อีเมล</label>
-          <input
-            v-model="emailCreate"
-            type="email"
-            placeholder="กรอกอีเมล"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.email }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">อีเมล</label>
+          <input v-model="emailCreate" type="email" placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.email }" />
           <p v-if="createErrors.email" class="text-red-500 text-xs mt-1">
             {{ createErrors.email }}
           </p>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">รหัสผ่าน</label>
-          <input
-            v-model="passwordCreate"
-            type="password"
-            placeholder="กรอกรหัสผ่าน"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.password }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">รหัสผ่าน</label>
+          <input v-model="passwordCreate" type="password" placeholder="กรอกรหัสผ่าน"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': createErrors.password }" />
           <p v-if="createErrors.password" class="text-red-500 text-xs mt-1">
             {{ createErrors.password }}
           </p>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">ยืนยันรหัสผ่าน</label>
-          <input
-            v-model="confirmPasswordCreate"
-            type="password"
-            placeholder="ยืนยันรหัสผ่าน"
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">ยืนยันรหัสผ่าน</label>
+          <input v-model="confirmPasswordCreate" type="password" placeholder="ยืนยันรหัสผ่าน"
             class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.confirm_password }"
-          />
+            :class="{ 'border-red-500': createErrors.confirm_password }" />
           <p v-if="createErrors.confirm_password" class="text-red-500 text-xs mt-1">
             {{ createErrors.confirm_password }}
           </p>
         </div>
 
         <div v-if="authStore.user?.role === 'admin'" class="mb-3">
-          <label class="text-sm font-medium">สาขา</label>
-          <select
-            v-model="branchCreate"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': createErrors.branch_id }"
-          >
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">สาขา</label>
+          <select v-model="branchCreate" class="border w-full px-3 py-2 rounded bg-gray-50"
+            :class="{ 'border-red-500': createErrors.branch_id }">
             <option value="" disabled>เลือกสาขา</option>
             <option v-for="b in branchStore.branches" :key="b.branch_id" :value="b.branch_id">
               {{ b.branch_name }}
@@ -365,78 +328,49 @@ const clearSearch = async () => {
 
       <template v-else-if="mode === 'edit' && userStore.editedUser">
         <div class="mb-3">
-          <label class="text-sm font-medium">ชื่อผู้ใช้</label>
-          <input
-            v-model="nameEdit"
-            type="text"
-            placeholder="กรอกชื่อผู้ใช้"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': editErrors.name }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">ชื่อผู้ใช้</label>
+          <input v-model="nameEdit" type="text" placeholder="กรอกชื่อผู้ใช้"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.name }" />
           <p v-if="editErrors.name" class="text-red-500 text-xs mt-1">{{ editErrors.name }}</p>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">อีเมล</label>
-          <input
-            v-model="emailEdit"
-            type="email"
-            placeholder="กรอกอีเมล"
-            class="border w-full px-3 py-2 rounded bg-gray-50"
-            :class="{ 'border-red-500': editErrors.email }"
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">อีเมล</label>
+          <input v-model="emailEdit" type="email" placeholder="กรอกอีเมล"
+            class="border w-full px-3 py-2 rounded bg-gray-50" :class="{ 'border-red-500': editErrors.email }" />
           <p v-if="editErrors.email" class="text-red-500 text-xs mt-1">{{ editErrors.email }}</p>
         </div>
 
         <div class="mb-4">
           <label class="text-sm font-medium text-gray-700">รหัสผ่านใหม่</label>
           <div class="mt-1 border rounded-lg p-3 bg-gray-50">
-            <input
-              v-model="passwordEdit"
-              type="password"
-              placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน"
-              class="w-full px-3 py-2 rounded bg-white border"
-            />
+            <input v-model="passwordEdit" type="password" placeholder="เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน"
+              class="w-full px-3 py-2 rounded bg-white border" />
             <p class="text-xs text-gray-500 mt-1">หากไม่ต้องการเปลี่ยนรหัสผ่าน ให้เว้นว่างไว้</p>
           </div>
         </div>
 
         <div class="mb-3">
-          <label class="text-sm font-medium">สาขา</label>
-          <input
-            :value="userStore.editedUser.branch?.branch_name"
-            type="text"
-            class="border w-full px-3 py-2 rounded bg-gray-100 cursor-not-allowed"
-            readonly
-          />
+          <label class="text-sm font-medium after:content-['*'] after:text-red-500 after:ml-1">สาขา</label>
+          <input :value="userStore.editedUser.branch?.branch_name" type="text"
+            class="border w-full px-3 py-2 rounded bg-gray-100 cursor-not-allowed" readonly />
         </div>
       </template>
 
       <div class="flex justify-center gap-4">
-        <button
-          class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
-          @click="closeDialog()"
-        >
+        <button class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition" @click="closeDialog()">
           ยกเลิก
         </button>
 
-        <button
-          class="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition"
-          @click="preSave()"
-        >
+        <button class="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition" @click="preSave()">
           บันทึก
         </button>
       </div>
     </div>
   </div>
 
-  <ConfirmComponent
-    :show="showConfirm"
-    type="save"
-    message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่"
-    @confirm="saveUser()"
-    @cancel="showConfirm = false"
-  />
+  <ConfirmComponent :show="showConfirm" type="save" message="คุณต้องการบันทึกข้อมูลนี้ใช่หรือไม่" @confirm="saveUser()"
+    @cancel="showConfirm = false" />
 
   <LoadingComponent v-model="loadingStore.loading" />
 </template>

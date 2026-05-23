@@ -1,8 +1,8 @@
 import type { Shipment } from '@/types/Shipment'
 import http from './http'
 
-function getShipments(search?: string, onlyActive?: boolean) {
-  return http.get(`/shipments?search=${search || ''}&onlyActive=${onlyActive || false}`)
+function getShipments(page = 1, limit = 10, search = '', onlyActive = false) {
+  return http.get(`/shipments?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&onlyActive=${onlyActive}`)
 }
 
 function createShipment(data: Shipment) {

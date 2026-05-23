@@ -15,19 +15,33 @@ export class ShipmentService {
     return await this.shipmentRepository.save(shipment);
   }
 
-  async findAll(search?: string, onlyActive?: boolean) {
-    const where: any = search ? { name: Like(`%${search}%`) } : {};
+  async findAll(page = 1, limit = 10, search?: string, onlyActive?: boolean) {
+    const skip = (page - 1) * limit;
+    const where: any = {};
+
+    if (search) {
+      where.name = Like(`%${search}%`);
+    }
 
     if (onlyActive) {
       where.is_active = true;
     }
 
-    return await this.shipmentRepository.find({
+    const [data, total] = await this.shipmentRepository.findAndCount({
       where,
       order: {
         shipment_id: 'ASC',
       },
+      skip,
+      take: limit,
     });
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: number) {

@@ -7,6 +7,11 @@ import { useLoadingStore } from './loading'
 export const useCategoryStore = defineStore('category', () => {
   const loadingStore = useLoadingStore()
   const categories = ref<Category[]>([])
+  const page = ref(1)
+  const limit = ref(10)
+  const lastPage = ref(1)
+  const total = ref(0)
+  const search = ref('')
 
   const initialCategory: CreateCategory = {
     name: '',
@@ -14,10 +19,13 @@ export const useCategoryStore = defineStore('category', () => {
 
   const editedCategory = ref<CreateCategory>(structuredClone(initialCategory))
 
-  async function getCategories(onlyActive = false) {
+  async function getCategories(p = page.value, l = limit.value, s = search.value, onlyActive = false) {
     loadingStore.doLoad()
-    const res = await categoryService.getCategories(onlyActive)
-    categories.value = res.data
+    const res = await categoryService.getCategories(p, l, s, onlyActive)
+    categories.value = res.data.data ?? res.data
+    page.value = res.data.page ?? p
+    lastPage.value = res.data.lastPage ?? lastPage.value
+    total.value = res.data.total ?? total.value
     loadingStore.finishLoad()
   }
 
@@ -66,6 +74,11 @@ export const useCategoryStore = defineStore('category', () => {
   return {
     categories,
     editedCategory,
+    page,
+    limit,
+    lastPage,
+    total,
+    search,
     getCategories,
     createCategory,
     updateCategory,

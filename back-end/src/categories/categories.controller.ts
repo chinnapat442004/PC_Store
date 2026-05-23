@@ -21,8 +21,18 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll(@Query('onlyActive') onlyActive?: string) {
-    return this.categoryService.findAll(onlyActive === 'true');
+  findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @Query('search') search?: string,
+    @Query('onlyActive') onlyActive?: string,
+  ) {
+    return this.categoryService.findAll(
+      +page,
+      +limit,
+      search,
+      onlyActive === 'true',
+    );
   }
 
   @Get(':id')

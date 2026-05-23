@@ -84,5 +84,9 @@ export const useCouponStore = defineStore('coupon', () => {
     toggleCouponActive,
     editedCoupon,
     coupons,
+    page,
+    limit,
+    lastPage,
+    search,
   }
 })

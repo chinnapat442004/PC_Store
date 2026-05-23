@@ -23,10 +23,17 @@ export class ShipmentController {
 
   @Get()
   findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
     @Query('search') search?: string,
     @Query('onlyActive') onlyActive?: string,
   ) {
-    return this.shipmentService.findAll(search, onlyActive === 'true');
+    return this.shipmentService.findAll(
+      +page,
+      +limit,
+      search,
+      onlyActive === 'true',
+    );
   }
 
   @Get(':id')

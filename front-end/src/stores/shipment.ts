@@ -7,6 +7,11 @@ import { useLoadingStore } from './loading'
 export const useShipmentStore = defineStore('shipment', () => {
   const shipments = ref<Shipment[]>([])
   const loadingStore = useLoadingStore()
+  const page = ref(1)
+  const limit = ref(10)
+  const lastPage = ref(1)
+  const total = ref(0)
+  const search = ref('')
   const initialShipment: Shipment = {
     name: '',
     is_active: true,
@@ -14,10 +19,13 @@ export const useShipmentStore = defineStore('shipment', () => {
 
   const editedShipment = ref<Shipment>(JSON.parse(JSON.stringify(initialShipment)))
 
-  async function getShipments(search?: string, onlyActive = false) {
+  async function getShipments(p = page.value, l = limit.value, s = search.value, onlyActive = false) {
     loadingStore.doLoad()
-    const res = await shipmentService.getShipments(search, onlyActive)
-    shipments.value = res.data
+    const res = await shipmentService.getShipments(p, l, s, onlyActive)
+    shipments.value = res.data.data ?? res.data
+    page.value = res.data.page ?? p
+    lastPage.value = res.data.lastPage ?? lastPage.value
+    total.value = res.data.total ?? total.value
     loadingStore.finishLoad()
   }
 
@@ -66,6 +74,11 @@ export const useShipmentStore = defineStore('shipment', () => {
   return {
     shipments,
     editedShipment,
+    page,
+    limit,
+    lastPage,
+    total,
+    search,
     getShipments,
     createShipment,
     updateShipment,

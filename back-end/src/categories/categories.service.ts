@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -17,11 +17,33 @@ export class CategoryService {
     return await this.categoryRepository.save(category);
   }
 
-  async findAll(onlyActive?: boolean) {
-    if (onlyActive) {
-      return await this.categoryRepository.find({ where: { is_active: true } });
+  async findAll(page = 1, limit = 10, search?: string, onlyActive?: boolean) {
+    const skip = (page - 1) * limit;
+    const where: any = {};
+
+    if (search) {
+      where.name = Like(`%${search}%`);
     }
-    return await this.categoryRepository.find();
+
+    if (onlyActive) {
+      where.is_active = true;
+    }
+
+    const [data, total] = await this.categoryRepository.findAndCount({
+      where,
+      order: {
+        category_id: 'ASC',
+      },
+      skip,
+      take: limit,
+    });
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 
   async findOne(category_id: number) {
