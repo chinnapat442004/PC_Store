@@ -61,22 +61,8 @@ async function minus(detail: CartDetail) {
 }
 
 async function remove(cartDetail: CartDetail) {
-  cartStore.remove(cartDetail)
+  await cartStore.remove(cartDetail)
   await cartStore.getCarts()
-  const cart = cartStore.cart
-  if (cart && cart.cartDetails) {
-    cart.cartDetails = cart.cartDetails.filter(
-      (detail) => detail.cart_detail_id !== cartDetail.cart_detail_id,
-    )
-  }
-  if (cart) {
-    cart.subtotal = cart.cartDetails.reduce((total, cartDetail) => {
-      if (cartDetail.price) {
-        return total + cartDetail.price
-      }
-      return total
-    }, 0)
-  }
 }
 
 const hasInvalidItems = computed(() => {
