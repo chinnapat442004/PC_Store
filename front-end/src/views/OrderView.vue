@@ -106,88 +106,62 @@ const goToOrderDetail = (orderId: number) => {
 <template>
   <LoadingComponent v-model="loadingStore.loading" />
   <div
-    class="w-full min-h-screen flex flex-col items-center gap-2 md:gap-3 py-[10px] md:py-[30px] px-[10px] md:px-[20px]"
-  >
-    <div class="w-full max-w-[750px] flex bg-gray-100 rounded-xl">
-      <button
-        v-for="t in tabs"
-        :key="t.key"
-        @click="tab = t.key"
-        class="flex-1 py-2 text-xs sm:text-sm font-semibold rounded-lg transition flex items-center justify-center gap-1"
-        :class="tab === t.key ? 'bg-white shadow text-black' : 'text-gray-500'"
-      >
-        <span>
-          {{ t.label }}
-        </span>
+    class="w-full min-h-screen flex flex-col items-center gap-2 md:gap-3 py-[10px] md:py-[30px] px-[10px] md:px-[20px]">
 
-        <span class="text-[10px] sm:text-xs md:text-sm font-bold text-red-500">
+    <div class="w-full max-w-[750px] flex bg-gray-100 rounded-xl overflow-x-auto">
+      <button v-for="t in tabs" :key="t.key" @click="tab = t.key"
+        class="flex-1 min-w-[60px] py-1.5 sm:py-2 text-[10px] sm:text-xs md:text-sm font-semibold rounded-lg transition flex flex-col sm:flex-row items-center justify-center gap-0 sm:gap-1 px-1"
+        :class="tab === t.key ? 'bg-white shadow text-black' : 'text-gray-500'">
+        <span>{{ t.label }}</span>
+        <span class="text-[9px] sm:text-[10px] md:text-xs font-bold text-red-500">
           ({{ getCountByTab(t) }})
         </span>
       </button>
     </div>
-    <div
-      v-if="!orderStore.orders || orderStore.orders.length === 0"
-      class="w-full max-w-[750px] bg-white border rounded-xl shadow-sm p-8 flex flex-col items-center justify-center text-center"
-    >
+
+    <div v-if="!orderStore.orders || orderStore.orders.length === 0"
+      class="w-full max-w-[750px] bg-white border rounded-xl shadow-sm p-8 flex flex-col items-center justify-center text-center">
       <span class="pi pi-box text-5xl mb-3 text-gray-700"></span>
-
       <div class="text-lg font-semibold text-gray-700 mb-1">ไม่มีรายการคำสั่งซื้อ</div>
-
       <div class="text-sm text-gray-500 mb-4">ยังไม่มีคำสั่งซื้อในหมวดนี้</div>
     </div>
+
     <template v-else>
-      <div
-        v-for="order in orderStore.orders"
-        :key="order.order_id"
-        class="bg-white p-4 rounded-xl w-full max-w-[750px] shadow-sm border flex flex-col gap-3 cursor-pointer hover:shadow-md transition-shadow"
-        @click="goToOrderDetail(order.order_id)"
-      >
-        <div class="flex justify-between items-center">
-          <div class="flex gap-5">
-            <div class="font-semibold text-sm sm:text-base">ออเดอร์ #{{ order.order_id }}</div>
-            <div
-              class="text-xs sm:text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-medium"
-            >
-              ส่งจากสาขา {{ order.branch.branch_name }}
+      <div v-for="order in orderStore.orders" :key="order.order_id"
+        class="bg-white p-3 sm:p-4 rounded-xl w-full max-w-[750px] shadow-sm border flex flex-col gap-2 sm:gap-3 cursor-pointer hover:shadow-md transition-shadow"
+        @click="goToOrderDetail(order.order_id)">
+        <!-- Order header -->
+        <div class="flex flex-wrap justify-between items-start gap-1">
+          <div class="flex flex-wrap gap-1 sm:gap-2 items-center">
+            <div class="font-semibold text-xs sm:text-sm">ออเดอร์ #{{ order.order_id }}</div>
+            <div class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
+              สาขา {{ order.branch.branch_name }}
             </div>
           </div>
-
-          <span
-            class="px-3 py-1 rounded-full text-xs font-semibold"
-            :class="OrderStatusColor[order.order_status]"
-          >
+          <span class="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold"
+            :class="OrderStatusColor[order.order_status]">
             {{ OrderStatusLabelCustomer[order.order_status] }}
           </span>
         </div>
 
         <div class="border-t"></div>
 
-        <div class="flex flex-col gap-3">
-          <div
-            v-for="detail in order.details"
-            :key="detail.order_detail_id"
-            class="flex items-center gap-3"
-          >
-            <img
-              :src="detail.product_image"
-              class="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] object-cover rounded-md border"
-            />
-
-            <div class="flex-1 flex flex-col gap-1">
-              <div class="flex justify-between items-start gap-2">
-                <div class="font-medium text-sm sm:text-base line-clamp-2">
+        <!-- Order items -->
+        <div class="flex flex-col gap-2">
+          <div v-for="detail in order.details" :key="detail.order_detail_id" class="flex items-center gap-2">
+            <img :src="detail.product_image"
+              class="w-[40px] h-[40px] sm:w-[55px] sm:h-[55px] object-cover rounded-md border flex-shrink-0" />
+            <div class="flex-1 flex flex-col gap-0.5 min-w-0">
+              <div class="flex justify-between items-start gap-1">
+                <div class="font-medium text-xs sm:text-sm line-clamp-2 flex-1 min-w-0">
                   {{ detail.product_title }}
                 </div>
-
-                <div class="text-red-500 font-semibold text-sm sm:text-base whitespace-nowrap">
+                <div class="text-red-500 font-semibold text-xs sm:text-sm whitespace-nowrap ml-1">
                   ฿{{ detail.price }}
                 </div>
               </div>
-
-              <div class="flex justify-between items-center text-sm text-gray-600">
-                <div class="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded-md">
-                  จำนวน {{ detail.quantity }}
-                </div>
+              <div class="text-[10px] sm:text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md w-fit">
+                จำนวน {{ detail.quantity }}
               </div>
             </div>
           </div>
@@ -195,41 +169,37 @@ const goToOrderDetail = (orderId: number) => {
 
         <div class="border-t"></div>
 
-        <div class="flex justify-between items-center">
-          <div class="font-semibold text-base">รวม ฿{{ order.total_amount }}</div>
+        <!-- Footer: total + actions -->
+        <div class="flex justify-between items-center gap-2">
+          <div class="font-semibold text-xs sm:text-sm">รวม ฿{{ order.total_amount }}</div>
 
-          <div class="flex gap-2" @click.stop>
-            <button
-              class="px-3 py-1 text-sm border rounded-lg hover:bg-gray-100"
-              @click="goToOrderDetail(order.order_id)"
-            >
+          <div class="flex flex-wrap gap-1 sm:gap-2 justify-end" @click.stop>
+            <button class="px-2 sm:px-3 py-1 text-[10px] sm:text-xs border rounded-lg hover:bg-gray-100 transition"
+              @click="goToOrderDetail(order.order_id)">
               ดูรายละเอียด
             </button>
 
             <template v-if="order.order_status === 'pending'">
               <button
-                class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 border border-gray-400 text-gray-800 rounded-lg transition"
-                @click="cancelOrder(order.order_id)"
-              >
+                class="px-2 sm:px-3 py-1 text-[10px] sm:text-xs bg-gray-200 hover:bg-gray-300 border border-gray-400 text-gray-800 rounded-lg transition"
+                @click="cancelOrder(order.order_id)">
                 ยกเลิก
               </button>
               <button
-                class="px-3 py-1 text-sm bg-[#637aad] hover:bg-[#4a68a8] text-white rounded-lg"
-                @click="payOrder(order.order_id)"
-              >
+                class="px-2 sm:px-3 py-1 text-[10px] sm:text-xs bg-[#637aad] hover:bg-[#4a68a8] text-white rounded-lg"
+                @click="payOrder(order.order_id)">
                 ชำระเงิน
               </button>
             </template>
 
             <template v-else-if="order.order_status === 'waiting_verify'">
-              <span class="text-sm text-gray-500">รอตรวจสอบการชำระเงิน</span>
+              <span class="text-[10px] sm:text-xs text-gray-500 self-center">รอตรวจสอบการชำระ</span>
             </template>
 
             <template v-else-if="order.order_status === 'shipped'">
               <button
-                class="px-3 py-1 text-sm bg-[#637aad] hover:bg-[#4a68a8] text-white rounded-lg"
-                @click="confirmReceived(order.order_id)"
-              >
+                class="px-2 sm:px-3 py-1 text-[10px] sm:text-xs bg-[#637aad] hover:bg-[#4a68a8] text-white rounded-lg"
+                @click="confirmReceived(order.order_id)">
                 ยืนยันรับสินค้า
               </button>
             </template>
@@ -237,26 +207,26 @@ const goToOrderDetail = (orderId: number) => {
         </div>
       </div>
     </template>
+
+    <!-- Pagination -->
     <div class="flex-1 w-full max-w-[750px]">
-      <div
-        class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-2 md:py-4 md:mr-3"
-      >
+      <div class="flex justify-center md:justify-end items-center gap-2 md:gap-4 py-2 md:py-4 md:mr-3">
         <button
-          class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          @click="prevPage()"
-        >
-          <span class="pi pi-chevron-left text-sm"></span> Prev
+          class="bg-gray-100 px-2 sm:px-3 py-1 text-xs sm:text-sm border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          @click="prevPage()">
+          <span class="pi pi-chevron-left text-xs sm:text-sm"></span>
+          <span class="hidden sm:inline"> Prev</span>
         </button>
 
-        <span class="text-sm text-white bg-[#555] px-3 py-1 rounded">
-          {{ orderStore.page }} of {{ orderStore.lastPage }}</span
-        >
+        <span class="text-xs sm:text-sm text-white bg-[#555] px-2 sm:px-3 py-1 rounded">
+          {{ orderStore.page }} / {{ orderStore.lastPage }}
+        </span>
 
         <button
-          class="bg-gray-100 px-3 py-1 border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          @click="nextPage()"
-        >
-          Next <span class="pi pi-chevron-right text-sm"></span>
+          class="bg-gray-100 px-2 sm:px-3 py-1 text-xs sm:text-sm border rounded hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          @click="nextPage()">
+          <span class="hidden sm:inline">Next </span>
+          <span class="pi pi-chevron-right text-xs sm:text-sm"></span>
         </button>
       </div>
     </div>
