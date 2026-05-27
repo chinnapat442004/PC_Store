@@ -83,7 +83,7 @@ const orderActions: OrderAction[] = [
 
 onMounted(async () => {
   await fetchOrders()
-  await shimpentStore.getShipments('', true)
+  await shimpentStore.getShipments(1, 1000, '', true)
   orderStore.activeTab = 'all'
 })
 
