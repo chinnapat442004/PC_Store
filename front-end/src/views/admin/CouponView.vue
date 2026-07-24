@@ -54,6 +54,23 @@ const [usage_limit] = defineField('usage_limit')
 const [start_date] = defineField('start_date')
 const [end_date] = defineField('end_date')
 
+const toDateInputValue = (value: string | Date | null | undefined) => {
+  if (!value) return ''
+
+  if (typeof value === 'string') {
+    return value.slice(0, 10)
+  }
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
 onMounted(async () => {
   await couponStore.getCoupons(1, 10, '')
 })
@@ -83,8 +100,8 @@ const openEdit = (coupon: Coupon) => {
       min_order: coupon.min_order,
       max_discount: coupon.max_discount ?? null,
       usage_limit: coupon.usage_limit ?? null,
-      start_date: coupon.start_date,
-      end_date: coupon.end_date,
+      start_date: toDateInputValue(coupon.start_date),
+      end_date: toDateInputValue(coupon.end_date),
     },
   })
   showDialog.value = true
