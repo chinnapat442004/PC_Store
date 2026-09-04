@@ -47,9 +47,7 @@ onMounted(async () => {
 <template>
   <div class="w-full flex p-6 flex-col items-center">
     <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div
-        class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center text-center space-y-3"
-      >
+      <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center text-center space-y-3">
         <span class="pi pi-check-circle text-green-500 text-6xl"></span>
 
         <div class="text-xl font-semibold text-gray-800">ขอบคุณสำหรับคำสั่งซื้อ!</div>
@@ -64,11 +62,8 @@ onMounted(async () => {
 
           <div class="flex justify-between">
             <span class="text-gray-500">สถานะ</span>
-            <span
-              class="px-3 py-1 rounded-full text-xs font-semibold"
-              :class="OrderStatusColor[orderStore.selectedOrder?.order_status]"
-              v-if="orderStore.selectedOrder"
-            >
+            <span class="px-3 py-1 rounded-full text-xs font-semibold"
+              :class="OrderStatusColor[orderStore.selectedOrder?.order_status]" v-if="orderStore.selectedOrder">
               {{ OrderStatusLabelCustomer[orderStore.selectedOrder?.order_status] }}
             </span>
           </div>
@@ -76,18 +71,11 @@ onMounted(async () => {
       </div>
 
       <div class="bg-white p-6 rounded-lg shadow-md h-fit">
-        <div
-          class="max-w-[750px] w-full min-w-[300px] flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-2"
-        >
-          <div
-            v-for="detail in orderStore.selectedOrder?.details"
-            :key="detail.order_detail_id"
-            class="bg-white border rounded-[10px] flex items-center gap-3 p-3 w-full"
-          >
-            <img
-              :src="detail.product_image"
-              class="w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] object-cover rounded-md"
-            />
+        <div class="max-w-[750px] w-full min-w-[300px] flex flex-col gap-2 max-h-[350px] overflow-y-auto pr-2">
+          <div v-for="detail in orderStore.selectedOrder?.details" :key="detail.order_detail_id"
+            class="bg-white border rounded-[10px] flex items-center gap-3 p-3 w-full">
+            <img :src="detail.product_image"
+              class="w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] object-cover rounded-md" />
 
             <div class="flex-1 flex flex-col justify-between gap-1">
               <div class="flex justify-between items-start gap-2">
@@ -118,7 +106,7 @@ onMounted(async () => {
 
         <div class="flex justify-between mb-2 text-sm">
           <div>ส่วนลด</div>
-          <div>฿ 0.00</div>
+          <div>฿ {{ orderStore.selectedOrder?.discount_amount }}</div>
         </div>
 
         <hr class="my-3" />
@@ -128,16 +116,12 @@ onMounted(async () => {
           <div>฿ {{ orderStore.selectedOrder?.total_amount }}</div>
         </div>
 
-        <button
-          class="bg-[#82d182] w-full mt-[20px] h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
-          @click="router.push({ name: 'orders' })"
-        >
+        <button class="bg-[#82d182] w-full mt-[20px] h-[35px] hover:bg-[#69c769] rounded-[10px] text-white font-medium"
+          @click="router.push({ name: 'orders' })">
           ดูคำสั่งซื้อทั้งหมด
         </button>
-        <button
-          @click="router.push({ name: 'home' })"
-          class="bg-gray-100 w-full mt-[10px] h-[35px] hover:bg-gray-200 rounded-[10px] text-gray-700 font-medium"
-        >
+        <button @click="router.push({ name: 'home' })"
+          class="bg-gray-100 w-full mt-[10px] h-[35px] hover:bg-gray-200 rounded-[10px] text-gray-700 font-medium">
           กลับหน้าหลัก
         </button>
       </div>
